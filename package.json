@@ -1,5 +1,5 @@
 {
-  "name": "clide",
+  "name": "gud-cli",
   "version": "0.0.0",
   "license": "Apache-2.0",
   "workspaces": ["packages/*", "examples/*", ".github/actions/*"],

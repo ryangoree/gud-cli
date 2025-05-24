@@ -1,5 +1,5 @@
 {
-  "name": "clide-node-js-example",
+  "name": "node-js-example",
   "version": "0.0.0",
   "license": "MIT",
   "private": true,
@@ -11,7 +11,7 @@
     "prod": "node cli.js"
   },
   "dependencies": {
-    "clide-js": "0.3.0-next.8",
-    "clide-plugin-command-menu": "0.3.0-next.2"
+    "@gud/cli": "*",
+    "@gud/cli-menu": "*"
   }
 }

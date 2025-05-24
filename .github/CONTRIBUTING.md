@@ -1,6 +1,6 @@
-# Contributing to Clide-JS
+# Contributing to @gud/cli
 
-Thank you for your interest in contributing to Clide-JS! 🥹
+Thank you for your interest in contributing to `@gud/cli`! 🥹
 
 If you're unsure where to start, or if a feature would be welcomed, open an
 issue and start a conversation.
@@ -11,7 +11,7 @@ issue and start a conversation.
   - [Working in a Monorepo](#working-in-a-monorepo)
 - [Source Code Overview](#source-code-overview)
   - [Folder Organization](#folder-organization)
-  - [Clide-JS Source Code](#clide-js-source-code)
+  - [@gud/cli Source Code](#gudcli-source-code)
     - [Folder Organization](#folder-organization-1)
 - [Testing](#testing)
 - [Before Opening a PR](#before-opening-a-pr)
@@ -76,7 +76,7 @@ yarn workspace <package-name> add <package-name>
 
 ## Source Code Overview
 
-A brief overview of the clide-js repo.
+A brief overview of the gud-cli repo.
 
 ### Folder Organization
 
@@ -85,30 +85,30 @@ A brief overview of the clide-js repo.
 .github/ # files for GitHub, including actions and workflows
 .vscode/ # VSCode project settings
 assets/ # assets for the README.md
-examples/ # example CLIs built with clide-js
+examples/ # example CLIs built with @gud/cli
 notes/ # misc notes
 packages/ # package directories
-├── clide-js/ # core package
-├── clide-plugin-command-menu/ # a plugin to prompt users for missing subcommands
+├── cli/ # core package
+├── cli-menu/ # a plugin to prompt users for missing subcommands
 └── extras/ # utilities from CLIs I've written in the past that might get used later.
 ```
 
-The 2 published packages are [clide-js](https://www.npmjs.com/package/clide-js)
+The 2 published packages are [@gud/cli](https://www.npmjs.com/package/@gud/cli)
 and
 [clide-plugin-command-menu](https://www.npmjs.com/package/clide-plugin-command-menu)
 
-### Clide-JS Source Code
+### @gud/cli Source Code
 
-The [clide-js](../packages/clide-js) package contains the core code for the
-Clide-JS framework.
+The [cli](../packages/cli) package contains the core code for the `@gud/cli`
+framework.
 
 #### Folder Organization
 
 ```sh
-packages/clide-js/
+packages/cli/
 ├── src/
 │   ├── cli/ # used as a sandbox to test features, may eventually be a real CLI
-│   ├── core/ # the main code for clide-js
+│   ├── core/ # the main code for @gud/cli
 │   ├── plugins/ # built-in plugins that enable optional features like help
 │   └── utils/ # utilities used throughout, should not reference any code outside utils
 ├── test/
@@ -125,44 +125,44 @@ packages/clide-js/
 ```
 
 Everything revolves around the
-[context](../packages/clide-js/src/core/context.ts) module which acts as the
+[context](../packages/cli/src/core/context.ts) module which acts as the
 orchestrator for the entire command lifecycle, preparing the command for
 execution, and providing a central method for throwing errors and exiting the
 process.
 
 It makes use of the other modules in core for most of it's functionality:
 
-- [hooks](../packages/clide-js/src/core/hooks.ts): Contains the `HookRegistry`
+- [hooks](../packages/cli/src/core/hooks.ts): Contains the `HookRegistry`
   which is used by `Context` and `State` to call hooks from plugins during
   lifecycle events.
-- [client](../packages/clide-js/src/core/client.ts): Contains a `Client` class
+- [client](../packages/cli/src/core/client.ts): Contains a `Client` class
   for logging and prompting. I would like to build this out more to work with
   different `stdin`, `stdout`, and `stderr` settings.
-- [resolve](../packages/clide-js/src/core/resolve.ts): Contains functions to
+- [resolve](../packages/cli/src/core/resolve.ts): Contains functions to
   locate and import command modules based on a command string.
-- [state](../packages/clide-js/src/core/state.ts): Contains the `State` class
+- [state](../packages/cli/src/core/state.ts): Contains the `State` class
   which manages the state of command execution with mechanisms to progress
   through the steps, handle state transition, and manage the lifecycle of shared
   command data.
 
-The [state](../packages/clide-js/src/core/state.ts) module uses
-[options-getter](../packages/clide-js/src/core/options/options-getter.ts) to
+The [state](../packages/cli/src/core/state.ts) module uses
+[options-getter](../packages/cli/src/core/options/options-getter.ts) to
 create an `OptionsGetter` for use in command handlers during execution. The
 `OptionsGetter` is an object with methods on it for every option with type safe
 keys for the option key and it's aliases. These methods are used to dyanamically
 fetch option values with optional prompt fallbacks.
 
-The [help](../packages/clide-js/src/core/help.ts) module generates help text for
+The [help](../packages/cli/src/core/help.ts) module generates help text for
 a command context and is used by the built-in [help
-plugin](../packages/clide-js/src/plugins/help.ts).
+plugin](../packages/cli/src/plugins/help.ts).
 
-The [run](../packages/clide-js/src/core/run.ts) module contains the `run`
+The [run](../packages/cli/src/core/run.ts) module contains the `run`
 function which is the primary entry to framework, used in the bin file of CLIs.
-It offers a simple unified API for running a CLI with the Clide-JS framework. It
+It offers a simple unified API for running a CLI with the `@gud/cli` framework. It
 manages registering hooks, creating a `Context` instance, adding options,
 preparing and executing the context, and catching errors.
 
-Lastly in core, the [command](../packages/clide-js/src/core/command.ts) module
+Lastly in core, the [command](../packages/cli/src/core/command.ts) module
 contains a factory function for creating type safe command modules. These are
 used in the command files of CLIs and should be their default export.
 

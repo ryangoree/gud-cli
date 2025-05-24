@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { help, run } from 'clide-js';
-import { commandMenu } from 'clide-plugin-command-menu';
+import { help, run } from '@gud/cli';
+import { commandMenu } from '@gud/cli-menu';
 
 const result = await run({
   plugins: [

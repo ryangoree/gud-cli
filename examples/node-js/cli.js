@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { run, help } = require('clide-js');
+const { run, help } = require('@gud/cli');
 const { commandMenu } = require('clide-plugin-command-menu');
 
 async function main() {

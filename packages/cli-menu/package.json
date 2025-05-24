@@ -1,0 +1,49 @@
+{
+  "name": "@gud/cli-menu",
+  "version": "0.0.0",
+  "description": "Adds command menus to @gud/cli apps.",
+  "license": "MIT",
+  "type": "module",
+  "author": "ryan goree (https://github.com/ryangoree)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryangoree/gud-cli"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "NODE_ENV=development tsx example/cli.ts",
+    "test": "vitest run --reporter=verbose",
+    "test:watch": "vitest --reporter=verbose",
+    "test:ci": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@gud/cli": "^0.0.0"
+  },
+  "dependencies": {
+    "cfonts": "^3.3.0",
+    "colors": "^1.4.0"
+  },
+  "devDependencies": {
+    "@gud/cli": "^0.0.0",
+    "@types/node": "^22.15.18",
+    "tsup": "^8.5.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.3"
+  },
+  "exports": {
+    ".": {
+      "types": {
+        "import": "./dist/index.d.ts",
+        "require": "./dist/index.d.cts"
+      },
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "keywords": ["gud", "cli", "menu", "command", "prompt"]
+}

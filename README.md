@@ -1,6 +1,6 @@
-# Clide-JS
+# @gud/cli
 
-`Clide-JS` is a Command Line Interface (CLI) framework for node designed to
+A Command Line Interface (CLI) framework for node designed to
 build powerful and flexible command-line applications with ease. It leverages a
 modular approach, allowing developers to create commands, use hooks for
 lifecycle management, and extend functionality with plugins.
@@ -40,9 +40,9 @@ lifecycle management, and extend functionality with plugins.
 ## Installation
 
 ```bash
-npm install clide-js
+npm install @gud/cli
 # or
-yarn add clide-js
+yarn add @gud/cli
 ```
 
 ## Quick Start
@@ -51,7 +51,7 @@ yarn add clide-js
 
 ```ts
 // src/cli.ts
-import { run } from 'clide-js';
+import { run } from '@gud/cli';
 
 // Use argv (minus the binary name) and the default commands directory.
 run();
@@ -69,7 +69,7 @@ run({
 
 ```ts
 // src/commands/hello.ts
-import { command } from 'clide-js';
+import { command } from '@gud/cli';
 
 export default command({
   description: 'Say hello!',
@@ -104,7 +104,7 @@ export default command({
 **3. (Optional) Create plugins to extend the framework:**
 
 ```ts
-import { Plugin } from 'clide-js';
+import { Plugin } from '@gud/cli';
 
 export function logger(): Plugin {
   return {
@@ -143,7 +143,7 @@ export function logger(): Plugin {
 
 ## Ideal Use Cases
 
-Clide-JS is ideal for developers looking to create efficient, maintainable CLI
+@gud/cli is ideal for developers looking to create efficient, maintainable CLI
 applications with minimal fuss. It offers the right balance of functionality and
 ease-of-use, making it a practical choice for both simple scripts and more
 elaborate command-line tools.
@@ -154,78 +154,77 @@ elaborate command-line tools.
 - Create reusable and modular command components.
 
 ## Running
-
-Clide-JS is designed to be straightforward to run. The primary entry point is
-the [`run`](https://ryangoree.github.io/clide-js/functions/run.html) function,
+@gud/cli is designed to be straightforward to run. The primary entry point is
+the [`run`](https://ryangoree.github.io/gud-cli/functions/run.html) function,
 which orchestrates the command execution flow. It parses and executes commands
 based on your configuration, handles plugins, and utilizes hooks for lifecycle
 management.
 
-The [`run`](https://ryangoree.github.io/clide-js/functions/run.html) function
+The [`run`](https://ryangoree.github.io/gud-cli/functions/run.html) function
 takes an optional [configuration
-object](https://ryangoree.github.io/clide-js/interfaces/RunOptions.html)
+object](https://ryangoree.github.io/gud-cli/interfaces/RunOptions.html)
 allowing you to specify commands, plugins, and hooks. This level of
 customization makes it adaptable to various CLI application requirements.
 
 For detailed API information on the
-[`run`](https://ryangoree.github.io/clide-js/functions/run.html) function,
+[`run`](https://ryangoree.github.io/gud-cli/functions/run.html) function,
 please refer to the [Typedoc
-reference](https://ryangoree.github.io/clide-js/functions/run.html).
+reference](https://ryangoree.github.io/gud-cli/functions/run.html).
 
 ## Creating Commands
 
-In Clide-JS, commands are the building blocks of your CLI application. Each
+Commands are the building blocks of your CLI application. Each
 command can have its description, options, and a handler function where the
-command's logic resides. Clide-JS allows for dynamic command resolution, meaning
+command's logic resides. @gud/cli allows for dynamic command resolution, meaning
 your commands can be organized hierarchically, with support for nested and
 parameterized commands.
 
 To create a command, use the
-[`command`](https://ryangoree.github.io/clide-js/functions/command.html) factory
+[`command`](https://ryangoree.github.io/gud-cli/functions/command.html) factory
 function. This function takes an object with your command's metadata, options,
 and the handler function. The handler function, which is where the main logic of
 your command lives, receives a
-[`State`](https://ryangoree.github.io/clide-js/classes/State.html) object. This
+[`State`](https://ryangoree.github.io/gud-cli/classes/State.html) object. This
 object provides access to parsed options, command parameters, and the ability to
 control the command execution flow.
 
 For a comprehensive guide on creating commands, including handling options and
 parameters, see the [Typedoc
-reference](https://ryangoree.github.io/clide-js/functions/command.html).
+reference](https://ryangoree.github.io/gud-cli/functions/command.html).
 
 ## Creating Plugins
 
-Plugins in Clide-JS offer a way to extend and customize the framework's
+Plugins offer a way to extend and customize the framework's
 functionality. A plugin is an object that includes metadata (name, version,
 description) and an
-[`init`](https://ryangoree.github.io/clide-js/interfaces/Plugin.html#init)
+[`init`](https://ryangoree.github.io/@gud/cli/interfaces/Plugin.html#init)
 function. This function is called during the CLI application's initialization
 phase and receives the application's
-[`Context`](https://ryangoree.github.io/clide-js/classes/Context.html). The
-[`Context`](https://ryangoree.github.io/clide-js/classes/Context.html) provides
+[`Context`](https://ryangoree.github.io/@gud/cli/classes/Context.html). The
+[`Context`](https://ryangoree.github.io/@gud/cli/classes/Context.html) provides
 access to hooks, commands, and other critical framework components.
 
 You can create plugins to add new features, integrate with external services,
 modify existing behavior, or inject middleware for advanced use cases. The
-[`init`](https://ryangoree.github.io/clide-js/interfaces/Plugin.html#init)
+[`init`](https://ryangoree.github.io/@gud/cli/interfaces/Plugin.html#init)
 function should return a boolean indicating whether the initialization was
 successful.
 
 For more information on developing plugins, including accessing and modifying
 the application context, refer to the [Typedoc
-reference](/packages/clide-js/docs/interfaces/Plugin.md).
+reference](/packages/@gud/cli/docs/interfaces/Plugin.md).
 
 ### Examples
 
-- [help](https://ryangoree.github.io/clide-js/functions/help-1.html): Adds the
+- [help](https://ryangoree.github.io/@gud/cli/functions/help-1.html): Adds the
   `--help`/`-h` option and manages printing help messages when the option is
   present or a
-  [`UsageError`](https://ryangoree.github.io/clide-js/classes/UsageError.html)
+  [`UsageError`](https://ryangoree.github.io/@gud/cli/classes/UsageError.html)
   occurs. _Included in the core package._
-- [logger](https://ryangoree.github.io/clide-js/functions/logger.html): A simple
+- [logger](https://ryangoree.github.io/@gud/cli/functions/logger.html): A simple
   logger that logs the result of each execution step. _Included in the core
   package._
-- [command-menu](https://github.com/ryangoree/clide-js/tree/main/packages/clide-plugin-command-menu):
+- [command-menu](https://github.com/ryangoree/@gud/cli/tree/main/packages/clide-plugin-command-menu):
   Prompts the user to select a subcommand when required.
 
 ## Routing and Command Resolution
@@ -233,7 +232,7 @@ reference](/packages/clide-js/docs/interfaces/Plugin.md).
 ### Default Commands Directory
 
 If you don't explicitly provide a commands directory when calling the
-[`run`](https://ryangoree.github.io/clide-js/functions/run.html) function, the
+[`run`](https://ryangoree.github.io/@gud/cli/functions/run.html) function, the
 framework automatically attempts to locate the commands directory in two ways:
 
 1. **Current Working Directory:** It first checks for a directory named
@@ -242,7 +241,7 @@ framework automatically attempts to locate the commands directory in two ways:
 2. **Caller Directory:** If no "commands" directory is found in the current
    working directory, the framework looks for a "commands" folder adjacent to
    the file that called the
-   [`run`](https://ryangoree.github.io/clide-js/functions/run.html) function.
+   [`run`](https://ryangoree.github.io/@gud/cli/functions/run.html) function.
    This is helpful for scenarios where your CLI script lives in a specific
    directory within your project (e.g., "cli/bin.js") and the commands are kept
    in a sibling directory called "cli/commands".
@@ -256,11 +255,11 @@ framework automatically attempts to locate the commands directory in two ways:
 
 **2. Find Command File:**
 
-- Clide-JS attempts to locate a file with the same name as the command in the
+- @gud/cli attempts to locate a file with the same name as the command in the
   specified commands directory.
 - If the file exists, it imports the module and checks for a default export,
   which should be the
-  [`CommandModule`](https://ryangoree.github.io/clide-js/types/CommandModule.html)
+  [`CommandModule`](https://ryangoree.github.io/@gud/cli/types/CommandModule.html)
   object.
 
 **3. Handle Non-existent Files:**
@@ -310,7 +309,7 @@ The framework searches for `list.js` in the commands directory. If found, it
 imports the module and executes its handler.
 
 ![Basic Command
-Files](https://raw.githubusercontent.com/ryangoree/clide-js/main/assets/basic-command-resolution.png)
+Files](https://raw.githubusercontent.com/ryangoree/gud-cli/main/assets/basic-command-resolution.png)
 
 **2. Pass-through Command:**
 
@@ -322,7 +321,7 @@ The framework identifies `settings` as a directory, treats it as a pass-through
 command, and expects further command resolution within the `settings` directory.
 
 ![Directory
-Files](https://raw.githubusercontent.com/ryangoree/clide-js/main/assets/directory-resolution.png)
+Files](https://raw.githubusercontent.com/ryangoree/gud-cli/main/assets/directory-resolution.png)
 
 **4. Subcommand:**
 
@@ -335,7 +334,7 @@ mycli users create
 - The framework looks for `create.js` in the `users` directory.
 
 ![Subcommand Resolution
-Files](https://raw.githubusercontent.com/ryangoree/clide-js/main/assets/subcommand-resolution.png)
+Files](https://raw.githubusercontent.com/ryangoree/gud-cli/main/assets/subcommand-resolution.png)
 
 **3. Parameterized Command:**
 
@@ -348,10 +347,10 @@ mycli deploy prod
 - If not found, the framework will look for a parameterized file name and finds
   `[environment].ts`.
 - The module is imported and the `environment` is set to `prod` in the
-  [`State.params`](https://ryangoree.github.io/clide-js/classes/State.html#params).
+  [`State.params`](https://ryangoree.github.io/gud-cli/classes/State.html#params).
 
 ![Parameterized Command
-Files](https://raw.githubusercontent.com/ryangoree/clide-js/main/assets/parameterized-command.png)
+Files](https://raw.githubusercontent.com/ryangoree/gud-cli/main/assets/parameterized-command.png)
 
 ### Key Points
 

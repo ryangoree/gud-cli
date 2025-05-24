@@ -1,4 +1,4 @@
-import { command } from 'clide-js';
+import { command } from '@gud/cli';
 
 export default command({
   description: 'Get a greeting',

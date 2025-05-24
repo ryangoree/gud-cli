@@ -1,4 +1,4 @@
-const { command, ClideError } = require('clide-js');
+const { command, ClideError } = require('@gud/cli');
 
 module.exports = command({
   description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',

@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'packages/clide-js/src/**'
+      - 'packages/cli/src/**'
       - 'README.md'
       - '.github/workflows/docs.yml'
 
@@ -42,7 +42,7 @@ jobs:
         run: yarn --frozen-lockfile
 
       - name: build
-        run: yarn workspace clide-js build:docs
+        run: yarn workspace @gud/cli build:docs
 
       - name: setup pages
         uses: actions/configure-pages@v5
@@ -50,7 +50,7 @@ jobs:
       - name: upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './packages/clide-js/docs'
+          path: './packages/cli/docs'
 
       - name: deploy to github pages
         id: deployment

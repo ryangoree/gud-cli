@@ -1,0 +1,26 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src/index.ts"],
+  "out": "docs",
+  "navigationLinks": {
+    "github": "https://github.com/ryangoree/@gud/cli"
+  },
+  "categorizeByGroup": true,
+  "groupOrder": [
+    "Run",
+    "Command",
+    "State",
+    "Context",
+    "Client",
+    "Plugin",
+    "Hooks",
+    "Help",
+    "Errors",
+    "Resolve",
+    "Parse",
+    "*"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true
+}
