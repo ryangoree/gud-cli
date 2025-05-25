@@ -1,6 +1,6 @@
-# @gud/cli Command Menu Plugin
+# Gud CLI Command Menu Plugin
 
-An [@gud/cli](https://github.com/ryangoree/gud-cli/tree/main) plugin that
+A [Gud CLI](https://github.com/ryangoree/gud-cli/tree/main) plugin that
 prompts the user to select a subcommand when required.
 
 ```ts

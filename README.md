@@ -1,4 +1,4 @@
-# @gud/cli
+# Gud CLI
 
 A Command Line Interface (CLI) framework for node designed to
 build powerful and flexible command-line applications with ease. It leverages a
@@ -354,7 +354,7 @@ Files](https://raw.githubusercontent.com/ryangoree/gud-cli/main/assets/parameter
 
 ### Key Points
 
-- Clide-JS prioritizes direct file name matching for each token, followed by
+- @gud/cli prioritizes direct file name matching for each token, followed by
   parameterized file names.
 - Plugin and initial command options are removed before further processing.
 - Resolution continues within a directory matching the name of the previously
@@ -365,18 +365,18 @@ execution, making it ideal for building versatile CLI applications.
 
 ## Dynamic Option Handling
 
-Clide-JS introduces a dynamic and user-centric approach to handling command
+@gud/cli introduces a dynamic and user-centric approach to handling command
 options, distinguishing it from many other CLI frameworks. Instead of validating
-options before execution, Clide-JS's
-[`OptionsGetter`](https://ryangoree.github.io/clide-js/types/OptionsGetter.html)
+options before execution, the
+[`OptionsGetter`](https://ryangoree.github.io/@gud/cli/types/OptionsGetter.html)
 allows command handlers to address missing or invalid options dynamically,
 enhancing the user experience and offering more flexibility:
 
 - **Lazy Evaluation:** Options are not immediately validated upon command
   execution. Instead, they are evaluated dynamically when accessed by the
   command handler.
-- **User Prompts:** If an option is required but not provided, Clide-JS can
-  prompt the user for input, allowing for interactive CLI experiences. This
+- **User Prompts:** If an option is required but not provided, command handlers
+  can prompt the user for input, allowing for interactive CLI experiences. This
   eliminates the need for remembering all options beforehand and provides a more
   guided experience.
 - **Option Getters:** Each option is represented by a `getter` function that

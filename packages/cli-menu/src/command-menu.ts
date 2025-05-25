@@ -46,7 +46,7 @@ export interface CommandMenuOptions {
 /**
  * Command Menu
  *
- * A plugin for \@gud/cli that:
+ * A \@gud/cli plugin that:
  * 1. Prompts the user to choose a subcommand if the current command requires
  *    it.
  * 2. After a subcommand is chosen, checks if it also needs a subcommand.
