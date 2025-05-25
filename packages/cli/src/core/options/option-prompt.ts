@@ -6,12 +6,7 @@ import {
   normalizeOptionValue,
 } from 'src/core/options/options';
 import { validateOptionType } from 'src/core/options/validate-options';
-import type {
-  KeyMap,
-  MaybePromise,
-  MaybeReadonly,
-  Replace,
-} from 'src/utils/types';
+import type { KeyMap, MaybePromise, Replace } from 'src/utils/types';
 
 // Types //
 
@@ -95,7 +90,6 @@ export type OptionPromptParams<T extends OptionConfig = OptionConfig> = Replace<
  */
 export async function optionPrompt<
   TConfig extends OptionConfig = OptionConfig,
-  TValue = MaybeReadonly<OptionConfigPrimitiveType<TConfig>> | undefined,
 >({
   name,
   config,
@@ -104,7 +98,9 @@ export async function optionPrompt<
   validate,
   onState,
   ...params
-}: OptionPromptParams<TConfig>): Promise<TValue> {
+}: OptionPromptParams<TConfig>): Promise<
+  OptionConfigPrimitiveType<TConfig> | undefined
+> {
   // Assign a default validate function if the option is required and no
   // validate function is provided
   if (config?.required && !validate) {
@@ -230,10 +226,10 @@ export async function optionPrompt<
         break;
 
       default:
-        promptOptions.initial = defaultValue as any;
+        promptOptions.initial = defaultValue;
     }
   }
 
   const value = await client.prompt(promptOptions);
-  return normalizeOptionValue(value, config) as TValue;
+  return normalizeOptionValue(value, config);
 }

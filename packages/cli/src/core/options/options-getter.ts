@@ -27,7 +27,7 @@ import type { AnyObject } from 'src/utils/types';
  * Configuration options for the {@linkcode OptionGetter} function.
  * @Group Options
  */
-type OptionGetterParams<T extends OptionConfig> = Pick<
+type OptionGetterParams<T extends OptionConfig = OptionConfig> = Pick<
   OptionPromptParams<T>,
   'validate'
 > & {
@@ -216,7 +216,7 @@ export function createOptionsGetter<
       expandedConfig[key] = {
         ...config,
         alias: config.alias?.length ? [...config.alias, configKey] : undefined,
-      } as OptionConfig;
+      };
 
       // Add the key to the values if any of it's aliases are already set
       if (valueKey) {
@@ -225,7 +225,7 @@ export function createOptionsGetter<
 
       // Create a getter for the key
       getter[key] = async (params = {}) => {
-        const { prompt, validate } = params;
+        const { prompt, validate } = params as OptionGetterParams;
         let value = getter.values[key];
 
         // Return cached value if it exists
@@ -234,6 +234,7 @@ export function createOptionsGetter<
         // Prompt for the value if required or a prompt is provided.
         if (config.required || params?.prompt) {
           value = await optionPrompt({
+            //    ^?
             client,
             config,
             name: key,
@@ -252,10 +253,10 @@ export function createOptionsGetter<
         // Validate and set the value to avoid prompting again
         validateOptionType({ config, name: key, value });
         getter.set(key, value);
-        return value as any;
+        return value as OptionConfigPrimitiveType as any;
       };
     }
   }
 
-  return getter as unknown as OptionsGetter<TOptionsConfig>;
+  return getter as OptionsGetter<TOptionsConfig>;
 }
