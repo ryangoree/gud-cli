@@ -70,11 +70,11 @@ export type PromptParams<T extends PromptType = PromptType> = Replace<
 >;
 
 /**
- * A client that can be used to log messages, errors, and prompt the user.
+ * A client that wraps the Node.js console and provides additional methods for
+ * logging, error handling, and user prompts.
  *
- * This is a **WIP** and will be built out more in the future. For now, it's
- * just a simple wrapper around `console` and
- * [prompts](https://github.com/terkelg/prompts).
+ *
+ * @see [GitHub - terkelg/prompts](https://github.com/terkelg/prompts).
  * @group Client
  */
 export class Client extends Console {

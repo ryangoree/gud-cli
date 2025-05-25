@@ -166,7 +166,8 @@ export class State<
   }
 
   /**
-   * The client for logging and I/O operations.
+   * A client that wraps the Node.js console and provides additional methods for
+   * logging, error handling, and user prompts.
    */
   get client() {
     return this.context.client;

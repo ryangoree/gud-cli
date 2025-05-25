@@ -1,6 +1,6 @@
-# Contributing to @gud/cli
+# Contributing to Gud CLI
 
-Thank you for your interest in contributing to `@gud/cli`! 🥹
+Thank you for your interest in contributing! 🥹
 
 If you're unsure where to start, or if a feature would be welcomed, open an
 issue and start a conversation.
@@ -10,9 +10,9 @@ issue and start a conversation.
   - [Installing Dependencies](#installing-dependencies)
   - [Working in a Monorepo](#working-in-a-monorepo)
 - [Source Code Overview](#source-code-overview)
-  - [Folder Organization](#folder-organization)
-  - [@gud/cli Source Code](#gudcli-source-code)
-    - [Folder Organization](#folder-organization-1)
+  - [Repo Organization](#repo-organization)
+  - [`@gud/cli` Source Code](#gudcli-source-code)
+    - [Folder Organization](#folder-organization)
 - [Testing](#testing)
 - [Before Opening a PR](#before-opening-a-pr)
 
@@ -78,14 +78,14 @@ yarn workspace <package-name> add <package-name>
 
 A brief overview of the gud-cli repo.
 
-### Folder Organization
+### Repo Organization
 
 ```sh
 .changeset/ # changesets and config
 .github/ # files for GitHub, including actions and workflows
 .vscode/ # VSCode project settings
 assets/ # assets for the README.md
-examples/ # example CLIs built with @gud/cli
+examples/ # example CLIs using @gud/cli
 notes/ # misc notes
 packages/ # package directories
 ├── cli/ # core package
@@ -94,10 +94,9 @@ packages/ # package directories
 ```
 
 The 2 published packages are [@gud/cli](https://www.npmjs.com/package/@gud/cli)
-and
-[clide-plugin-command-menu](https://www.npmjs.com/package/clide-plugin-command-menu)
+and [@gud/cli-menu](https://www.npmjs.com/package/@gud/cli-menu)
 
-### @gud/cli Source Code
+### `@gud/cli` Source Code
 
 The [cli](../packages/cli) package contains the core code for the `@gud/cli`
 framework.
@@ -124,43 +123,42 @@ packages/cli/
 └── vitest.config.ts # testing config
 ```
 
-Everything revolves around the
-[context](../packages/cli/src/core/context.ts) module which acts as the
-orchestrator for the entire command lifecycle, preparing the command for
-execution, and providing a central method for throwing errors and exiting the
-process.
+Everything revolves around the [context](../packages/cli/src/core/context.ts)
+module which acts as the orchestrator for the entire command lifecycle,
+preparing the command for execution, and providing a central method for throwing
+errors and exiting the process.
 
 It makes use of the other modules in core for most of it's functionality:
 
-- [hooks](../packages/cli/src/core/hooks.ts): Contains the `HookRegistry`
-  which is used by `Context` and `State` to call hooks from plugins during
-  lifecycle events.
-- [client](../packages/cli/src/core/client.ts): Contains a `Client` class
-  for logging and prompting. I would like to build this out more to work with
+- [hooks](../packages/cli/src/core/hooks.ts): Contains the `HookRegistry` which
+  is used by `Context` and `State` to call hooks from plugins during lifecycle
+  events.
+- [client](../packages/cli/src/core/client.ts): Contains a `Client` class for
+  logging and prompting. I would like to build this out more to work with
   different `stdin`, `stdout`, and `stderr` settings.
-- [resolve](../packages/cli/src/core/resolve.ts): Contains functions to
-  locate and import command modules based on a command string.
-- [state](../packages/cli/src/core/state.ts): Contains the `State` class
-  which manages the state of command execution with mechanisms to progress
-  through the steps, handle state transition, and manage the lifecycle of shared
-  command data.
+- [resolve](../packages/cli/src/core/resolve.ts): Contains functions to locate
+  and import command modules based on a command string.
+- [state](../packages/cli/src/core/state.ts): Contains the `State` class which
+  manages the state of command execution with mechanisms to progress through the
+  steps, handle state transition, and manage the lifecycle of shared command
+  data.
 
 The [state](../packages/cli/src/core/state.ts) module uses
-[options-getter](../packages/cli/src/core/options/options-getter.ts) to
-create an `OptionsGetter` for use in command handlers during execution. The
+[options-getter](../packages/cli/src/core/options/options-getter.ts) to create
+an `OptionsGetter` for use in command handlers during execution. The
 `OptionsGetter` is an object with methods on it for every option with type safe
 keys for the option key and it's aliases. These methods are used to dyanamically
 fetch option values with optional prompt fallbacks.
 
-The [help](../packages/cli/src/core/help.ts) module generates help text for
-a command context and is used by the built-in [help
+The [help](../packages/cli/src/core/help.ts) module generates help text for a
+command context and is used by the built-in [help
 plugin](../packages/cli/src/plugins/help.ts).
 
-The [run](../packages/cli/src/core/run.ts) module contains the `run`
-function which is the primary entry to framework, used in the bin file of CLIs.
-It offers a simple unified API for running a CLI with the `@gud/cli` framework. It
-manages registering hooks, creating a `Context` instance, adding options,
-preparing and executing the context, and catching errors.
+The [run](../packages/cli/src/core/run.ts) module contains the `run` function
+which is the primary entry to framework, used in the bin file of CLIs. It
+provides a simple unified API for running a CLI with the framework. It manages
+registering hooks, creating a `Context` instance, adding options, preparing and
+executing the context, and catching errors.
 
 Lastly in core, the [command](../packages/cli/src/core/command.ts) module
 contains a factory function for creating type safe command modules. These are
