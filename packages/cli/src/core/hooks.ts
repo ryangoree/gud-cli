@@ -2,9 +2,9 @@ import type { Context } from 'src/core/context';
 import type { OptionValues, OptionsConfig } from 'src/core/options/options';
 import type { ParseCommandFn } from 'src/core/parse';
 import type {
-  Params,
   ResolveCommandFn,
   ResolvedCommand,
+  RouteParams,
 } from 'src/core/resolve';
 import type { NextState, State } from 'src/core/state';
 import type {
@@ -286,7 +286,7 @@ export interface LifecycleHooks {
      * Override the params for the command, fully replacing the existing params.
      * @param params - New params to pass.
      */
-    setParams: (params: Params) => void;
+    setParams: (params: RouteParams) => void;
 
     /**
      * The command to be executed.

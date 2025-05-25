@@ -42,7 +42,7 @@ export {
   MissingDefaultExportError,
   prepareResolvedCommand,
   resolveCommand,
-  type Params,
+  type RouteParams,
   type ResolveCommandFn,
   type ResolveCommandParams,
   type ResolvedCommand,

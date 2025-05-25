@@ -65,7 +65,7 @@ export type ResolveCommandFn = (
  * Params that were parsed from the command string.
  * @group Resolve
  */
-export type Params = Record<string, string | string[]>;
+export type RouteParams = Record<string, string | string[]>;
 
 /**
  * Object containing details about the resolved command, the path to the command
@@ -112,7 +112,7 @@ export interface ResolvedCommand {
   /**
    * The params associated with the resolved command.
    */
-  params?: Params;
+  params?: RouteParams;
 }
 
 // Functions + Function Types //

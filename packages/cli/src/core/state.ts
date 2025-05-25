@@ -6,7 +6,7 @@ import {
   type OptionsGetter,
   createOptionsGetter,
 } from 'src/core/options/options-getter';
-import type { Params, ResolvedCommand } from 'src/core/resolve';
+import type { ResolvedCommand, RouteParams } from 'src/core/resolve';
 
 // Types //
 
@@ -18,7 +18,7 @@ import type { Params, ResolvedCommand } from 'src/core/resolve';
 export interface NextState {
   i?: number;
   data?: unknown;
-  params?: Params;
+  params?: RouteParams;
   options?: OptionValues;
 }
 
@@ -80,7 +80,7 @@ export class State<
   #i = -1;
   #commands: ResolvedCommand[];
   #options: OptionsGetter;
-  #params: Params = {};
+  #params: RouteParams = {};
 
   /**
    * A promise that resolves when the steps are done. This is useful for
@@ -359,7 +359,7 @@ export class State<
      * Parameters to merge/override the current parameters.
      */
     // TODO: strict type for paramValues
-    paramValues?: Params;
+    paramValues?: RouteParams;
   }) => {
     const resolvedCommands: ResolvedCommand[] = [];
     const resolvedCommandsOptions: OptionsConfig = {};
