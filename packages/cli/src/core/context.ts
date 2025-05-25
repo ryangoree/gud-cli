@@ -438,6 +438,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     });
 
     this.#result = result;
+    return result;
   };
 
   /**
