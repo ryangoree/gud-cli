@@ -1,4 +1,4 @@
-import { ClideError, type ClideErrorOptions } from 'src/core/errors';
+import { CliError, type CliErrorOptions } from 'src/core/errors';
 import type { OptionsConfig } from 'src/core/options/options';
 
 // Errors //
@@ -7,8 +7,8 @@ import type { OptionsConfig } from 'src/core/options/options';
  * An error indicating the options config is invalid.
  * @group Errors
  */
-export class OptionsConfigError extends ClideError {
-  constructor(message: string, options?: ClideErrorOptions) {
+export class OptionsConfigError extends CliError {
+  constructor(message: string, options?: CliErrorOptions) {
     super(message, {
       name: 'OptionsConfigError',
       ...options,

@@ -1,7 +1,7 @@
 import { Console } from 'node:console';
 import process from 'node:process';
 import prompts, { type PromptObject, type PromptType } from 'prompts';
-import { ClideError, type ClideErrorOptions } from 'src/core/errors';
+import { CliError, type CliErrorOptions } from 'src/core/errors';
 import type { KeyMap, Replace } from 'src/utils/types';
 
 // Errors //
@@ -10,8 +10,8 @@ import type { KeyMap, Replace } from 'src/utils/types';
  * An error that has already been printed by the client.
  * @group Errors
  */
-export class ClientError extends ClideError {
-  constructor(message: unknown, options?: ClideErrorOptions) {
+export class ClientError extends CliError {
+  constructor(message: unknown, options?: CliErrorOptions) {
     super(message, {
       name: 'Error',
       ...options,
@@ -93,7 +93,7 @@ export class Client extends Console {
       `\n${
         process.env.NODE_ENV === 'development'
           ? clientError.stack
-          : `${ClideError.prefix}Error: ${clientError.message}`
+          : `${CliError.prefix}Error: ${clientError.message}`
       }`,
     );
     return clientError;

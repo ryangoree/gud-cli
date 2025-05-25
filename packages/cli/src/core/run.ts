@@ -7,7 +7,7 @@ import { getCallerPath } from 'src/utils/caller-path';
 import { isDirectory } from 'src/utils/fs';
 import { joinTokens } from 'src/utils/tokens';
 import { Context } from './context';
-import { ClideError } from './errors';
+import { CliError } from './errors';
 import { HookRegistry, type LifecycleHooks } from './hooks';
 import type { OptionsConfig } from './options/options';
 import type { Plugin } from './plugin';
@@ -120,7 +120,7 @@ export async function run({
     // if neither "<cwd>/commands" nor "<caller-dir>/commands" exist, throw
     if (!isDirectory(defaultCommandsDir)) {
       triedPaths.push(defaultCommandsDir);
-      throw new ClideError(
+      throw new CliError(
         `Unable to find commands directory. Specify the path to the directory containing command modules using the "commandsDir" option or create the directory at one of the following locations:
   - ${triedPaths.join('\n  - ')}
   `,
@@ -160,7 +160,7 @@ export async function run({
   } catch (error) {
     // simply return client errors since they're handled by the client
     if (error instanceof ClientError) return error;
-    if (error instanceof ClideError) throw error;
-    throw new ClideError(error);
+    if (error instanceof CliError) throw error;
+    throw new CliError(error);
   }
 }

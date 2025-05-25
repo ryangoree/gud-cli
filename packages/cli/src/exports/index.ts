@@ -20,10 +20,10 @@ export {
   type ContextParams,
 } from 'src/core/context';
 export {
-  ClideError,
+  CliError,
   NotFoundError,
   UsageError,
-  type ClideErrorOptions,
+  type CliErrorOptions,
 } from 'src/core/errors';
 export type {
   GetHelpOptions,

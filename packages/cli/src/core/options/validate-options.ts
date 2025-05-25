@@ -1,4 +1,4 @@
-import { type ClideErrorOptions, UsageError } from 'src/core/errors';
+import { type CliErrorOptions, UsageError } from 'src/core/errors';
 import {
   type OptionConfig,
   type OptionValues,
@@ -14,7 +14,7 @@ import {
  * @group Errors
  */
 export class OptionsError extends UsageError {
-  constructor(message: string, options?: ClideErrorOptions) {
+  constructor(message: string, options?: CliErrorOptions) {
     super(message, {
       name: 'OptionsError',
       ...options,
@@ -27,7 +27,7 @@ export class OptionsError extends UsageError {
  * @group Errors
  */
 export class OptionRequiredError extends OptionsError {
-  constructor(optionName: string, options?: ClideErrorOptions) {
+  constructor(optionName: string, options?: CliErrorOptions) {
     super(`Option "${optionName}" is required`, {
       name: 'OptionRequiredError',
       ...options,
@@ -43,7 +43,7 @@ export class OptionRequiresError extends OptionsError {
   constructor(
     optionName: string,
     requiresName: string,
-    options?: ClideErrorOptions,
+    options?: CliErrorOptions,
   ) {
     super(`Option "${optionName}" requires option "${requiresName}"`, {
       name: 'OptionRequiresError',
@@ -60,7 +60,7 @@ export class OptionConflictsError extends OptionsError {
   constructor(
     optionName: string,
     conflictName: string,
-    options?: ClideErrorOptions,
+    options?: CliErrorOptions,
   ) {
     super(`Option "${optionName}" conflicts with option "${conflictName}"`, {
       name: 'OptionConflictsError',

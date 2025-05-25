@@ -1,9 +1,5 @@
 import { Client } from 'src/core/client';
-import {
-  ClideError,
-  type ClideErrorOptions,
-  UsageError,
-} from 'src/core/errors';
+import { CliError, type CliErrorOptions, UsageError } from 'src/core/errors';
 import { HookRegistry } from 'src/core/hooks';
 import type { OptionValues, OptionsConfig } from 'src/core/options/options';
 import {
@@ -26,7 +22,7 @@ import { State } from 'src/core/state';
  * @group Errors
  */
 export class SubcommandRequiredError extends UsageError {
-  constructor(commandString: string, options?: ClideErrorOptions) {
+  constructor(commandString: string, options?: CliErrorOptions) {
     super(`Subcommand required for command "${commandString}".`, {
       name: 'SubcommandRequiredError',
       ...options,
@@ -414,9 +410,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     if (!skipped && !this.#isReady) {
       // this.throw must be awaited since it could be ignored by an async hook
       await this.throw(
-        new ClideError(
-          "Context isn't ready. Did you forget to call prepare()?",
-        ),
+        new CliError("Context isn't ready. Did you forget to call prepare()?"),
       );
     }
 

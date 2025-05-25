@@ -1,10 +1,10 @@
-import { ClideError } from 'src/core/errors';
+import { CliError } from 'src/core/errors';
 import { describe, expect, it } from 'vitest';
 
 describe('error', () => {
-  describe('ClideError', () => {
+  describe('CliError', () => {
     it('Uses the provided prefix and name from options', () => {
-      class FooError extends ClideError {
+      class FooError extends CliError {
         constructor(error: unknown) {
           super(error, { prefix: '👻 ', name: 'Foo Error' });
         }
@@ -22,7 +22,7 @@ describe('error', () => {
     });
 
     it('Uses the `name` property if set after the constructor', () => {
-      class CustomError extends ClideError {
+      class CustomError extends CliError {
         constructor(message: string) {
           super(message);
           this.name = 'Error';
@@ -35,18 +35,18 @@ describe('error', () => {
 
       // The error property is used in the stack message.
       expect(error.stack).toMatch(
-        `${ClideError.prefix}Error: Something went wrong\n`,
+        `${CliError.prefix}Error: Something went wrong\n`,
       );
     });
 
     it('Appends wrapped error names if not `Error`', () => {
       class CustomError extends Error {}
-      const wrappedCustomError = new ClideError(new CustomError());
+      const wrappedCustomError = new CliError(new CustomError());
 
       // The custom error name is included in the stack trace.
       expect(wrappedCustomError.stack).toMatch('[CustomError]');
 
-      const wrappedError = new ClideError(new Error());
+      const wrappedError = new CliError(new Error());
 
       // The default name, "Error", is ignored.
       expect(wrappedError.stack).not.toMatch('[Error]');

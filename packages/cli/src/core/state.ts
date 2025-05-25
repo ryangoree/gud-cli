@@ -1,6 +1,6 @@
 import type { CommandModule } from 'src/core/command';
 import type { Context } from 'src/core/context';
-import { ClideError } from 'src/core/errors';
+import { CliError } from 'src/core/errors';
 import type { OptionValues, OptionsConfig } from 'src/core/options/options';
 import {
   type OptionsGetter,
@@ -175,13 +175,13 @@ export class State<
 
   /**
    * Start the steps.
-   * @throws {ClideError} If the steps have already started.
+   * @throws {CliError} If the steps have already started.
    * @returns A promise that resolves when the steps are done.
    */
   readonly start = async (initialData: unknown = this.#data): Promise<void> => {
     // Avoid starting the steps if they're already started.
     if (this.#executionPromise) {
-      throw new ClideError('Steps have already started.');
+      throw new CliError('Steps have already started.');
     }
 
     // Create a promise that will resolve when the steps are done.

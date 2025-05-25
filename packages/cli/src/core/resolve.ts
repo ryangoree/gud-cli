@@ -2,8 +2,8 @@ import { readdirSync } from 'node:fs';
 import path from 'node:path';
 import { type CommandModule, command } from 'src/core/command';
 import {
-  ClideError,
-  type ClideErrorOptions,
+  CliError,
+  type CliErrorOptions,
   NotFoundError,
   UsageError,
 } from 'src/core/errors';
@@ -25,7 +25,7 @@ import type { MaybePromise } from 'src/utils/types';
  * @group Errors
  */
 export class CommandRequiredError extends UsageError {
-  constructor(options?: ClideErrorOptions) {
+  constructor(options?: CliErrorOptions) {
     super('Command required.', {
       name: 'CommandRequiredError',
       ...options,
@@ -37,12 +37,8 @@ export class CommandRequiredError extends UsageError {
  * An error indicating a command is missing a default export.
  * @group Errors
  */
-export class MissingDefaultExportError extends ClideError {
-  constructor(
-    token: string | number,
-    path: string,
-    options?: ClideErrorOptions,
-  ) {
+export class MissingDefaultExportError extends CliError {
+  constructor(token: string | number, path: string, options?: CliErrorOptions) {
     super(`Missing default export for command "${token}" at "${path}"`, {
       name: 'MissingDefaultExportError',
       ...options,

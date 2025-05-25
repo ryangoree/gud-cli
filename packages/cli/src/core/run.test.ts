@@ -9,7 +9,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Client } from 'src/core/client';
 import { Context } from 'src/core/context';
-import { ClideError } from 'src/core/errors';
+import { CliError } from 'src/core/errors';
 import type { HookPayload } from 'src/core/hooks';
 import type { Plugin } from 'src/core/plugin';
 import { run } from 'src/core/run';
@@ -512,7 +512,7 @@ describe('run', () => {
       it('is called with the correct payload', async () => {
         mockCommandModule('commands/foo', {
           handler: () => {
-            throw new ClideError('test');
+            throw new CliError('test');
           },
         });
 
@@ -529,7 +529,7 @@ describe('run', () => {
         // Expect the hook to have been called with the correct payload
         expect(beforeError).toHaveBeenCalledWith({
           context: expect.any(Context),
-          error: expect.any(ClideError),
+          error: expect.any(CliError),
           ignore: expect.any(Function),
           setError: expect.any(Function),
         } satisfies HookPayload<'beforeError'>);
@@ -561,13 +561,13 @@ describe('run', () => {
         const withoutPlugin = (await run({
           command: 'foo',
           commandsDir: 'commands',
-        }).catch((e) => e)) as ClideError;
+        }).catch((e) => e)) as CliError;
 
         const withPlugin = (await run({
           command: 'foo',
           commandsDir: 'commands',
           plugins: [plugin],
-        }).catch((e) => e)) as ClideError;
+        }).catch((e) => e)) as CliError;
 
         expect(withoutPlugin.message).toBe(originalError.message);
         expect(withPlugin.message).toBe(pluginError.message);

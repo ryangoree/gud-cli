@@ -1,11 +1,11 @@
-export interface ClideErrorOptions extends ErrorOptions {
+export interface CliErrorOptions extends ErrorOptions {
   /**
-   * A custom prefix to use in place of {@linkcode ClideError.prefix}.
+   * A custom prefix to use in place of {@linkcode CliError.prefix}.
    */
   prefix?: string;
 
   /**
-   * A custom name to use in place of {@linkcode ClideError.name}.
+   * A custom name to use in place of {@linkcode CliError.name}.
    */
   name?: string;
 }
@@ -19,7 +19,7 @@ export interface ClideErrorOptions extends ErrorOptions {
  *
  * @example
  * ```ts
- * class FooCliError extends ClideError {
+ * class FooCliError extends CliError {
  *   constructor(message: string, options?: ErrorOptions) {
  *     super(message, {
  *       prefix: "👺 ",
@@ -36,11 +36,11 @@ export interface ClideErrorOptions extends ErrorOptions {
  *
  * @group Errors
  */
-export class ClideError extends Error {
+export class CliError extends Error {
   static prefix = '✖ ';
   static name = 'CLI Error' as const;
 
-  constructor(error: any, options?: ClideErrorOptions) {
+  constructor(error: any, options?: CliErrorOptions) {
     // Coerce the error to a string, or throw the original error if unable.
     let message: string;
     try {
@@ -50,7 +50,7 @@ export class ClideError extends Error {
     }
 
     super(message);
-    this.name = options?.name ?? ClideError.name;
+    this.name = options?.name ?? CliError.name;
 
     // Minification can mangle the stack traces of custom errors by obfuscating
     // the class name and including large chunks of minified code in the output.
@@ -81,7 +81,7 @@ export class ClideError extends Error {
     // subclassing and changing the name).
     Object.defineProperty(this, 'stack', {
       get(): string {
-        let stack = `${options?.prefix ?? ClideError.prefix}${this.name}`;
+        let stack = `${options?.prefix ?? CliError.prefix}${this.name}`;
 
         if (customName) {
           stack += ` [${customName}]`;
@@ -120,8 +120,8 @@ export class ClideError extends Error {
  * An error indicating the user has done something wrong.
  * @group Errors
  */
-export class UsageError extends ClideError {
-  constructor(error: unknown, options?: ClideErrorOptions) {
+export class UsageError extends CliError {
+  constructor(error: unknown, options?: CliErrorOptions) {
     super(error, {
       name: 'UsageError',
       ...options,
@@ -134,11 +134,7 @@ export class UsageError extends ClideError {
  * @group Errors
  */
 export class NotFoundError extends UsageError {
-  constructor(
-    token: string | number,
-    path: string,
-    options?: ClideErrorOptions,
-  ) {
+  constructor(token: string | number, path: string, options?: CliErrorOptions) {
     super(
       ['development', 'test'].includes(process.env.NODE_ENV || '')
         ? // In development, show the full path to the command

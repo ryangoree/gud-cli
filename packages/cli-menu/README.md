@@ -3,6 +3,10 @@
 A [Gud CLI](https://github.com/ryangoree/gud-cli/tree/main) plugin that
 prompts the user to select a subcommand when required.
 
+```sh
+npm install @gud/cli-menu
+```
+
 ```ts
 import { run } from '@gud/cli';
 import { menu } from '@gud/cli-menu';
@@ -17,19 +21,11 @@ run({
 });
 ```
 
-![Title menu](https://raw.githubusercontent.com/ryangoree/gud-cli/main/packages/clide-plugin-command-menu/assets/opening-menu.png)
+![Title menu](./assets/opening-menu.png)
 
 After the user selects a subcommand, the command will be resolved and if it also
 requires a subcommand, the user will be prompted again, but this time can also
 select `↩ back` to go back to the previous menu. This will continue until the
 user has selected all required subcommands.
 
-![Submenu](https://raw.githubusercontent.com/ryangoree/gud-cli/main/packages/clide-plugin-command-menu/assets/submenu.png)
-
-## Installation
-
-```sh
-npm install clide-plugin-command-menu
-# or
-yarn add clide-plugin-command-menu
-```
+![Submenu](./assets/submenu.png)
