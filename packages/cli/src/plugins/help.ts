@@ -75,7 +75,7 @@ export function help({
       });
 
       // Save usage errors so we can print them when the command is executed
-      hooks.on('error', async ({ error, ignore, context }) => {
+      hooks.on('beforeError', async ({ error, ignore, context }) => {
         if (!(error instanceof UsageError)) return;
 
         usageError = error;

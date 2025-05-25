@@ -34,7 +34,7 @@ export type {
 export {
   HookRegistry,
   type HookName,
-  type ClideHooks,
+  type LifecycleHooks,
   type HookPayload,
 } from 'src/core/hooks';
 export {

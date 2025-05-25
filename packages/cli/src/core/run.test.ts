@@ -231,17 +231,17 @@ describe('run', () => {
       mockCommandModule('commands/foo');
 
       // Setup mock hook
-      const mockHook = vi.fn(() => {});
+      const beforeParse = vi.fn(() => {});
 
       // Run
       await run({
         command: 'foo',
         commandsDir: 'commands',
-        beforeParse: mockHook,
+        hooks: { beforeParse },
       });
 
       // Expect the hook to have been called with the correct payload
-      expect(mockHook).toHaveBeenCalledWith({
+      expect(beforeParse).toHaveBeenCalledWith({
         commandString: 'foo',
         optionsConfig: expect.any(Object),
         setParsedOptionsAndSkip: expect.any(Function),
@@ -255,17 +255,17 @@ describe('run', () => {
       mockCommandModule('commands/foo');
 
       // Setup mock hook
-      const mockHook = vi.fn(() => {});
+      const afterParse = vi.fn(() => {});
 
       // Run
       await run({
         command: 'foo',
         commandsDir: 'commands',
-        afterParse: mockHook,
+        hooks: { afterParse },
       });
 
       // Expect the hook to have been called with the correct payload
-      expect(mockHook).toHaveBeenCalledWith({
+      expect(afterParse).toHaveBeenCalledWith({
         context: expect.any(Context),
         parsedOptions: expect.any(Object),
         setParsedOptions: expect.any(Function),
@@ -276,17 +276,17 @@ describe('run', () => {
       mockCommandModule('commands/foo');
 
       // Setup mock hook
-      const mockHook = vi.fn(() => {});
+      const beforeResolve = vi.fn(() => {});
 
       // Run
       await run({
         command: 'foo',
         commandsDir: 'commands',
-        beforeResolve: mockHook,
+        hooks: { beforeResolve },
       });
 
       // Expect the hook to have been called with the correct payload
-      expect(mockHook).toHaveBeenCalledWith({
+      expect(beforeResolve).toHaveBeenCalledWith({
         commandString: 'foo',
         commandsDir: 'commands',
         setResolveFn: expect.any(Function),
@@ -301,17 +301,17 @@ describe('run', () => {
       mockCommandModule('commands/foo');
 
       // Setup mock hook
-      const mockHook = vi.fn(() => {});
+      const afterResolve = vi.fn(() => {});
 
       // Run
       await run({
         command: 'foo',
         commandsDir: 'commands',
-        afterResolve: mockHook,
+        hooks: { afterResolve },
       });
 
       // Expect the hook to have been called with the correct payload
-      expect(mockHook).toHaveBeenCalledWith({
+      expect(afterResolve).toHaveBeenCalledWith({
         addResolvedCommands: expect.any(Function),
         context: expect.any(Context),
         resolvedCommands: expect.any(Array),
@@ -322,17 +322,17 @@ describe('run', () => {
       mockCommandModule('commands/foo');
 
       // Setup mock hook
-      const mockHook = vi.fn(() => {});
+      const beforeExecute = vi.fn(() => {});
 
       // Run
       await run({
         command: 'foo',
         commandsDir: 'commands',
-        beforeExecute: mockHook,
+        hooks: { beforeExecute },
       });
 
       // Expect the hook to have been called with the correct payload
-      expect(mockHook).toHaveBeenCalledWith({
+      expect(beforeExecute).toHaveBeenCalledWith({
         initialData: undefined,
         setInitialData: expect.any(Function),
         setResultAndSkip: expect.any(Function),
@@ -345,17 +345,17 @@ describe('run', () => {
       mockCommandModule('commands/foo');
 
       // Setup mock hook
-      const mockHook = vi.fn(() => {});
+      const afterExecute = vi.fn(() => {});
 
       // Run
       await run({
         command: 'foo',
         commandsDir: 'commands',
-        afterExecute: mockHook,
+        hooks: { afterExecute },
       });
 
       // Expect the hook to have been called with the correct payload
-      expect(mockHook).toHaveBeenCalledWith({
+      expect(afterExecute).toHaveBeenCalledWith({
         result: undefined,
         setResult: expect.any(Function),
         state: expect.any(State),
@@ -435,17 +435,17 @@ describe('run', () => {
       });
 
       // Setup mock hook
-      const mockHook = vi.fn(() => {});
+      const beforeCommand = vi.fn(() => {});
 
       // Run
       await run({
         command: 'foo bar',
         commandsDir: 'commands',
-        beforeCommand: mockHook,
+        hooks: { beforeCommand },
       });
 
       // Expect the hook to have been called with the correct payload
-      expect(mockHook).toHaveBeenCalledWith({
+      expect(beforeCommand).toHaveBeenCalledWith({
         data: undefined,
         command: expect.any(Object),
         params: expect.any(Object),
@@ -467,17 +467,17 @@ describe('run', () => {
       });
 
       // Setup mock hook
-      const mockHook = vi.fn(() => {});
+      const afterCommand = vi.fn(() => {});
 
       // Run
       await run({
         command: 'foo bar',
         commandsDir: 'commands',
-        afterCommand: mockHook,
+        hooks: { afterCommand },
       });
 
       // Expect the hook to have been called with the correct payload
-      expect(mockHook).toHaveBeenCalledWith({
+      expect(afterCommand).toHaveBeenCalledWith({
         data: undefined,
         command: expect.any(Object),
         setData: expect.any(Function),
@@ -491,17 +491,17 @@ describe('run', () => {
       });
 
       // Setup mock hook
-      const mockHook = vi.fn(() => {});
+      const beforeEnd = vi.fn(() => {});
 
       // Run
       await run({
         command: 'foo',
         commandsDir: 'commands',
-        beforeEnd: mockHook,
+        hooks: { beforeEnd },
       });
 
       // Expect the hook to have been called with the correct payload
-      expect(mockHook).toHaveBeenCalledWith({
+      expect(beforeEnd).toHaveBeenCalledWith({
         data: undefined,
         setData: expect.any(Function),
         state: expect.any(State),
@@ -517,22 +517,22 @@ describe('run', () => {
         });
 
         // Setup mock hook
-        const mockHook = vi.fn(() => {});
+        const beforeError = vi.fn(() => {});
 
         // Run
         await run({
           command: 'foo',
           commandsDir: 'commands',
-          onError: mockHook,
+          hooks: { beforeError },
         }).catch(() => {});
 
         // Expect the hook to have been called with the correct payload
-        expect(mockHook).toHaveBeenCalledWith({
+        expect(beforeError).toHaveBeenCalledWith({
           context: expect.any(Context),
           error: expect.any(ClideError),
           ignore: expect.any(Function),
           setError: expect.any(Function),
-        } satisfies HookPayload<'error'>);
+        } satisfies HookPayload<'beforeError'>);
       });
 
       it('can set the error', async () => {
@@ -550,7 +550,7 @@ describe('run', () => {
           name: 'test',
           version: '0.0.0',
           init: ({ hooks }) => {
-            hooks.on('error', ({ setError }) => {
+            hooks.on('beforeError', ({ setError }) => {
               setError(pluginError);
             });
 
@@ -587,7 +587,7 @@ describe('run', () => {
           name: 'test',
           version: '0.0.0',
           init: ({ hooks }) => {
-            hooks.on('error', ({ ignore }) => {
+            hooks.on('beforeError', ({ ignore }) => {
               ignore();
             });
 
@@ -626,9 +626,11 @@ describe('run', () => {
         const result = await run({
           command: 'foo bar',
           commandsDir: 'commands',
-          beforeExit: ({ cancel }) => {
-            console.log('cancel', cancel);
-            cancel();
+          hooks: {
+            beforeExit: ({ cancel }) => {
+              console.log('cancel', cancel);
+              cancel();
+            },
           },
         });
 
@@ -646,7 +648,7 @@ describe('run', () => {
         });
 
         // Setup mock hook
-        const mockHook = vi.fn(({ cancel }) => {
+        const beforeExit = vi.fn(({ cancel }) => {
           cancel();
         });
 
@@ -654,11 +656,11 @@ describe('run', () => {
         await run({
           command: 'foo',
           commandsDir: 'commands',
-          beforeExit: mockHook,
+          hooks: { beforeExit },
         }).catch(() => {});
 
         // Expect the hook to have been called with the correct payload
-        expect(mockHook).toHaveBeenCalledWith({
+        expect(beforeExit).toHaveBeenCalledWith({
           context: expect.any(Context),
           code,
           setCode: expect.any(Function),
@@ -686,8 +688,10 @@ describe('run', () => {
         await run({
           command: 'foo',
           commandsDir: 'commands',
-          beforeExit: ({ setCode }) => {
-            setCode(hookCode);
+          hooks: {
+            beforeExit: ({ setCode }) => {
+              setCode(hookCode);
+            },
           },
         });
 
@@ -714,8 +718,10 @@ describe('run', () => {
         await run({
           command: 'foo',
           commandsDir: 'commands',
-          beforeExit: ({ setMessage }) => {
-            setMessage(hookMessage);
+          hooks: {
+            beforeExit: ({ setMessage }) => {
+              setMessage(hookMessage);
+            },
           },
         });
 

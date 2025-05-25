@@ -8,7 +8,7 @@ import { isDirectory } from 'src/utils/fs';
 import { joinTokens } from 'src/utils/tokens';
 import { Context } from './context';
 import { ClideError } from './errors';
-import { type HookPayload, HookRegistry } from './hooks';
+import { HookRegistry, type LifecycleHooks } from './hooks';
 import type { OptionsConfig } from './options/options';
 import type { Plugin } from './plugin';
 
@@ -24,7 +24,7 @@ export interface RunParams {
   command?: string | string[];
 
   /**
-   * The command string to run if no command is provided.
+   * The default command string to run if no command is provided.
    */
   defaultCommand?: string | string[];
 
@@ -51,7 +51,7 @@ export interface RunParams {
 
   /**
    * The client instance to use for logging and user interaction.
-   * @default A new instance of {@linkcode Client}
+   * @default new Client()
    */
   client?: Client;
 
@@ -65,78 +65,7 @@ export interface RunParams {
    */
   parseFn?: ParseCommandFn;
 
-  /**
-   * A hook that runs before attempting to locate and import command modules.
-   */
-  beforeResolve?: (payload: HookPayload<'beforeResolve'>) => void;
-
-  /**
-   * A hook that runs before attempting to locate and import each subcommand
-   * module.
-   */
-  beforeResolveNext?: (payload: HookPayload<'beforeResolveNext'>) => void;
-
-  /**
-   * A hook that runs after importing command modules.
-   */
-  afterResolve?: (payload: HookPayload<'afterResolve'>) => void;
-
-  /**
-   * A hook that runs before parsing the command string using the options config
-   * from plugins and imported command modules.
-   */
-  beforeParse?: (payload: HookPayload<'beforeParse'>) => void;
-
-  /**
-   * A hook that runs after parsing the command string.
-   */
-  afterParse?: (payload: HookPayload<'afterParse'>) => void;
-
-  /**
-   * A hook that runs before calling the first command.
-   */
-  beforeExecute?: (payload: HookPayload<'beforeExecute'>) => void;
-
-  /**
-   * A hook that runs before executing a command module.
-   */
-  beforeCommand?: (payload: HookPayload<'beforeCommand'>) => void;
-
-  /**
-   * A hook that runs after executing a command module.
-   */
-  afterCommand?: (payload: HookPayload<'afterCommand'>) => void;
-
-  /**
-   * A hook that runs before each state update during command execution.
-   */
-  beforeStateChange?: (payload: HookPayload<'beforeStateChange'>) => void;
-
-  /**
-   * A hook that runs after each state update during command execution.
-   */
-  afterStateChange?: (payload: HookPayload<'afterStateChange'>) => void;
-
-  /**
-   * A hook that runs before executing the `context.end()` function.
-   */
-  beforeEnd?: (payload: HookPayload<'beforeEnd'>) => void;
-
-  /**
-   * A hook that runs once all commands have been called or when `context.end()`
-   * is called.
-   */
-  afterExecute?: (payload: HookPayload<'afterExecute'>) => void;
-
-  /**
-   * A hook that runs whenever an error is thrown.
-   */
-  onError?: (payload: HookPayload<'error'>) => void;
-
-  /**
-   * A hook that runs whenever a plugin or command intends to exit the process.
-   */
-  beforeExit?: (payload: HookPayload<'beforeExit'>) => void;
+  hooks?: Partial<LifecycleHooks>;
 }
 
 /**
@@ -170,20 +99,7 @@ export async function run({
   client,
   parseFn,
   resolveFn,
-  beforeResolve,
-  beforeResolveNext,
-  afterResolve,
-  beforeParse,
-  afterParse,
-  beforeExecute,
-  beforeCommand,
-  afterCommand,
-  beforeStateChange,
-  afterStateChange,
-  beforeEnd,
-  afterExecute,
-  onError,
-  beforeExit,
+  hooks,
 }: RunParams = {}) {
   // attempt to find commands directory
   if (!commandsDir) {
@@ -220,23 +136,6 @@ export async function run({
   }
 
   // create hook registry
-  const hooks = new HookRegistry();
-
-  // register hooks
-  if (beforeResolve) hooks.on('beforeResolve', beforeResolve);
-  if (beforeResolveNext) hooks.on('beforeResolveNext', beforeResolveNext);
-  if (afterResolve) hooks.on('afterResolve', afterResolve);
-  if (beforeParse) hooks.on('beforeParse', beforeParse);
-  if (afterParse) hooks.on('afterParse', afterParse);
-  if (beforeExecute) hooks.on('beforeExecute', beforeExecute);
-  if (beforeCommand) hooks.on('beforeCommand', beforeCommand);
-  if (afterCommand) hooks.on('afterCommand', afterCommand);
-  if (beforeStateChange) hooks.on('beforeStateChange', beforeStateChange);
-  if (afterStateChange) hooks.on('afterStateChange', afterStateChange);
-  if (beforeEnd) hooks.on('beforeEnd', beforeEnd);
-  if (afterExecute) hooks.on('afterExecute', afterExecute);
-  if (onError) hooks.on('error', onError);
-  if (beforeExit) hooks.on('beforeExit', beforeExit);
 
   // create context
   const context = new Context({
@@ -244,7 +143,7 @@ export async function run({
     commandsDir,
     options,
     plugins,
-    hooks,
+    hooks: new HookRegistry(hooks),
     client,
     parseFn,
     resolveFn,

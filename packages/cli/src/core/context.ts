@@ -448,7 +448,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   readonly throw = async (error: unknown) => {
     let ignore = false;
 
-    await this.hooks.call('error', {
+    await this.hooks.call('beforeError', {
       context: this,
       error,
       setError: (newError) => {

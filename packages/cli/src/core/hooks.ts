@@ -19,9 +19,11 @@ import type {
  * process. Hooks are called in sequential order as listed below.
  * @group Hooks
  */
-export interface ClideHooks {
+export interface LifecycleHooks {
   /**
-   * 1. Initial preparation hook called before command resolution begins.
+   * Called before attempting to locate and import command modules.
+   *
+   * Hook order: 1
    */
   beforeResolve: (payload: {
     /**
@@ -64,7 +66,9 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 2. Called before resolving each subcommand in the command chain
+   * Called before attempting to locate and import each subcommand module.
+   *
+   * Hook order: 2
    */
   beforeResolveNext: (payload: {
     /**
@@ -112,7 +116,9 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 3. Called after all commands in the chain have been resolved.
+   * Called after resolving and importing command modules.
+   *
+   * Hook order: 3
    */
   afterResolve: (payload: {
     /**
@@ -140,7 +146,22 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 4. Called before parsing command arguments and options.
+   * Called before parsing the command string using the options config from
+   * plugins and resolved command modules.
+   *
+   * Hook order: 4
+   *
+   * @remarks
+   * The command string will be parsed multiple times during a command string's
+   * execution. After each command module is resolved and imported, the string
+   * will be re-parsed *without* validation to determine the next token in the
+   * command string that represents the next command or subcommand. The parse
+   * hooks will *not* be called during this phase.
+   *
+   * After all commands are resolved, the command string will be parsed again,
+   * this time *with* validation using the options config from all plugins and
+   * resolved commands. This is when the the `beforeParse` hook is called.
+   *
    */
   beforeParse: (payload: {
     /**
@@ -178,7 +199,10 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 5. Called after command arguments and options have been parsed.
+   * Called after the final command string is parsed using the options
+   * configuration from plugins and resolved command modules.
+   *
+   * Hook order: 5
    */
   afterParse: (payload: {
     /**
@@ -199,7 +223,9 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 6. Called before command execution begins.
+   * Called before command execution begins.
+   *
+   * Hook order: 6
    */
   beforeExecute: (payload: {
     /**
@@ -230,10 +256,9 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 7. Called before each command in the chain is executed.
+   * Called before each command's handler function.
    *
-   * @remarks This hook is triggered by both `state.next()` calls and the
-   * initial `state.start()` call, which internally uses `state.next()`.
+   * Hook order: 7
    */
   beforeCommand: (payload: {
     /**
@@ -276,7 +301,9 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 8. Called after each command in the chain is executed.
+   * Called after each command's handler function.
+   *
+   * Hook order: 8
    */
   afterCommand: (payload: {
     /**
@@ -302,7 +329,9 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 9. Called before each state update during command execution.
+   * Called before each state update during command execution.
+   *
+   * Hook order: 9
    */
   beforeStateChange: (payload: {
     /**
@@ -328,7 +357,9 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 10. Called after each state update during command execution.
+   * Called after each state update during command execution.
+   *
+   * Hook order: 10
    */
   afterStateChange: (payload: {
     /**
@@ -343,8 +374,9 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 11. Called once per execution, before the final state update, if
-   *     `state.end()` is called.
+   * Called before the {@linkcode State.end()} function is executed.
+   *
+   * Hook order: 11
    */
   beforeEnd: (payload: {
     /**
@@ -365,7 +397,10 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * 12. Called once per execution, after the final state update.
+   * Called after the command execution completes, just before the result is
+   * returned.
+   *
+   * Hook order: 12
    */
   afterExecute: (payload: {
     /**
@@ -386,34 +421,8 @@ export interface ClideHooks {
   }) => MaybePromise<void>;
 
   /**
-   * Called whenever an error is thrown.
-   */
-  error: (payload: {
-    /**
-     * The CLI context object.
-     */
-    context: Context;
-
-    /**
-     * The error that was thrown.
-     */
-    error: unknown;
-
-    /**
-     * Override the error that will be thrown.
-     * @param error - New error to throw.
-     */
-    setError: (error: unknown) => void;
-
-    /**
-     * Prevent the error from being thrown.
-     */
-    ignore: () => void;
-  }) => MaybePromise<void>;
-
-  /**
    * Called whenever a plugin or command intends to exit the process via
-   * `context.exit()`.
+   * {@linkcode Context.exit()}.
    */
   beforeExit: (payload: {
     /**
@@ -448,6 +457,32 @@ export interface ClideHooks {
      */
     cancel: () => void;
   }) => MaybePromise<void>;
+
+  /**
+   * Called whenever an error is thrown.
+   */
+  beforeError: (payload: {
+    /**
+     * The CLI context object.
+     */
+    context: Context;
+
+    /**
+     * The error that was thrown.
+     */
+    error: unknown;
+
+    /**
+     * Override the error that will be thrown.
+     * @param error - New error to throw.
+     */
+    setError: (error: unknown) => void;
+
+    /**
+     * Prevent the error from being thrown.
+     */
+    ignore: () => void;
+  }) => MaybePromise<void>;
 }
 
 /**
@@ -470,10 +505,20 @@ export interface ClideHooks {
  * hooks.call('beforeRun', { command: 'foo bar' }); // -> 'Running command: foo bar'
  * ```
  */
-export class HookRegistry<THooks extends AnyObject = ClideHooks> {
-  #handlers: {
-    [K in HookName<THooks>]?: HookHandler<K, THooks>[];
-  } = {};
+export class HookRegistry<THooks extends AnyObject = LifecycleHooks> {
+  #handlers: HookHandlers<THooks> = {};
+
+  constructor(initialHandlers?: Partial<THooks>) {
+    if (initialHandlers) {
+      // Wrap initial handlers in arrays.
+      this.#handlers = Object.fromEntries(
+        Object.entries(initialHandlers).map(([hook, handler]) => [
+          hook,
+          [handler],
+        ]),
+      ) as HookHandlers<THooks>;
+    }
+  }
 
   /**
    * Register a handler for a hook.
@@ -550,7 +595,7 @@ export class HookRegistry<THooks extends AnyObject = ClideHooks> {
  * Represents a possible hook name given a hooks configuration object.
  * @group Hooks
  */
-export type HookName<THooks extends AnyObject = ClideHooks> =
+export type HookName<THooks extends AnyObject = LifecycleHooks> =
   | FunctionKey<THooks>
   | (string & {});
 
@@ -560,12 +605,21 @@ export type HookName<THooks extends AnyObject = ClideHooks> =
  * @template T - The hooks configuration object containing the hook
  * @group Hooks
  */
-type HookHandler<
-  THook extends HookName<T> = keyof ClideHooks,
-  T extends AnyObject = ClideHooks,
+export type HookHandler<
+  THook extends HookName<T> = keyof LifecycleHooks,
+  T extends AnyObject = LifecycleHooks,
 > = T[THook] extends AnyFunction
   ? T[THook]
   : (payload?: unknown) => MaybePromise<void>;
+
+/**
+ * A collection of handlers for each hook in a hooks configuration object.
+ * @template THooks - The hooks configuration object containing the hooks
+ * @group Hooks
+ */
+export type HookHandlers<THooks extends AnyObject = LifecycleHooks> = {
+  [K in HookName<THooks>]?: HookHandler<K, THooks>[];
+};
 
 /**
  * The payload object passed to a hook handler.
@@ -578,6 +632,6 @@ type HookHandler<
  * @group Hooks
  */
 export type HookPayload<
-  THook extends HookName<T> = keyof ClideHooks,
-  T extends AnyObject = ClideHooks,
+  THook extends HookName<T> = keyof LifecycleHooks,
+  T extends AnyObject = LifecycleHooks,
 > = Parameters<HookHandler<THook, T>>[0];
