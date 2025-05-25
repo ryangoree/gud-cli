@@ -70,7 +70,7 @@ export type OptionsGetter<TOptions extends OptionsConfig = OptionsConfig> = {
     ...optionNames: K[]
   ) => Promise<{
     [O in K as O | CamelCase<O>]: OptionConfigPrimitiveType<
-      ExpandedOptionsConfig<TOptions>[K]
+      ExpandedOptionsConfig<TOptions>[O]
     >;
   }>;
 
