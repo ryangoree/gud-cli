@@ -119,4 +119,15 @@ export class Client extends Console {
     });
     return value;
   }
+
+  /**
+   * Prompt the user for confirmation.
+   * @param message - The confirmation message.
+   * @params initial - The initial value for the confirmation prompt. Defaults
+   * to `true`.
+   * @returns Whether the user confirmed.
+   */
+  async confirm(message: string, initial = true): Promise<boolean> {
+    return this.prompt({ type: 'confirm', initial, message });
+  }
 }
