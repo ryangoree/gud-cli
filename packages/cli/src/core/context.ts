@@ -6,6 +6,10 @@ import {
 } from 'src/core/errors';
 import { HookRegistry } from 'src/core/hooks';
 import type { OptionValues, OptionsConfig } from 'src/core/options/options';
+import {
+  type ValidateOptionsParams,
+  validateOptions,
+} from 'src/core/options/validate-options';
 import { type ParseCommandFn, parseCommand } from 'src/core/parse';
 import type { Plugin, PluginInfo } from 'src/core/plugin';
 import {
@@ -313,7 +317,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     return this.#resolveFn({
       commandString,
       commandsDir,
-      parseFn: this.parseCommand,
+      parseFn: this.#parseFn,
     });
   };
 
@@ -334,12 +338,38 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
    */
   readonly parseCommand = (
     commandString: string = this.commandString,
-    optionsConfig?: OptionsConfig,
+    optionsConfig: OptionsConfig = this.options,
   ) => {
-    return this.#parseFn(commandString, {
+    const parsed = this.#parseFn(commandString, {
       ...this.options,
       ...optionsConfig,
     });
+
+    const validationParams: ValidateOptionsParams = {
+      values: {},
+      config: optionsConfig,
+      validations: {
+        conflicts: true,
+        requires: true,
+      },
+    };
+
+    // Validate after resolution if a promise is returned.
+    if (parsed instanceof Promise) {
+      return parsed.then((result) => {
+        validateOptions({
+          ...validationParams,
+          values: result.options,
+        });
+        return result;
+      });
+    }
+
+    validateOptions({
+      ...validationParams,
+      values: parsed.options,
+    });
+    return parsed;
   };
 
   // Hooked Methods //

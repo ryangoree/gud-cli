@@ -71,7 +71,7 @@ export class OptionConflictsError extends OptionsError {
 
 // Functions + Function Types //
 
-interface ValidateOptionsParams {
+export interface ValidateOptionsParams {
   values: OptionValues;
   config: OptionsConfig;
   validations: {
