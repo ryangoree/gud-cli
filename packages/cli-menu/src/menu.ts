@@ -1,7 +1,7 @@
 import type { OptionValues, Plugin } from '@gud/cli';
-import { commandPrompt } from './command-menu-prompt.js';
+import { commandPrompt } from './command-prompt.js';
 
-export interface CommandMenuOptions {
+export interface MenuOptions {
   /**
    * The title to show in the prompt.
    */
@@ -44,9 +44,7 @@ export interface CommandMenuOptions {
 }
 
 /**
- * Command Menu
- *
- * A \@gud/cli plugin that:
+ * A Gud CLI plugin that:
  * 1. Prompts the user to choose a subcommand if the current command requires
  *    it.
  * 2. After a subcommand is chosen, checks if it also needs a subcommand.
@@ -57,14 +55,14 @@ export interface CommandMenuOptions {
  * Note: The '↩ back' option allows users to return to the previous menu at any
  * stage.
  */
-export function commandMenu({
+export function menu({
   title,
   titleColors = ['#2EFFAF', '#0FC2C2'],
   message = 'Choose a command',
   showDescriptions = true,
   maxDescriptionLength = 60,
   enabled,
-}: CommandMenuOptions = {}): Plugin {
+}: MenuOptions = {}): Plugin {
   return {
     name: 'command-menu',
     version: '0.1.0',

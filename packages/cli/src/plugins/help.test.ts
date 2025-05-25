@@ -31,12 +31,14 @@ describe('plugin: help', () => {
       command: 'foo',
       commandsDir: 'commands',
       plugins: [help()],
-      beforeExecute: ({ state }) => {
-        // Ensure the options are present before the command is executed
-        expect(state.options).toMatchObject({
-          help: expect.any(Function),
-          h: expect.any(Function),
-        });
+      hooks: {
+        beforeExecute: ({ state }) => {
+          // Ensure the options are present before the command is executed
+          expect(state.options).toMatchObject({
+            help: expect.any(Function),
+            h: expect.any(Function),
+          });
+        },
       },
     });
   });

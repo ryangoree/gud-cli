@@ -1,7 +1,7 @@
 {
   "name": "@gud/cli-menu",
   "version": "0.0.0",
-  "description": "Adds command menus to @gud/cli apps.",
+  "description": "Adds command menus to Gud CLI apps.",
   "license": "MIT",
   "type": "module",
   "author": "ryan goree (https://github.com/ryangoree)",

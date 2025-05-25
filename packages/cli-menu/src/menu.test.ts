@@ -3,18 +3,15 @@ import { mockCommandModule } from '@gud/cli/testing';
 
 import { type ResolvedCommand, command, run } from '@gud/cli';
 import { type Mock, beforeEach, expect, test, vi } from 'vitest';
-import { commandMenu } from './command-menu';
-import {
-  type CommandMenuPromptOptions,
-  commandPrompt,
-} from './command-menu-prompt';
+import { type CommandPromptOptions, commandPrompt } from './command-prompt';
+import { menu } from './menu';
 
-vi.mock('./command-menu-prompt', async (importOriginal) => {
+vi.mock('./command-prompt', async (importOriginal) => {
   const original: any = await importOriginal();
   return {
     ...original,
     commandPrompt: vi.fn<
-      (options: CommandMenuPromptOptions) => ResolvedCommand[]
+      (options: CommandPromptOptions) => ResolvedCommand[]
     >(({ commandsDir }): ResolvedCommand[] => [
       {
         command: {
@@ -41,7 +38,7 @@ test('It shows the command menu when no command string is provided', async () =>
     // Pass a commandsDir to prevent @gud/cli from trying to auto-detect it,
     // which would cause an error because there is none.
     commandsDir: 'commands',
-    plugins: [commandMenu()],
+    plugins: [menu()],
   });
 
   expect(commandPrompt).toHaveBeenCalled();
@@ -54,7 +51,7 @@ test.only('It shows the command menu when the last resolved command requires a s
   await run({
     command: 'foo',
     commandsDir: 'commands',
-    plugins: [commandMenu()],
+    plugins: [menu()],
   });
 
   expect(commandPrompt).toHaveBeenCalled();

@@ -1,10 +1,10 @@
 import { help, run } from '@gud/cli';
-import { commandMenu } from 'src/command-menu.js';
+import { menu } from 'src/menu.js';
 
 run({
   plugins: [
     help(),
-    commandMenu({
+    menu({
       title: 'Command Menu',
       enabled: (options) => !options.help,
     }),

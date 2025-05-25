@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "build:clide": "turbo run build --filter=./packages/clide*",
+    "build:packages": "turbo run build --filter=./packages/*",
     "format": "biome format --write .",
     "lint": "biome lint --diagnostic-level error .",
     "lint:fix": "yarn lint --fix",

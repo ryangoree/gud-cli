@@ -5,11 +5,11 @@ prompts the user to select a subcommand when required.
 
 ```ts
 import { run } from '@gud/cli';
-import { commandMenu } from '@gud/cli-menu';
+import { menu } from '@gud/cli-menu';
 
 run({
   plugins: [
-    commandMenu({
+    menu({
       title: 'Foo CLI',
       titleColors: ['#D89DFF', '#519BFF'],
     })
@@ -19,10 +19,10 @@ run({
 
 ![Title menu](https://raw.githubusercontent.com/ryangoree/gud-cli/main/packages/clide-plugin-command-menu/assets/opening-menu.png)
 
-After the user selects a subcommand, the command will be resolved and if it
-also requires a subcommand, the user will be prompted again, but this time
-can also select `↩ back` to go back to the previous menu. This will continue
-until the user has selected all required subcommands.
+After the user selects a subcommand, the command will be resolved and if it also
+requires a subcommand, the user will be prompted again, but this time can also
+select `↩ back` to go back to the previous menu. This will continue until the
+user has selected all required subcommands.
 
 ![Submenu](https://raw.githubusercontent.com/ryangoree/gud-cli/main/packages/clide-plugin-command-menu/assets/submenu.png)
 

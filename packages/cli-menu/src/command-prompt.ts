@@ -13,9 +13,9 @@ import {
 import cfonts from 'cfonts';
 import colors from 'colors';
 import type { Choice } from 'prompts';
-import type { CommandMenuOptions } from './command-menu.js';
+import type { MenuOptions } from './menu.js';
 
-export interface CommandMenuPromptOptions extends CommandMenuOptions {
+export interface CommandPromptOptions extends MenuOptions {
   /**
    * The path to the directory to scan for command modules. The names of the
    * files will be used to populate the choices for the user.
@@ -45,7 +45,7 @@ export interface CommandMenuPromptOptions extends CommandMenuOptions {
 }
 
 export async function commandPrompt(
-  options: CommandMenuPromptOptions,
+  options: CommandPromptOptions,
 ): Promise<ResolvedCommand[]> {
   const {
     client = new Client(),
