@@ -80,9 +80,9 @@ export interface CommandModule<
  */
 export type CommandFactoryConfig<
   TOptions extends OptionsConfig = OptionsConfig,
-  TModule extends Partial<CommandModule<any, any, any>> = Partial<
-    CommandModule<unknown, OptionsConfig, unknown>
-  >,
+  TModule extends Partial<
+    CommandModule<any, any, any>
+  > = Partial<CommandModule>,
 > = TModule & {
   options?: TOptions;
 };
@@ -92,9 +92,9 @@ export type CommandFactoryConfig<
  * @group Command
  */
 export type CommandFactoryReturn<
-  TModule extends Partial<CommandModule<any, any, any>> = Partial<
-    CommandModule<unknown, OptionsConfig, unknown>
-  >,
+  TModule extends Partial<
+    CommandModule<any, any, any>
+  > = Partial<CommandModule>,
 > = TModule extends Partial<
   CommandModule<infer TData, infer TOptions, infer TReturn>
 >
