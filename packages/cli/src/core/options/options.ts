@@ -1,10 +1,10 @@
 import { type CamelCase, camelCase } from 'src/utils/camel-case';
 import type {
-    Eval,
-    KeyWithMatchingValue,
-    MaybeReadonly,
-    Merge,
-    Replace,
+  Eval,
+  KeyWithMatchingValue,
+  MaybeReadonly,
+  Merge,
+  Replace,
 } from 'src/utils/types';
 
 // Types //
@@ -80,7 +80,7 @@ export type OptionCustomType<T extends OptionType> =
   | KeyWithMatchingValue<OptionPrimitiveTypeMap, T>;
 
 /**
- * Get the argument type for an option considering the  number of arguments it
+ * Get the argument type for an option considering the number of arguments it
  * accepts.
  */
 export type OptionArgumentType<
@@ -390,10 +390,10 @@ export function getOptionDisplayName(
  *
  * @group Options
  */
-export function normalizeOptionValue(
+export function normalizeOptionValue<T extends OptionConfig>(
   value: unknown,
-  config?: OptionConfig,
-): OptionArgumentType | undefined {
+  config?: T,
+): OptionConfigPrimitiveType<T> | undefined {
   // Treat empty strings as undefined
   if (isEmpty(value)) value = config?.default;
   if (isEmpty(value)) return undefined;
@@ -411,33 +411,34 @@ export function normalizeOptionValue(
     if (Array.isArray(value)) {
       return value.map((v) =>
         normalizeScalar(v, config?.type),
-      ) as OptionArgumentType;
+      ) as OptionConfigPrimitiveType<T>;
     }
   }
 
-  return normalizeScalar(value, config?.type);
+  return normalizeScalar(value, config?.type) as OptionConfigPrimitiveType<T>;
 }
 
 // Internal //
 
-type OptionScalarType = OptionPrimitiveType extends infer T
-  ? T extends any[]
-    ? T[number]
-    : T
-  : never;
+type OptionScalarType<T extends OptionType> =
+  OptionPrimitiveType<T> extends infer U
+    ? U extends any[]
+      ? U[number]
+      : U
+    : never;
 
-function normalizeScalar(
+function normalizeScalar<T extends OptionType>(
   value: unknown,
-  type?: OptionType,
-): OptionScalarType | undefined {
+  type?: T,
+): OptionScalarType<T> | undefined {
   if (isEmpty(value)) return undefined;
   switch (type) {
     case 'number':
-      return Number(value);
+      return Number(value) as OptionScalarType<T>;
     case 'boolean':
-      return value === 'true' || value === true;
+      return (value === 'true' || value === true) as OptionScalarType<T>;
     default:
-      return String(value).trim();
+      return String(value).trim() as OptionScalarType<T>;
   }
 }
 

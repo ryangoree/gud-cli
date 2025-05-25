@@ -1,8 +1,4 @@
-import {
-  Client,
-  type PromptParams,
-  type PromptPrimitiveType,
-} from 'src/core/client';
+import { Client, type PromptParams } from 'src/core/client';
 import {
   type OptionConfig,
   type OptionConfigPrimitiveType,
@@ -66,7 +62,9 @@ export type OptionPromptParams<T extends OptionConfig = OptionConfig> = Replace<
      * @returns `true` if the value is valid, `false` or an error message if the
      * value is invalid.
      */
-    validate?: (value?: PromptPrimitiveType) => MaybePromise<boolean | string>;
+    validate?: (
+      value?: OptionConfigPrimitiveType<T>,
+    ) => MaybePromise<boolean | string>;
 
     /**
      * A function to call when the user cancels a prompt. By default, this will
