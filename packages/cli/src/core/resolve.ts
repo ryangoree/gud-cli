@@ -1,6 +1,10 @@
 import { readdirSync } from 'node:fs';
-import path from 'node:path';
-import { type CommandModule, command } from 'src/core/command';
+import { join } from 'node:path';
+import {
+  type CommandModule,
+  passThroughCommand,
+  passThroughHandler,
+} from 'src/core/command';
 import {
   CliError,
   type CliErrorOptions,
@@ -75,14 +79,14 @@ export interface ResolvedCommand {
   command: CommandModule;
 
   /**
-   * The path to the resolved command file.
-   */
-  commandPath: string;
-
-  /**
    * The name of the resolved command.
    */
   commandName: string;
+
+  /**
+   * The path to the resolved command file.
+   */
+  commandPath: string;
 
   /**
    * The command tokens that were resolved.
@@ -100,15 +104,15 @@ export interface ResolvedCommand {
   subcommandsDir: string;
 
   /**
+   * The route params associated with the resolved command.
+   */
+  params?: RouteParams;
+
+  /**
    * A function to resolve the next command, if any, based on the remaining
    * command string.
    */
   resolveNext?: () => MaybePromise<ResolvedCommand>;
-
-  /**
-   * The params associated with the resolved command.
-   */
-  params?: RouteParams;
 }
 
 // Functions + Function Types //
@@ -174,26 +178,13 @@ export async function resolveCommand({
     ...string[],
   ];
 
-  // Check if the first token is an option.
-  if (commandName.startsWith('-')) {
-    throw new OptionsError(`Unknown option "${commandName}"`);
-  }
+  // Validate the command name and commands directory before resolving a command.
+  validateResolvable(commandName, commandsDir);
 
-  // Check if the command name is a relative path (e.g., ./foo, ../foo, /foo)
-  if (/^(\.|\/)/.test(commandName)) {
-    throw new UsageError(`Invalid command name: ${commandName}`);
-  }
-
-  // Ensure the command directory exists.
-  if (!isDirectory(commandsDir)) {
-    throw new NotFoundError(commandName, commandsDir);
-  }
-
-  const subcommandsDir = path.join(commandsDir, commandName);
+  const subcommandsDir = join(commandsDir, commandName);
   const commandPath = formatFileName(subcommandsDir);
   const commandTokens = [commandName];
   const remainingCommandString = joinTokens(remainingTokens);
-
   let resolved: ResolvedCommand | undefined;
 
   // Attempt to load the command file.
@@ -223,7 +214,7 @@ export async function resolveCommand({
     // treat it as a pass-through command.
     if (isDirectory(subcommandsDir)) {
       resolved = {
-        command: command(),
+        command: passThroughCommand,
         commandPath,
         commandName,
         commandTokens,
@@ -316,13 +307,40 @@ export async function prepareResolvedCommand({
 
   // Replace the handler if the command won't be executed.
   if (!isMiddleware && resolved.resolveNext) {
-    resolved.command.handler = ({ data, next }) => next(data);
+    resolved.command.handler = passThroughHandler;
   }
 
   return resolved;
 }
 
 // Internal //
+
+/**
+ * Validates the command name and commands directory before resolving a command.
+ *
+ * @param commandName - The name of the command to validate.
+ * @param commandsDir - The path to the directory containing command files.
+ *
+ * @throws {OptionsError | UsageError | NotFoundError} Throws an error if the
+ * command name looks like an option, if the command name is a relative path, or
+ * if the commands directory does not exist.
+ */
+function validateResolvable(commandName: string, commandsDir: string): void {
+  // Check if the first token is an option.
+  if (commandName.startsWith('-')) {
+    throw new OptionsError(`Unknown option "${commandName}"`);
+  }
+
+  // Check if the command name is a relative path (e.g., ./foo, ../foo, /foo)
+  if (/^(\.|\/)/.test(commandName)) {
+    throw new UsageError(`Invalid command name: ${commandName}`);
+  }
+
+  // Ensure the command directory exists.
+  if (!isDirectory(commandsDir)) {
+    throw new NotFoundError(commandName, commandsDir);
+  }
+}
 
 /**
  * Attempts to load a command module by finding a param file name in the given
@@ -349,7 +367,7 @@ async function resolveParamCommand({
     if (!paramName) continue;
 
     const commandName = removeFileExtension(fileName);
-    const commandPath = path.join(commandsDir, formatFileName(commandName));
+    const commandPath = join(commandsDir, formatFileName(commandName));
     const subcommandsDir = removeFileExtension(commandPath);
     const [commandToken, ...remainingTokens] = tokens;
 
@@ -394,11 +412,12 @@ async function resolveParamCommand({
       // If the file exists but couldn't be loaded for some other reason,
       // forward the error to avoid masking module errors.
       if (isFile(commandPath)) throw err;
+
       // If the command file doesn't exist, assume the path is a directory and
       // treat it as a pass-through command. This is safe to assume since the
       // paths are derived from readdir so we know they exist.
       resolved = {
-        command: command(),
+        command: passThroughCommand,
         commandName,
         commandPath,
         commandTokens: [commandToken],
