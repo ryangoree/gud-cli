@@ -4,6 +4,7 @@ import { NotFoundError } from 'src/core/errors';
 import { parseCommand } from 'src/core/parse';
 import type { State } from 'src/core/state';
 import { formatFileName } from 'src/utils/filename';
+import type { Eval } from 'src/utils/types';
 import { type Mock, vi } from 'vitest';
 
 const mockCommandDirs = new Map<string, Set<string>>();
@@ -191,7 +192,7 @@ export function mockCommandStringModules<TCommandString extends string>(
   }
 
   return {
-    mocks: mocks as CommandMap<TCommandString, MockCommandModule>,
+    mocks: mocks as CommandNameMap<TCommandString, MockCommandModule>,
     unmock: () => {
       for (const unmock of unMockFns) unmock();
     },
@@ -206,18 +207,16 @@ type MockCommandModule = {
  * A utility type that converts a command string into a map of command modules
  * with the command names as keys.
  */
-type CommandMap<
+type CommandNameMap<
   TString extends string,
   TValues = any,
   TResult extends Record<string, any> = {},
-> = Prettify<
+> = Eval<
   TString extends `${infer Word} ${infer Rest}`
     ? Word extends `-${string}`
-      ? CommandMap<Rest, TValues, TResult>
-      : CommandMap<Rest, TValues, TResult & { [k in Word]: TValues }>
-    : TString extends `-${string}`
+      ? CommandNameMap<Rest, TValues, TResult>
+      : CommandNameMap<Rest, TValues, TResult & { [k in Word]: TValues }>
+    : TString extends '' | `-${string}`
       ? TResult
-      : TResult & { [k in TString]: TValues }
+      : CommandNameMap<'', TValues, TResult & { [k in TString]: TValues }>
 >;
-
-type Prettify<T> = { [K in keyof T]: T[K] } & unknown;
