@@ -1,4 +1,4 @@
-import { joinTokens } from 'src/utils/tokens';
+import { joinTokens, splitTokens } from 'src/utils/tokens';
 import { describe, expect, it } from 'vitest';
 
 describe('tokens', () => {
@@ -29,6 +29,39 @@ describe('tokens', () => {
       expect(joinTokens('foo', ['bar', ['baz', ['qux']]])).toBe(
         'foo bar baz qux',
       );
+    });
+
+    it('accepts custom joiner', () => {
+      expect(joinTokens('foo', 'bar', { delimiter: '/' })).toBe('foo/bar');
+    });
+
+    it('allows omitting quotes on nested spaces', () => {
+      expect(joinTokens('foo', ['bar baz'], { wrapInQuotes: false })).toBe(
+        'foo bar baz',
+      );
+    });
+  });
+
+  describe('splitTokens', () => {
+    it('splits a simple string into tokens', () => {
+      expect(splitTokens('foo bar baz')).toEqual(['foo', 'bar', 'baz']);
+    });
+
+    it('handles quoted tokens with spaces', () => {
+      expect(splitTokens('foo "bar baz" qux quux')).toEqual([
+        'foo',
+        'bar baz',
+        'qux',
+        'quux',
+      ]);
+    });
+
+    it('accepts custom joiner', () => {
+      expect(splitTokens('foo/"bar baz"/qux', '/')).toEqual([
+        'foo',
+        'bar baz',
+        'qux',
+      ]);
     });
   });
 });
