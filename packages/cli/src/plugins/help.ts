@@ -1,7 +1,7 @@
 import { UsageError } from 'src/core/errors';
 import { getHelp } from 'src/core/help';
 import { removeOptionTokens } from 'src/core/options/remove-option-tokens';
-import type { Plugin } from 'src/core/plugin';
+import { type Plugin, plugin } from 'src/core/plugin';
 
 /**
  * Options for the help plugin.
@@ -38,9 +38,8 @@ export function help({
   const [optionKey = 'help', ...alias] = helpFlags;
   helpFlags = [optionKey, ...alias];
 
-  return {
+  return plugin({
     name: 'help',
-    version: '0.0.1',
     description: `Prints help information on execution if a usage error is thrown or a help flag is present: ${helpFlags
       .map((flag) => `${flag.length === 1 ? '-' : '--'}${flag}`)
       .join(', ')}.`,
@@ -166,5 +165,5 @@ export function help({
 
       return true;
     },
-  };
+  });
 }

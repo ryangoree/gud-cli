@@ -2,7 +2,7 @@ import { appendFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type { Client } from 'src/core/client';
 import type { HookPayload } from 'src/core/hooks';
-import type { Plugin } from 'src/core/plugin';
+import { type Plugin, plugin } from 'src/core/plugin';
 
 export interface LoggerMeta {
   /**
@@ -182,9 +182,8 @@ export function logger({
   }
 
   // Return the plugin object.
-  return {
+  return plugin<LoggerMeta>({
     name: 'logger',
-    version: '0.0.1',
     description: 'Logs the result of each execution step.',
     meta: {
       // Create a meta object to provide read-only access to the enabled state.
@@ -222,7 +221,7 @@ export function logger({
 
       return true;
     },
-  };
+  });
 }
 
 function defaultPrefix() {

@@ -294,8 +294,7 @@ export type OptionValues<TOptions extends OptionsConfig = OptionsConfig> =
 // Functions //
 
 /**
- * Factory function to create an {@linkcode OptionConfig} object with strong
- * typing.
+ * Factory function to create an {@linkcode OptionConfig} with strong typing.
  *
  * @param config - The config for the option.
  *

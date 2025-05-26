@@ -109,9 +109,9 @@ export type CommandFactoryReturn<
   : never;
 
 /**
- * Factory function to create a {@linkcode CommandModule} object with strong
- * typing. This is used to define a command with its associated metadata,
- * options, and handler logic.
+ * Factory function to create a {@linkcode CommandModule} with strong typing.
+ * This is used to define a command with its associated metadata, options, and
+ * handler logic.
  *
  * @returns A constructed {@linkcode CommandModule} object with strong types.
  * @group Command
@@ -120,11 +120,36 @@ export function command<
   TOptions extends OptionsConfig,
   const TModule extends Partial<CommandModule<any, TOptions>>,
 >(
-  config?: CommandFactoryConfig<TOptions, TModule>,
+  {
+    description,
+    options,
+    isMiddleware = true,
+    handler = passThroughHandler,
+    requiresSubcommand = handler === passThroughHandler,
+  }: CommandFactoryConfig<TOptions, TModule> = {} as CommandFactoryConfig<
+    TOptions,
+    TModule
+  >,
 ): CommandFactoryReturn<TModule> {
   return {
-    isMiddleware: true,
-    handler: (state: CommandState) => state.next(state.data),
-    ...config,
+    isMiddleware,
+    requiresSubcommand,
+    handler,
+    description,
+    options,
   } as CommandFactoryReturn<TModule>;
 }
+
+/**
+ * A pass-through command handler that simply returns the current state data
+ * without any modifications.
+ */
+export function passThroughHandler(state: CommandState) {
+  return state.next(state.data);
+}
+
+/**
+ * A pass-through command that does not perform any action and simply returns
+ * the current state data.
+ */
+export const passThroughCommand = command();
