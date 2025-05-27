@@ -40,6 +40,16 @@ describe('tokens', () => {
         'foo bar baz',
       );
     });
+
+    it('returns a single token as is', () => {
+      expect(joinTokens('foo')).toBe('foo');
+      expect(joinTokens('foo', { delimiter: '/' })).toBe('foo');
+    });
+
+    it('ignores empty tokens', () => {
+      expect(joinTokens('foo', '', 'bar')).toBe('foo bar');
+      expect(joinTokens(['foo', '', 'bar'])).toBe('foo bar');
+    });
   });
 
   describe('splitTokens', () => {

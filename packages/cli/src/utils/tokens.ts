@@ -1,10 +1,4 @@
-export type JoinableTokens = string | string[] | JoinableTokens[];
-
-export type JoinableTokensWithOptions = [
-  JoinableTokens,
-  ...JoinableTokens[],
-  JoinTokenOptions,
-];
+export type Tokens = string | string[] | Tokens[];
 
 export interface JoinTokenOptions {
   /**
@@ -17,8 +11,7 @@ export interface JoinTokenOptions {
    *
    * @example
    * ```ts
-   * joinTokens({
-   *   tokens: ['foo', 'bar baz', 'qux'],
+   * joinTokens('foo', 'bar baz', 'qux', {
    *   wrapInQuotes: true,
    * });
    * // => 'foo "bar baz" qux'
@@ -33,44 +26,41 @@ export interface JoinTokenOptions {
  * Joins multiple command tokens into a single string.
  */
 export function joinTokens(
-  ...tokens: JoinableTokens[] | JoinableTokensWithOptions
+  ...tokens: [Tokens, ...Tokens[]] | [Tokens, ...Tokens[], JoinTokenOptions]
 ): string {
-  let joiner = ' ';
-  let wrapInQuotes = true;
+  let delim = ' ';
+  let useQuotes = true;
 
   // Check if the last argument is an options object
   const lastArg = tokens.at(-1);
   if (typeof lastArg === 'object' && !Array.isArray(lastArg)) {
-    const options = tokens.pop() as JoinTokenOptions;
-    if (options.delimiter !== undefined) {
-      joiner = options.delimiter;
+    const { delimiter, wrapInQuotes } = tokens.pop() as JoinTokenOptions;
+    if (delimiter !== undefined) {
+      delim = delimiter;
     }
-    if (options.wrapInQuotes !== undefined) {
-      wrapInQuotes = options.wrapInQuotes;
+    if (wrapInQuotes !== undefined) {
+      useQuotes = wrapInQuotes;
     }
   }
 
-  return (tokens as JoinableTokens[])
-    .map((token) => {
-      if (Array.isArray(token))
-        return joinTokens(...(token as [JoinableTokens, ...JoinableTokens[]]), {
-          delimiter: joiner,
-          wrapInQuotes,
-        });
+  const processedTokens: string[] = [];
+  for (const token of (tokens as string[]).flat(Number.POSITIVE_INFINITY)) {
+    if (!token) continue;
 
-      // If a token within multiple tokens contains spaces, wrap it in quotes
-      if (
-        wrapInQuotes &&
-        tokens.length > 1 &&
-        token.includes(' ') &&
-        (!token.startsWith('"') || !token.endsWith('"'))
-      ) {
-        return `"${token.replaceAll('"', '\\"')}"`;
-      }
+    // If a token within multiple tokens contains spaces, wrap it in quotes
+    if (
+      useQuotes &&
+      tokens.length > 1 &&
+      token.includes(' ') &&
+      (!token.startsWith('"') || !token.endsWith('"'))
+    ) {
+      processedTokens.push(`"${token.replaceAll('"', '\\"')}"`);
+    } else {
+      processedTokens.push(token);
+    }
+  }
 
-      return token;
-    })
-    .join(joiner);
+  return processedTokens.join(delim);
 }
 
 /**
