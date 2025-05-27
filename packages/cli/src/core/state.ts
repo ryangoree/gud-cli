@@ -329,7 +329,7 @@ export class State<
    * Fork the state and execute a new set of commands with the same context.
    * @returns The data from the last command.
    */
-  readonly fork = async <TCommand extends CommandModule<any, any>>({
+  readonly fork = async <TCommand extends CommandModule<any, any, any>>({
     commands,
     initialData = this.#data,
     optionValues,
