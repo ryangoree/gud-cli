@@ -21,6 +21,7 @@ export {
 } from 'src/core/context';
 export {
   CliError,
+  CommandRequiredError,
   NotFoundError,
   UsageError,
   type CliErrorOptions,
@@ -38,7 +39,6 @@ export {
   type HookPayload,
 } from 'src/core/hooks';
 export {
-  CommandRequiredError,
   MissingDefaultExportError,
   prepareResolvedCommand,
   resolveCommand,
@@ -153,4 +153,5 @@ export {
   joinTokens,
   splitTokens,
   type JoinableTokens,
+  type JoinTokenOptions,
 } from 'src/utils/tokens';

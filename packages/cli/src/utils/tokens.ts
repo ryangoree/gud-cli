@@ -1,4 +1,4 @@
-export type Tokens = string | string[] | Tokens[];
+export type JoinableTokens = string | string[] | JoinableTokens[];
 
 export interface JoinTokenOptions {
   /**
@@ -26,7 +26,9 @@ export interface JoinTokenOptions {
  * Joins multiple command tokens into a single string.
  */
 export function joinTokens(
-  ...tokens: [Tokens, ...Tokens[]] | [Tokens, ...Tokens[], JoinTokenOptions]
+  ...tokens:
+    | [JoinableTokens, ...JoinableTokens[]]
+    | [JoinableTokens, ...JoinableTokens[], JoinTokenOptions]
 ): string {
   let delim = ' ';
   let useQuotes = true;
