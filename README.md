@@ -11,7 +11,7 @@ your CLI can guide them through an intuitive, conversational experience.
 npm install @gud/cli
 ```
 
-## Why Gud CLI?
+## Why Gud CLI? <!-- omit from toc -->
 
 - **🎯 User-first design** – Missing a required option? Gud CLI automatically
   prompts for it instead of showing cryptic error messages.
@@ -22,12 +22,39 @@ npm install @gud/cli
 - **🔌 Extensible** – Plugin system and lifecycle hooks let you customize
   everything without touching core logic.
 
+## Table of Contents <!-- omit from toc -->
+
+- [Quick Start](#quick-start)
+  - [1. Create your CLI entry point](#1-create-your-cli-entry-point)
+  - [2. Add your first command](#2-add-your-first-command)
+  - [3. Run it](#3-run-it)
+- [What makes it different?](#what-makes-it-different)
+  - [Interactive by default](#interactive-by-default)
+  - [File-based routing](#file-based-routing)
+  - [TypeScript-first](#typescript-first)
+- [Examples](#examples)
+  - [Interactive deployment](#interactive-deployment)
+  - [Parameterized commands](#parameterized-commands)
+- [Advanced Features](#advanced-features)
+  - [Plugins](#plugins)
+  - [Lifecycle Hooks](#lifecycle-hooks)
+  - [Flexible Option Handling](#flexible-option-handling)
+- [Built for Scale](#built-for-scale)
+- [Migration Guide](#migration-guide)
+  - [From Commander.js](#from-commanderjs)
+  - [From yargs](#from-yargs)
+- [Community](#community)
+- [Reference](#reference)
+
+
+
 ## Quick Start
 
 ### 1. Create your CLI entry point
 
 ```ts
 // src/cli.ts
+#!/usr/bin/env node
 import { run } from '@gud/cli';
 
 // Uses ./commands by default
@@ -170,7 +197,7 @@ export default command({
     force: { type: 'boolean', description: 'Skip confirmation' }
   },
   handler: async ({ params, options, client }) => {
-    const userId = params.id; // From the command: users/123/delete
+    const userId = params.id; // 123 from the command: users 123 delete
     const force = await options.force();
     
     if (!force) {
