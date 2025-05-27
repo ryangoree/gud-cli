@@ -4,14 +4,15 @@ import {
   type CommandModule,
   passThroughCommand,
   passThroughHandler,
+  validateCommandString,
 } from 'src/core/command';
 import {
   CliError,
   type CliErrorOptions,
+  CommandRequiredError,
   NotFoundError,
   UsageError,
 } from 'src/core/errors';
-import { OptionsError } from 'src/core/options/validate-options';
 import { type ParseCommandFn, parseCommand } from 'src/core/parse';
 import {
   formatFileName,
@@ -23,19 +24,6 @@ import { joinTokens, splitTokens } from 'src/utils/tokens';
 import type { MaybePromise } from 'src/utils/types';
 
 // Errors //
-
-/**
- * An error thrown when attempting to resolve an empty command string.
- * @group Errors
- */
-export class CommandRequiredError extends UsageError {
-  constructor(options?: CliErrorOptions) {
-    super('Command required.', {
-      name: 'CommandRequiredError',
-      ...options,
-    });
-  }
-}
 
 /**
  * An error indicating a command is missing a default export.
@@ -326,17 +314,7 @@ export async function prepareResolvedCommand({
  * if the commands directory does not exist.
  */
 function validateResolvable(commandName: string, commandsDir: string): void {
-  // Check if the first token is an option.
-  if (commandName.startsWith('-')) {
-    throw new OptionsError(`Unknown option "${commandName}"`);
-  }
-
-  // Check if the command name is a relative path (e.g., ./foo, ../foo, /foo)
-  if (/^(\.|\/)/.test(commandName)) {
-    throw new UsageError(`Invalid command name: ${commandName}`);
-  }
-
-  // Ensure the command directory exists.
+  validateCommandString(commandName);
   if (!isDirectory(commandsDir)) {
     throw new NotFoundError(commandName, commandsDir);
   }

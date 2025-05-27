@@ -1,4 +1,6 @@
+import { UsageError } from 'src/core/errors';
 import type { OptionsConfig } from 'src/core/options/options';
+import { OptionsError } from 'src/core/options/validate-options';
 import type { State } from 'src/core/state';
 import type { MaybePromise } from 'src/utils/types';
 
@@ -120,24 +122,16 @@ export function command<
   TOptions extends OptionsConfig,
   const TModule extends Partial<CommandModule<any, TOptions>>,
 >(
-  {
-    description,
-    options,
-    isMiddleware = true,
-    handler = passThroughHandler,
-    requiresSubcommand = handler === passThroughHandler,
-  }: CommandFactoryConfig<TOptions, TModule> = {} as CommandFactoryConfig<
-    TOptions,
-    TModule
-  >,
+  command?: CommandFactoryConfig<TOptions, TModule>,
 ): CommandFactoryReturn<TModule> {
-  return {
-    isMiddleware,
-    requiresSubcommand,
-    handler,
-    description,
-    options,
-  } as CommandFactoryReturn<TModule>;
+  const mod = { ...command };
+
+  if (!mod.handler) {
+    mod.handler = passThroughHandler;
+    mod.requiresSubcommand = true;
+  }
+
+  return mod as CommandFactoryReturn<TModule>;
 }
 
 /**
@@ -153,3 +147,24 @@ export function passThroughHandler(state: CommandState) {
  * the current state data.
  */
 export const passThroughCommand = command();
+
+/**
+ * Validates a command string to ensure it does not start with an option or
+ * contain a relative path.
+ *
+ * @param commandString - The command string to validate.
+ *
+ * @throws {OptionsError | UsageError} Throws an error if the command name looks
+ * like an option or a relative path.
+ */
+export function validateCommandString(commandString: string): void {
+  // Check if the first token is an option.
+  if (commandString.startsWith('-')) {
+    throw new OptionsError(`Unknown option "${commandString}"`);
+  }
+
+  // Check if the command name is a relative path (e.g., ./foo, ../foo, /foo)
+  if (/^(\.|\/)/.test(commandString)) {
+    throw new UsageError(`Invalid command name: ${commandString}`);
+  }
+}

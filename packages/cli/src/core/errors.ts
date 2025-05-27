@@ -148,3 +148,16 @@ export class NotFoundError extends UsageError {
     );
   }
 }
+
+/**
+ * An error thrown when attempting to resolve an empty command string.
+ * @group Errors
+ */
+export class CommandRequiredError extends UsageError {
+  constructor(options?: CliErrorOptions) {
+    super('Command required.', {
+      name: 'CommandRequiredError',
+      ...options,
+    });
+  }
+}
