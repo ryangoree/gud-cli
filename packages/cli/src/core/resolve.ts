@@ -1,5 +1,5 @@
 import { readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import {
   type CommandModule,
   passThroughCommand,
@@ -14,6 +14,7 @@ import {
   UsageError,
 } from 'src/core/errors';
 import { type ParseCommandFn, parseCommand } from 'src/core/parse';
+import { getCallerPath } from 'src/utils/caller-path';
 import {
   formatFileName,
   parseFileName,
@@ -23,7 +24,10 @@ import { isDirectory, isFile } from 'src/utils/fs';
 import { joinTokens, splitTokens } from 'src/utils/tokens';
 import type { MaybePromise } from 'src/utils/types';
 
-// Errors //
+/**
+ * The default directory name for commands.
+ */
+export const DEFAULT_COMMANDS_DIR_NAME = 'commands';
 
 /**
  * An error indicating a command is missing a default export.
@@ -37,8 +41,6 @@ export class MissingDefaultExportError extends CliError {
     });
   }
 }
-
-// Types //
 
 /**
  * A function to resolve a command based on the provided command string and
@@ -102,8 +104,6 @@ export interface ResolvedCommand {
    */
   resolveNext?: () => MaybePromise<ResolvedCommand>;
 }
-
-// Functions + Function Types //
 
 /**
  * Params for the {@linkcode resolveCommand} function.
@@ -299,6 +299,44 @@ export async function prepareResolvedCommand({
   }
 
   return resolved;
+}
+
+/**
+ * Resolve the default commands directory. This function attempts to find a
+ * "commands" directory in the current working directory or the caller's
+ * directory. If neither exists, it throws an error with a list of tried paths.
+ *
+ * @param callerDepth - The depth of the caller in the stack trace. This is used
+ * to determine the directory of the caller file. Defaults to `0`.
+ * @returns The resolved path to the commands directory.
+ * @throws {CliError} if no commands directory is found.
+ */
+export function resolveDefaultCommandsDir(callerDepth = 0): string {
+  // keep track of paths that were tried for the error message
+  const triedPaths: string[] = [];
+
+  // default to "<cwd>/commands"
+  let defaultCommandsDir = resolve(DEFAULT_COMMANDS_DIR_NAME);
+
+  // if "<cwd>/commands" doesn't exist, try "<caller-dir>/commands"
+  if (!isDirectory(defaultCommandsDir)) {
+    triedPaths.push(defaultCommandsDir);
+    const callerDirPath = dirname(getCallerPath(callerDepth) || '');
+    defaultCommandsDir = join(callerDirPath, DEFAULT_COMMANDS_DIR_NAME);
+  }
+
+  // if neither "<cwd>/commands" nor "<caller-dir>/commands" exist, throw
+  if (!isDirectory(defaultCommandsDir)) {
+    triedPaths.push(defaultCommandsDir);
+    throw new CliError(
+      [
+        'Unable to find commands directory. Specify the path to a directory containing command modules using the "commandsDir" option or create the directory at one of the following locations:',
+        `- ${triedPaths.join('\n  - ')}\n`,
+      ].join('\n  '),
+    );
+  }
+
+  return defaultCommandsDir;
 }
 
 // Internal //

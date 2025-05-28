@@ -1,10 +1,10 @@
-import path from 'node:path';
 import { type Client, ClientError } from 'src/core/client';
 import type { ParseCommandFn } from 'src/core/parse';
-import type { ResolveCommandFn } from 'src/core/resolve';
+import {
+  type ResolveCommandFn,
+  resolveDefaultCommandsDir,
+} from 'src/core/resolve';
 import { hideBin } from 'src/utils/argv';
-import { getCallerPath } from 'src/utils/caller-path';
-import { isDirectory } from 'src/utils/fs';
 import { joinTokens } from 'src/utils/tokens';
 import { Context } from './context';
 import { CliError } from './errors';
@@ -65,6 +65,9 @@ export interface RunParams {
    */
   parseFn?: ParseCommandFn;
 
+  /**
+   * Optional lifecycle hooks to customize command execution.
+   */
   hooks?: Partial<LifecycleHooks>;
 }
 
@@ -92,7 +95,7 @@ export interface RunParams {
 export async function run({
   command = hideBin(process.argv),
   defaultCommand,
-  commandsDir,
+  commandsDir = resolveDefaultCommandsDir(1),
   initialData,
   options,
   plugins,
@@ -101,41 +104,10 @@ export async function run({
   resolveFn,
   hooks,
 }: RunParams = {}) {
-  // attempt to find commands directory
-  if (!commandsDir) {
-    // keep track of paths that were tried for the error message
-    const triedPaths: string[] = [];
-
-    // default to "<cwd>/commands"
-    const defaultCommandsDirName = 'commands';
-    let defaultCommandsDir = path.resolve(defaultCommandsDirName);
-
-    // if "<cwd>/commands" doesn't exist, try "<caller-dir>/commands"
-    if (!isDirectory(defaultCommandsDir)) {
-      triedPaths.push(defaultCommandsDir);
-      const callerDirPath = path.dirname(getCallerPath() || '');
-      defaultCommandsDir = path.join(callerDirPath, defaultCommandsDirName);
-    }
-
-    // if neither "<cwd>/commands" nor "<caller-dir>/commands" exist, throw
-    if (!isDirectory(defaultCommandsDir)) {
-      triedPaths.push(defaultCommandsDir);
-      throw new CliError(
-        `Unable to find commands directory. Specify the path to the directory containing command modules using the "commandsDir" option or create the directory at one of the following locations:
-  - ${triedPaths.join('\n  - ')}
-  `,
-      );
-    }
-
-    commandsDir = defaultCommandsDir;
-  }
-
   let commandString = joinTokens(command);
   if ((!commandString || commandString.startsWith('-')) && defaultCommand) {
     commandString = joinTokens(defaultCommand, command);
   }
-
-  // create hook registry
 
   // create context
   const context = new Context({

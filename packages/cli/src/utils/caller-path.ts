@@ -2,6 +2,9 @@
  * Attempts to get the path to the file that contains the code that called the
  * code that called this function. I know, it's confusing, but it's cool.
  *
+ * @param depth - The number of stack frames to go back. Defaults to 0, which
+ * means the immediate caller. Use 1 to get the caller of the caller, and so on.
+ *
  * @example
  *
  * #### Caller:
@@ -25,7 +28,7 @@
  *
  * @group Utils
  */
-export function getCallerPath(): string | undefined {
+export function getCallerPath(depth = 0): string | undefined {
   /**
    * 0 = error name and message
    * 1 = path to this file
@@ -34,7 +37,7 @@ export function getCallerPath(): string | undefined {
    * 3 = path to the file that called the function that called this function
    *     (this is the file that the caller of this function wants)
    */
-  const callerIndex = 3;
+  const callerIndex = 3 + depth;
   const target = {} as unknown as Error;
 
   // Attempt to overwrite the `prepareStackTrace` function. This will work in
