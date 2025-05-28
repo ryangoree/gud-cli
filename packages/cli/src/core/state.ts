@@ -215,6 +215,18 @@ export class State<
     let nextCommand = this.commands[nextIndex] as ResolvedCommand | undefined;
 
     if (nextCommand) {
+      // If there is a next command, increment the step index and call the
+      // command handler.
+      await this.#applyState({
+        data: _data,
+        i: nextIndex,
+        // Merge params from previous steps with params from the next command.
+        params: {
+          ...this.params,
+          ...nextCommand.params,
+        },
+      });
+
       await this.context.hooks.call('beforeCommand', {
         state: this,
         command: nextCommand,
@@ -228,18 +240,6 @@ export class State<
         },
         setCommand: (command) => {
           nextCommand = command;
-        },
-      });
-
-      // If there is a next command, increment the step index and call the
-      // command handler.
-      await this.#applyState({
-        data: _data,
-        i: nextIndex,
-        // Merge params from previous steps with params from the next command.
-        params: {
-          ...this.params,
-          ...nextCommand.params,
         },
       });
 
