@@ -260,7 +260,8 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
       for (const { name, init } of this.#plugins) {
         const info = this.plugins[name];
         if (!info) continue;
-        info.isReady = await init(this);
+        await init?.(this);
+        info.isReady = true;
         Object.freeze(info);
       }
 

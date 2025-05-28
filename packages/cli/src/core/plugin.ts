@@ -1,3 +1,4 @@
+import { CliError, type CliErrorOptions } from 'src/core/errors';
 import type { AnyObject, MaybePromise } from 'src/utils/types';
 import type { Context } from './context';
 
@@ -5,8 +6,13 @@ import type { Context } from './context';
  * A plugin for @gud/cli
  * @group Plugin
  */
-export type Plugin<TMeta extends AnyObject = AnyObject> = PluginInfo<TMeta> &
-  PluginInitOption;
+export type Plugin<TMeta extends AnyObject = AnyObject> = PluginInfo<TMeta> & {
+  /**
+   * Initialize the plugin.
+   * @param context - The context the plugin is being initialized in.
+   */
+  init?: (context: Context) => MaybePromise<void>;
+};
 
 /**
  * Information about a plugin.
@@ -38,12 +44,22 @@ export type PluginInfo<TMeta extends AnyObject = AnyObject> = {
  * Factory function to create a {@linkcode Plugin} with strong typing.
  */
 export function plugin<TMeta extends AnyObject = AnyObject>(
-  plugin: PluginInfo<TMeta> & Partial<PluginInitOption>,
+  plugin: Plugin<TMeta>,
 ): Plugin<TMeta> {
-  return {
-    ...plugin,
-    init: plugin.init ?? (async () => true),
-  };
+  return plugin;
+}
+
+/**
+ * An error that can be thrown by a plugin.
+ * @group Errors
+ */
+export class PluginError extends CliError {
+  constructor(error: unknown, options?: CliErrorOptions) {
+    super(error, {
+      name: 'PluginError',
+      ...options,
+    });
+  }
 }
 
 // Internal //
@@ -58,14 +74,4 @@ interface PluginMetaOption<TMeta extends AnyObject = AnyObject> {
    * this object will be mutable by default.
    */
   meta?: TMeta;
-}
-
-interface PluginInitOption {
-  /**
-   * Initialize the plugin.
-   * @param context - The context the plugin is being initialized in.
-   * @returns A boolean or promise that resolves to a boolean indicating
-   * whether the plugin was successfully initialized.
-   */
-  init: (context: Context) => MaybePromise<boolean>;
 }

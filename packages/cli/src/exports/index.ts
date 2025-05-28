@@ -126,7 +126,6 @@ export {
   enableLogger,
   logger,
   toggleLogger,
-  type LoggerHooks,
   type LoggerMeta,
 } from 'src/plugins/logger';
 

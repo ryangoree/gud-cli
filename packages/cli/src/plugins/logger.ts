@@ -1,8 +1,10 @@
 import { appendFileSync, mkdirSync } from 'node:fs';
-import path from 'node:path';
+import { dirname, relative } from 'node:path';
+import { type InspectOptions, inspect } from 'node:util';
 import type { Client } from 'src/core/client';
+import { CliError } from 'src/core/errors';
 import type { HookPayload } from 'src/core/hooks';
-import { type Plugin, plugin } from 'src/core/plugin';
+import { type Plugin, PluginError, plugin } from 'src/core/plugin';
 
 export interface LoggerMeta {
   /**
@@ -11,30 +13,11 @@ export interface LoggerMeta {
   readonly enabled: boolean;
 }
 
-export interface LoggerHooks {
-  /**
-   * Turns the logger on.
-   */
-  enableLogger: () => void;
-
-  /**
-   * Turns the logger off.
-   */
-  disableLogger: () => void;
-
-  /**
-   * Toggles the logger on or off.
-   */
-  toggleLogger: () => void;
-}
-
 interface LoggerOptions {
   /**
-   * The prefix to use for log messages. Can be a string or a function that
+   * A custom prefix to use for log messages. Can be a string or a function that
    * returns a string. If a function is provided, it will be called each time a
    * log message is created.
-   *
-   * @defaultValue A timestamp.
    *
    * @example
    * ```ts
@@ -51,14 +34,45 @@ interface LoggerOptions {
 
   /**
    * Whether the logger is enabled.
-   * @defaultValue `true`
+   * @default true
    */
   enabled?: boolean;
+
+  /**
+   * Whether to log verbose information. If `true`, additional information will
+   * be logged, such as command resolution details and error handling.
+   * @default false
+   */
+  verbose?: boolean;
 }
 
-export let disableLogger: () => void;
-export let enableLogger: () => void;
-export let toggleLogger: () => void;
+// Global logger state.
+let _enabled = true;
+
+// Internal logger control to be reassigned during initialization.
+let _disableLogger = () => {
+  _enabled = false;
+};
+let _enableLogger = () => {
+  _enabled = true;
+};
+
+/**
+ * Disables the logger plugin if it was added to the CLI.
+ */
+export const disableLogger = () => _disableLogger();
+
+/**
+ * Enables the logger plugin if it was added to the CLI.
+ */
+export const enableLogger = () => _enableLogger();
+
+/**
+ * Toggles the logger plugin on or off if it was added to the CLI.
+ */
+export const toggleLogger = () => {
+  _enabled ? _disableLogger() : _enableLogger();
+};
 
 /**
  * A minimal logger plugin that logs the result of each execution step. By
@@ -134,105 +148,190 @@ export let toggleLogger: () => void;
  * @group Plugins
  */
 export function logger({
-  prefix = defaultPrefix,
+  enabled = _enabled,
   logFile,
-  enabled = true,
+  prefix = logFile ? defaultLogFilePrefix : defaultPrefix,
+  verbose = false,
 }: LoggerOptions = {}): Plugin<LoggerMeta> {
   const getPrefix = typeof prefix === 'function' ? prefix : () => prefix;
 
   // if a logFile is provided, ensure the directory exists.
   if (logFile) {
-    const dir = path.dirname(logFile);
-    mkdirSync(dir, { recursive: true });
+    try {
+      const dir = dirname(logFile);
+      mkdirSync(dir, { recursive: true });
+    } catch (error) {
+      throw new PluginError(
+        `Failed to create log directory for file "${logFile}": ${error}`,
+      );
+    }
   }
 
   // Create a function to centralize the logging logic.
   function log(client: Client, message: string, ...data: any[]) {
-    const prefixedMessage = `${getPrefix()}${message}`;
+    const formattedMessage = `${getPrefix()}${bold(message)}`;
     if (logFile) {
-      logToFile(logFile, prefixedMessage, ...data);
+      logToFile(logFile, formattedMessage, ...data);
     } else {
-      client.log(`${prefixedMessage}:`, ...data);
+      client.log(`${formattedMessage}:`, ...data.map((d) => formatData(d)));
     }
   }
 
-  // Create a function to log state transitions.
-  function logTransition(
-    transitionName: string,
-    { state }: HookPayload<'beforeCommand' | 'beforeEnd'>,
-  ) {
-    const { command, client, params, data } = state;
+  // Create hook functions.
+  function beforeExecute({ state }: HookPayload<'beforeExecute'>) {
+    const { client, commands } = state;
+    log(client, 'Starting execution', {
+      commandString: state.context.commandString,
+      commandCount: commands.length,
+      commands: state.commands.map((cmd) => cmd.commandName).join(' → '),
+    });
+  }
+  function beforeCommand({ state, data }: HookPayload<'beforeCommand'>) {
+    const { command, client, params } = state;
     if (!command) return;
-    const { commandName, commandTokens, commandPath } = command;
-    log(client, transitionName, {
-      commandName,
-      commandTokens,
-      commandPath,
+    const { commandName } = command;
+    log(client, 'Executing command', {
+      name: commandName,
       params,
+      data,
+      step: `${state.i + 1}/${state.commands.length}`,
+    });
+  }
+  function afterCommand({ state, command, data }: HookPayload<'afterCommand'>) {
+    log(state.client, 'Completed command', {
+      commandName: command.commandName,
       data,
     });
   }
-
-  // Create beforeCommand and beforeEnd hooks that log the transitions.
-  function beforeCommand(payload: HookPayload<'beforeCommand'>) {
-    logTransition('next', payload);
-  }
-  function beforeEnd(payload: HookPayload<'beforeEnd'>) {
-    logTransition('end', payload);
+  function afterExecute({ state, result }: HookPayload<'afterExecute'>) {
+    log(state.client, 'Execution completed', {
+      finalResult: result,
+      commandsExecuted: state.commands.length,
+    });
   }
 
-  // Return the plugin object.
+  // Verbose logging hook functions.
+  function beforeResolve({
+    context,
+    commandString,
+    commandsDir,
+  }: HookPayload<'beforeResolve'>) {
+    log(context.client, 'Resolving commands', {
+      commandString,
+      commandsDir: relative(process.cwd(), commandsDir),
+    });
+  }
+  function afterResolve({
+    context,
+    resolvedCommands,
+  }: HookPayload<'afterResolve'>) {
+    log(
+      context.client,
+      'Commands resolved',
+      resolvedCommands.map((cmd) => ({
+        name: cmd.commandName,
+        path: relative(process.cwd(), cmd.commandPath),
+      })),
+    );
+  }
+  function beforeError({ context, error }: HookPayload<'beforeError'>) {
+    const { name, message } =
+      error instanceof Error
+        ? error
+        : new CliError(error, { name: 'UnknownError' });
+    log(context.client, 'Error occurred', {
+      error: name,
+      message,
+    });
+  }
+  function beforeExit({ code, context, message }: HookPayload<'beforeExit'>) {
+    log(context.client, 'Exiting', { code, message });
+  }
+
   return plugin<LoggerMeta>({
     name: 'logger',
     description: 'Logs the result of each execution step.',
     meta: {
-      // Create a meta object to provide read-only access to the enabled state.
-      // It's important that the enabled state can't be modified directly
-      // because the hooks need to be aware of the state changes.
       get enabled() {
-        return enabled;
+        return _enabled;
+      },
+      set enabled(value: boolean) {
+        _enabled = value;
+        if (value) {
+          _enableLogger();
+        } else {
+          _disableLogger();
+        }
       },
     },
-    init: async ({ client, commandString, hooks }) => {
-      // Initialize the functions to enable and disable the logger.
-      enableLogger = () => {
-        hooks.on('beforeCommand', beforeCommand);
-        hooks.on('beforeEnd', beforeEnd);
-        enabled = true;
-      };
-      disableLogger = () => {
-        hooks.off('beforeCommand', beforeCommand);
-        hooks.off('beforeEnd', beforeEnd);
-        enabled = false;
-      };
-
-      // Log the command if the logger is enabled.
-      if (enabled) {
-        enableLogger();
-        log(client, 'received command', commandString);
+    init: async ({ hooks, plugins }) => {
+      if (plugins.logger?.isReady) {
+        throw new PluginError(
+          'Logger plugin is already registered. Please remove the duplicate registration.',
+        );
       }
 
-      // Add custom hooks to enable, disable, and toggle the logger.
-      hooks.on('enableLogger', () => enableLogger());
-      hooks.on('disableLogger', () => disableLogger());
-      hooks.on('toggleLogger', () =>
-        enabled ? disableLogger() : enableLogger(),
-      );
+      _enabled = enabled;
 
-      return true;
+      _enableLogger = () => {
+        hooks.on('beforeExecute', beforeExecute);
+        hooks.on('beforeCommand', beforeCommand);
+        hooks.on('afterCommand', afterCommand);
+        hooks.on('afterExecute', afterExecute);
+        if (verbose) {
+          hooks.on('beforeResolve', beforeResolve);
+          hooks.on('afterResolve', afterResolve);
+          hooks.on('beforeError', beforeError);
+          hooks.on('beforeExit', beforeExit);
+        }
+        _enabled = true;
+      };
+
+      _disableLogger = () => {
+        hooks.off('beforeExecute', beforeExecute);
+        hooks.off('beforeCommand', beforeCommand);
+        hooks.off('afterExecute', afterExecute);
+        if (verbose) {
+          hooks.off('beforeResolve', beforeResolve);
+          hooks.off('afterResolve', afterResolve);
+          hooks.off('beforeError', beforeError);
+          hooks.off('beforeExit', beforeExit);
+        }
+        _enabled = false;
+      };
+
+      if (_enabled) _enableLogger();
     },
   });
 }
 
+function bold(...msg: string[]) {
+  return `\u001b[1m${msg.join(' ')}\u001b[0m`;
+}
+
 function defaultPrefix() {
+  return '🪵  ';
+}
+
+function defaultLogFilePrefix() {
   return `[🪵 ${new Date().toISOString()}] `;
 }
 
 function logToFile(logFile: string, message: string, ...data: any[]) {
-  const stringData = data
-    .map((value) =>
-      typeof value === 'object' ? JSON.stringify(value, null, 2) : value,
-    )
+  const formattedData = data
+    .map((d) => formatData(d, { colors: false }))
     .join(' ');
-  appendFileSync(logFile, `${message}: ${stringData}\n`);
+  appendFileSync(logFile, `${message}: ${formattedData}\n`);
+}
+
+function formatData(data: any, overrides?: InspectOptions) {
+  return inspect(data, {
+    compact: false,
+    colors: true,
+    depth: null,
+    maxArrayLength: null,
+    maxStringLength: null,
+    numericSeparator: true,
+    ...overrides,
+  });
 }
