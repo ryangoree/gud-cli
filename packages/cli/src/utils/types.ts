@@ -112,7 +112,7 @@ export type RequiredUnionKey<T> = Exclude<UnionKey<T>, OptionalUnionKey<T>>;
  * // => string | undefined
  * ```
  */
-export type UnionValue<T, K extends UnionKey<T>> = T extends T
+export type UnionValue<T, K extends UnionKey<T> = UnionKey<T>> = T extends T
   ? K extends keyof T
     ? T[K]
     : undefined

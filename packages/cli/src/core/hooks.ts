@@ -602,14 +602,14 @@ export type HookName<THooks extends AnyObject = LifecycleHooks> =
 /**
  * A handler function for a specific hook.
  * @template THook - The name of the hook being handled
- * @template T - The hooks configuration object containing the hook
+ * @template THooks - The hooks configuration object containing the hook
  * @group Hooks
  */
 export type HookHandler<
-  THook extends HookName<T> = keyof LifecycleHooks,
-  T extends AnyObject = LifecycleHooks,
-> = T[THook] extends AnyFunction
-  ? T[THook]
+  THook extends HookName<THooks> = keyof LifecycleHooks,
+  THooks extends AnyObject = LifecycleHooks,
+> = THooks[THook] extends AnyFunction
+  ? THooks[THook]
   : (payload?: unknown) => MaybePromise<void>;
 
 /**

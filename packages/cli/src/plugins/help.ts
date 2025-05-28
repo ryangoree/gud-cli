@@ -44,7 +44,6 @@ export function help({
   // Ensure at least one help flag
   const [optionKey = 'help', ...alias] = helpFlags;
   helpFlags = [optionKey, ...alias];
-  Object.freeze(helpFlags);
 
   return plugin<HelpPluginMeta>({
     name: 'help',
@@ -89,8 +88,6 @@ export function help({
         }
       });
 
-      // Avoid continuing to resolve the command if the help flag is present or
-      // if a usage error occurred previously
       hooks.on('beforeResolveNext', async ({ context, skip, lastResolved }) => {
         // If there's already a usage error, skip resolving the next command
         if (usageError) {
