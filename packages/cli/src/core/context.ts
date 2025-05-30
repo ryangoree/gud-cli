@@ -295,8 +295,8 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   };
 
   /**
-   * Resolve a command string into an imported command module and possible
-   * `resolveNext` function using the configured `resolveFn` and `parseFn`.
+   * Resolve the first command module from a command string using the configured
+   * `resolveFn` and `parseFn`.
    *
    * This function has no side effects and is simply a wrapper around the
    * configured `resolveFn` and `parseFn`.
@@ -491,6 +491,19 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   };
 
   /**
+   * Add a list of resolved commands to the context's
+   * `resolvedCommands` and `options`.
+   */
+  #addResolvedCommands(resolvedCommands: ResolvedCommand[]) {
+    for (const resolved of resolvedCommands) {
+      this.#resolvedCommands.push(resolved);
+      if (resolved.command.options) {
+        this.addOptions(resolved.command.options);
+      }
+    }
+  }
+
+  /**
    * Resolve the command string into a list of imported command modules, setting
    * the context's `resolvedCommands` property.
    *
@@ -498,6 +511,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
    */
   async #resolveWithHooks() {
     if (this.#isResolved) return;
+    let pendingCommand: ResolvedCommand | undefined;
     let skipped = false;
 
     await this.hooks.call('beforeResolve', {
@@ -511,12 +525,8 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
         this.#parseFn = parseFn;
       },
       addResolvedCommands: (resolvedCommands) => {
-        for (const resolved of resolvedCommands) {
-          if (resolved.command.options) {
-            this.addOptions(resolved.command.options);
-          }
-          this.#resolvedCommands.push(resolved);
-        }
+        pendingCommand = resolvedCommands.pop();
+        this.#addResolvedCommands(resolvedCommands);
       },
       skip: () => {
         skipped = true;
@@ -524,20 +534,19 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     });
 
     // Only resolve if the hook didn't skip
-    let pendingCommand: ResolvedCommand | undefined;
     if (!skipped) {
       pendingCommand = await this.resolveCommand();
     }
 
     // Continue resolving until the last command is reached or the
     // `beforeResolveNext` hook skips
-    while (pendingCommand && !skipped) {
+    while (pendingCommand) {
       this.#resolvedCommands.push(pendingCommand);
       if (pendingCommand.command.options) {
         this.addOptions(pendingCommand.command.options);
       }
 
-      if (!pendingCommand.resolveNext) break;
+      if (!pendingCommand.remainingCommandString) break;
 
       await this.hooks.call('beforeResolveNext', {
         context: this,
@@ -550,34 +559,28 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
         setParseFn: (parseFn) => {
           this.#parseFn = parseFn;
         },
+        addResolvedCommands: (resolvedCommands) => {
+          pendingCommand = resolvedCommands.pop();
+          this.#addResolvedCommands(resolvedCommands);
+        },
         skip: () => {
           skipped = true;
         },
-        addResolvedCommands: (resolvedCommands) => {
-          for (const resolved of resolvedCommands) {
-            this.#resolvedCommands.push(resolved);
-            if (resolved.command.options) {
-              this.addOptions(resolved.command.options);
-            }
-          }
-        },
       });
 
-      if (!skipped) {
-        pendingCommand = await pendingCommand.resolveNext();
-      }
+      if (skipped) break;
+
+      pendingCommand = await this.resolveCommand(
+        pendingCommand.remainingCommandString,
+        pendingCommand.subcommandsDir,
+      );
     }
 
     await this.hooks.call('afterResolve', {
       context: this,
       resolvedCommands: this.#resolvedCommands,
       addResolvedCommands: (resolvedCommands) => {
-        for (const resolved of resolvedCommands) {
-          this.#resolvedCommands.push(resolved);
-          if (resolved.command.options) {
-            this.addOptions(resolved.command.options);
-          }
-        }
+        this.#addResolvedCommands(resolvedCommands);
       },
     });
 
@@ -601,6 +604,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     if (this.#isParsed) return;
 
     await this.hooks.call('beforeParse', {
+      context: this,
       commandString: this.commandString,
       optionsConfig: this.options,
       setParseFn: (parseFn) => {
@@ -613,7 +617,6 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
       skip: () => {
         this.#isParsed = true;
       },
-      context: this,
     });
 
     // Don't parse if the hook skipped
@@ -624,11 +627,11 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     }
 
     await this.hooks.call('afterParse', {
+      context: this,
       parsedOptions: this.#parsedOptions,
       setParsedOptions: (optionValues) => {
         this.#parsedOptions = optionValues;
       },
-      context: this,
     });
   }
 }

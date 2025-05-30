@@ -40,11 +40,13 @@ describe('resolve', () => {
       commandName: 'foo',
       commandTokens: ['foo'],
       remainingCommandString: 'bar baz',
-      resolveNext: expect.any(Function),
       subcommandsDir: 'commands/foo',
     } as ResolvedCommand);
 
-    resolved = await resolved.resolveNext!();
+    resolved = await resolveCommand({
+      commandString: resolved.remainingCommandString,
+      commandsDir: resolved.subcommandsDir,
+    });
 
     expect(resolved).toMatchObject({
       command: commandModules['commands/foo/bar.js'],
@@ -52,11 +54,13 @@ describe('resolve', () => {
       commandName: 'bar',
       commandTokens: ['bar'],
       remainingCommandString: 'baz',
-      resolveNext: expect.any(Function),
       subcommandsDir: 'commands/foo/bar',
     } as ResolvedCommand);
 
-    resolved = await resolved.resolveNext!();
+    resolved = await resolveCommand({
+      commandString: resolved.remainingCommandString,
+      commandsDir: resolved.subcommandsDir,
+    });
 
     expect(resolved).toMatchObject({
       command: commandModules['commands/foo/bar/baz.js'],
@@ -92,14 +96,16 @@ describe('resolve', () => {
       commandPath: 'commands/[qux].js',
       commandTokens: ['do'],
       remainingCommandString: 're mi',
-      resolveNext: expect.any(Function),
       params: {
         qux: 'do',
       },
       subcommandsDir: 'commands/[qux]',
     } as ResolvedCommand);
 
-    resolved = await resolved.resolveNext!();
+    resolved = await resolveCommand({
+      commandString: resolved.remainingCommandString,
+      commandsDir: resolved.subcommandsDir,
+    });
 
     expect(resolved).toEqual({
       command: commandModules['commands/[qux]/[...quux].js'],
@@ -107,7 +113,6 @@ describe('resolve', () => {
       commandPath: 'commands/[qux]/[...quux].js',
       commandTokens: ['re', 'mi'],
       remainingCommandString: '',
-      resolveNext: undefined,
       params: {
         quux: ['re', 'mi'],
       },

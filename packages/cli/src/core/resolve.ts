@@ -97,12 +97,6 @@ export interface ResolvedCommand {
    * The route params associated with the resolved command.
    */
   params?: RouteParams;
-
-  /**
-   * A function to resolve the next command, if any, based on the remaining
-   * command string.
-   */
-  resolveNext?: () => MaybePromise<ResolvedCommand>;
 }
 
 /**
@@ -242,11 +236,9 @@ interface PrepareResolvedCommandParams {
 }
 
 /**
- * Prepares a resolved command by:
- * - Ensuring the remaining command string starts with a subcommand name.
- * - Adding a `resolveNext` function if the command isn't the last one.
- * - Replacing the handler with a pass-through function if the command won't be
- *   executed.
+ * Prepares a resolved command by ensuring the remaining command string starts
+ * with a subcommand name and replacing the handler with a pass-through function
+ * if the command won't be executed.
  *
  * @returns The prepared resolved command.
  *
@@ -283,18 +275,8 @@ export async function prepareResolvedCommand({
     }
   }
 
-  // Add a resolveNext function if the command isn't the last one.
-  if (resolved.remainingCommandString) {
-    resolved.resolveNext = () =>
-      resolveCommand({
-        commandString: resolved.remainingCommandString,
-        commandsDir: resolved.subcommandsDir,
-        parseFn,
-      });
-  }
-
   // Replace the handler if the command won't be executed.
-  if (!isMiddleware && resolved.resolveNext) {
+  if (!isMiddleware && resolved.remainingCommandString) {
     resolved.command.handler = passThroughHandler;
   }
 
