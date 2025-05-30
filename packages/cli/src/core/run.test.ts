@@ -379,8 +379,6 @@ describe('run', () => {
             init: ({ hooks }) => {
               // Register the hook
               hooks.on('beforeStateChange', mockHook);
-
-              return true;
             },
           },
         ],
@@ -411,7 +409,6 @@ describe('run', () => {
             version: '0.0.0',
             init: ({ hooks }) => {
               hooks.on('afterStateChange', mockHook);
-              return true;
             },
           },
         ],
@@ -553,8 +550,6 @@ describe('run', () => {
             hooks.on('beforeError', ({ setError }) => {
               setError(pluginError);
             });
-
-            return true;
           },
         };
 
@@ -590,8 +585,6 @@ describe('run', () => {
             hooks.on('beforeError', ({ ignore }) => {
               ignore();
             });
-
-            return true;
           },
         };
 

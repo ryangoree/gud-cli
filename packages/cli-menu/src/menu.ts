@@ -70,7 +70,7 @@ export function menu({
       'Prompts the user to select a subcommand when a command requires one.',
 
     init: ({ hooks }) => {
-      if (enabled === false) return true;
+      if (enabled === false) return;
       const isPermanentlyEnabled = enabled === true;
       const isEnabledFn = typeof enabled === 'function' ? enabled : () => true;
 
@@ -143,8 +143,6 @@ export function menu({
           }
         },
       );
-
-      return true;
     },
   };
 }

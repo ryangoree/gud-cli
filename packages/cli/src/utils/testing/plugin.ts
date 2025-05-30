@@ -8,6 +8,7 @@ export const mockPluginInfo = {
 
 export const mockPlugin = {
   ...mockPluginInfo,
+  init() {},
 } as const satisfies Plugin;
 
 export const notReadyMockPlugin = {
