@@ -15,6 +15,7 @@
     "test": "turbo run test:ci",
     "typecheck": "turbo run typecheck",
     "release": "sh scripts/release.sh",
+    "loc": "scc",
     "reset-node-modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' + && yarn cache clean && yarn"
   },
   "devDependencies": {

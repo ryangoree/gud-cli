@@ -1,18 +1,30 @@
 import type { Context } from 'src/core/context';
-import type { OptionValues, OptionsConfig } from 'src/core/options/options';
-import type { ParseCommandFn } from 'src/core/parse';
-import type {
-  ResolveCommandFn,
-  ResolvedCommand,
-  RouteParams,
-} from 'src/core/resolve';
 import type { NextState, State } from 'src/core/state';
 import type {
   AnyFunction,
   AnyObject,
+  Eval,
   FunctionKey,
   MaybePromise,
 } from 'src/utils/types';
+
+type ContextHookPayload<T extends AnyObject = {}> = Eval<
+  {
+    /**
+     * The CLI context object.
+     */
+    context: Context;
+  } & T
+>;
+
+type StateHookPayload<T extends AnyObject = {}> = Eval<
+  {
+    /**
+     * The command execution state object.
+     */
+    state: State;
+  } & T
+>;
 
 /**
  * The core hooks interface that defines lifecycle events for the CLI execution
@@ -21,468 +33,253 @@ import type {
  */
 export interface LifecycleHooks {
   /**
-   * Called before attempting to locate and import command modules.
+   * Called before attempting to locate and import each command modules.
    *
    * Hook order: 1
    */
-  beforeResolve: (payload: {
-    /**
-     *  The raw command string input to the CLI
-     */
-    commandString: string;
+  beforeResolve: (
+    payload: ContextHookPayload<{
+      /**
+       * The remaining unresolved command string.
+       */
+      remainingCommandString: string;
 
-    /**
-     *  The root directory containing command implementations
-     */
-    commandsDir: string;
+      /**
+       * The directory where the next command module will be searched for.
+       */
+      nextCommandsDir: string;
 
-    /**
-     * Replace the configured command resolution function
-     * @param resolveFn - Custom resolution function implementation
-     */
-    setResolveFn: (resolveFn: ResolveCommandFn) => void;
+      /**
+       * Skip the default command resolution for the next command.
+       */
+      skip: () => void;
 
-    /**
-     * Replace the configured command parsing function
-     * @param parseFn - Custom parsing function implementation
-     */
-    setParseFn: (parseFn: ParseCommandFn) => void;
-
-    /**
-     * Register additional resolved commands
-     * @param resolvedCommands - Array of resolved command objects to add
-     */
-    addResolvedCommands: (resolvedCommands: ResolvedCommand[]) => void;
-
-    /**
-     *  Skip the command resolution phase
-     */
-    skip: () => void;
-
-    /**
-     *  The CLI context object
-     */
-    context: Context;
-  }) => MaybePromise<void>;
+      /**
+       * Stop the command resolution process entirely.
+       */
+      stopResolving: () => void;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
-   * Called before attempting to locate and import each subcommand module.
+   * Called after resolving and importing each command module.
    *
    * Hook order: 2
    */
-  beforeResolveNext: (payload: {
-    /**
-     *  The remaining unresolved portion of the command string
-     */
-    commandString: string;
+  afterResolve: (
+    payload: ContextHookPayload<{
+      /**
+       * The remaining unresolved command string or `undefined` if all commands
+       * have been resolved.
+       */
+      remainingCommandString: string | undefined;
 
-    /**
-     *  The directory containing subcommand implementations
-     */
-    commandsDir: string;
+      /**
+       * The directory where the next command module will be searched for or
+       * `undefined` if all commands have been resolved.
+       */
+      nextCommandsDir: string | undefined;
 
-    /**
-     *  The previously resolved command in the chain
-     */
-    lastResolved: ResolvedCommand;
-
-    /**
-     * Replace the configured command resolution function
-     * @param resolveFn - Custom resolution function implementation
-     */
-    setResolveFn: (resolveFn: ResolveCommandFn) => void;
-
-    /**
-     * Replace the configured command parsing function
-     * @param parseFn - Custom parsing function implementation
-     */
-    setParseFn: (parseFn: ParseCommandFn) => void;
-
-    /**
-     * Register additional resolved commands.
-     * @param resolvedCommands - Array of resolved command objects to add
-     */
-    addResolvedCommands: (resolvedCommands: ResolvedCommand[]) => void;
-
-    /**
-     *  Skip resolving this subcommand
-     */
-    skip: () => void;
-
-    /**
-     *  The CLI context object
-     */
-    context: Context;
-  }) => MaybePromise<void>;
-
-  /**
-   * Called after resolving and importing command modules.
-   *
-   * Hook order: 3
-   */
-  afterResolve: (payload: {
-    /**
-     * The complete array of resolved command objects.
-     */
-    resolvedCommands: ResolvedCommand[];
-
-    /**
-     * Register additional resolved commands.
-     * @param resolvedCommands - Array of resolved command objects to add.
-     *
-     * @remarks
-     * Options configurations are merged into the context immediately after each
-     * command is resolved to maintain context consistency in the
-     * {@linkcode beforeResolveNext} hook. Due to this, resolved commands can
-     * only be added, not replaced. To replace resolved commands entirely, use
-     * the {@linkcode beforeResolve} hook instead.
-     */
-    addResolvedCommands: (resolvedCommands: ResolvedCommand[]) => void;
-
-    /**
-     * The CLI context object.
-     */
-    context: Context;
-  }) => MaybePromise<void>;
+      /**
+       * Whether the command resolution was skipped.
+       */
+      skipped: boolean;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
    * Called before parsing the command string using the options config from
    * plugins and resolved command modules.
    *
-   * Hook order: 4
-   *
-   * @remarks
-   * The command string will be parsed multiple times during a command string's
-   * execution. After each command module is resolved and imported, the string
-   * will be re-parsed *without* validation to determine the next token in the
-   * command string that represents the next command or subcommand. The parse
-   * hooks will *not* be called during this phase.
-   *
-   * After all commands are resolved, the command string will be parsed again,
-   * this time *with* validation using the options config from all plugins and
-   * resolved commands. This is when the the `beforeParse` hook is called.
-   *
+   * Hook order: 3
    */
-  beforeParse: (payload: {
-    /**
-     * The raw command input (string or array format).
-     */
-    commandString: string | string[];
-
-    /**
-     * The consolidated options configuration from all plugins and resolved
-     * commands.
-     */
-    optionsConfig: OptionsConfig;
-
-    /**
-     * Replace the configured parsing function.
-     * @param parseFn - Custom parsing function implementation.
-     */
-    setParseFn: (parseFn: ParseCommandFn) => void;
-
-    /**
-     * Set parsed options directly and skip the parsing phase.
-     * @param optionValues - Pre-parsed option values.
-     */
-    setParsedOptionsAndSkip: (optionValues: OptionValues) => void;
-
-    /**
-     * Skip the parsing phase.
-     */
-    skip: () => void;
-
-    /**
-     * The CLI context object.
-     */
-    context: Context;
-  }) => MaybePromise<void>;
+  beforeParse: (
+    payload: ContextHookPayload<{
+      /**
+       * Skip the parsing phase.
+       */
+      skip: () => void;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
    * Called after the final command string is parsed using the options
    * configuration from plugins and resolved command modules.
    *
-   * Hook order: 5
+   * Hook order: 4
    */
-  afterParse: (payload: {
-    /**
-     * The parsed command options and arguments.
-     */
-    parsedOptions: OptionValues;
-
-    /**
-     * Override the parsed results
-     * @param optionValues - New option values to use
-     */
-    setParsedOptions: (optionValues: OptionValues) => void;
-
-    /**
-     * The CLI context object.
-     */
-    context: Context;
-  }) => MaybePromise<void>;
+  afterParse: (
+    payload: ContextHookPayload<{
+      /**
+       * Whether the command parsing was skipped.
+       */
+      skipped: boolean;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
    * Called before command execution begins.
    *
-   * Hook order: 6
+   * Hook order: 5
    */
-  beforeExecute: (payload: {
-    /**
-     * The initial state data.
-     */
-    initialData: unknown;
-
-    /**
-     * The command execution state object.
-     */
-    state: State;
-
-    /**
-     * Set final result and skip execution.
-     */
-    setResultAndSkip: (result: unknown) => void;
-
-    /**
-     * Override the initial state data
-     * @param data - New initial data
-     */
-    setInitialData: (data: unknown) => void;
-
-    /**
-     * Skip the execution phase.
-     */
-    skip: () => void;
-  }) => MaybePromise<void>;
+  beforeExecute: (
+    payload: StateHookPayload<{
+      /**
+       * Skip the execution phase.
+       */
+      skip: () => void;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
    * Called before each command's handler function.
    *
-   * Hook order: 7
+   * Hook order: 6
    */
-  beforeCommand: (payload: {
-    /**
-     * The command execution state object.
-     */
-    state: State;
-
-    /**
-     * The data that will be passed to the command.
-     */
-    data: unknown;
-
-    /**
-     * Override the data for the command.
-     * @param data - New data to pass.
-     */
-    setData: (data: unknown) => void;
-
-    /**
-     * The params that will be passed to the command.
-     */
-    params: unknown;
-
-    /**
-     * Override the params for the command, fully replacing the existing params.
-     * @param params - New params to pass.
-     */
-    setParams: (params: RouteParams) => void;
-
-    /**
-     * The command to be executed.
-     */
-    command: ResolvedCommand;
-
-    /**
-     * Override the command.
-     * @param command - New command to execute.
-     */
-    setCommand: (command: ResolvedCommand) => void;
-  }) => MaybePromise<void>;
+  beforeCommand: (
+    payload: StateHookPayload<{
+      /**
+       * Skip the command handler execution, and continue to the next
+       * command in the chain if any.
+       */
+      skip: () => void;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
    * Called after each command's handler function.
    *
-   * Hook order: 8
+   * Hook order: 7
    */
-  afterCommand: (payload: {
-    /**
-     * The command execution state object.
-     */
-    state: State;
-
-    /**
-     * The data returned from the command.
-     */
-    data: unknown;
-
-    /**
-     * Override the data returned from the command.
-     * @param data - New data to return.
-     */
-    setData: (data: unknown) => void;
-
-    /**
-     * The command that was executed.
-     */
-    command: ResolvedCommand;
-  }) => MaybePromise<void>;
+  afterCommand: (
+    payload: StateHookPayload<{
+      /**
+       * Whether the command handler execution was skipped.
+       */
+      skipped: boolean;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
    * Called before each state update during command execution.
    *
-   * Hook order: 9
+   * Hook order: 8
    */
-  beforeStateChange: (payload: {
-    /**
-     * The command execution state object.
-     */
-    state: State;
+  beforeStateChange: (
+    payload: StateHookPayload<{
+      /**
+       * The pending state changes.
+       */
+      changes: Partial<NextState>;
 
-    /**
-     * The pending state changes.
-     */
-    changes: Partial<NextState>;
+      /**
+       * Override the pending state changes.
+       * @param changes - New state changes to apply.
+       */
+      setChanges: (changes: Partial<NextState>) => void;
 
-    /**
-     * Override the pending state changes.
-     * @param changes - New state changes to apply.
-     */
-    setChanges: (changes: Partial<NextState>) => void;
-
-    /**
-     * Skip the state update.
-     */
-    skip: () => void;
-  }) => MaybePromise<void>;
+      /**
+       * Skip the state update.
+       */
+      skip: () => void;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
    * Called after each state update during command execution.
    *
-   * Hook order: 10
+   * Hook order: 9
    */
-  afterStateChange: (payload: {
-    /**
-     * The command execution state object.
-     */
-    state: State;
-
-    /**
-     * The applied state changes.
-     */
-    changes: Partial<NextState>;
-  }) => MaybePromise<void>;
+  afterStateChange: (
+    payload: StateHookPayload<{
+      /**
+       * The applied state changes.
+       */
+      changes: Partial<NextState>;
+      /**
+       * Whether the state update was skipped.
+       */
+      skipped: boolean;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
    * Called before the {@linkcode State.end()} function is executed.
    *
-   * Hook order: 11
+   * Hook order: 10
    */
-  beforeEnd: (payload: {
-    /**
-     * The command execution state object.
-     */
-    state: State;
-
-    /**
-     * The data that will be returned.
-     */
-    data: unknown;
-
-    /**
-     * Override the return data.
-     * @param data - New data to return.
-     */
-    setData: (data: unknown) => void;
-  }) => MaybePromise<void>;
+  beforeEnd: (payload: StateHookPayload) => MaybePromise<void>;
 
   /**
    * Called after the command execution completes, just before the result is
    * returned.
    *
-   * Hook order: 12
+   * Hook order: 11
    */
-  afterExecute: (payload: {
-    /**
-     * The command execution state object.
-     */
-    state: State;
-
-    /**
-     * The final result.
-     */
-    result: unknown;
-
-    /**
-     * Override the final result.
-     * @param result - New result to use.
-     */
-    setResult: (result: unknown) => void;
-  }) => MaybePromise<void>;
+  afterExecute: (
+    payload: StateHookPayload<{
+      /**
+       * Whether the command execution was skipped.
+       */
+      skipped: boolean;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
    * Called whenever a plugin or command intends to exit the process via
    * {@linkcode Context.exit()}.
    */
-  beforeExit: (payload: {
-    /**
-     * The CLI context object.
-     */
-    context: Context;
+  beforeExit: (
+    payload: ContextHookPayload<{
+      /**
+       * The exit code.
+       */
+      code: number;
 
-    /**
-     * The exit code.
-     */
-    code: number;
+      /**
+       * An optional message to log.
+       */
+      message: any | undefined;
 
-    /**
-     * An optional message to log.
-     */
-    message?: any;
+      /**
+       * Override the exit code.
+       */
+      setCode: (code: number) => void;
 
-    /**
-     * Override the exit code.
-     * @param code - New exit code to use.
-     */
-    setCode: (code: number) => void;
+      /**
+       * Override the message to log.
+       */
+      setMessage: (message: string) => void;
 
-    /**
-     * Override the message to log.
-     * @param message - New message to log.
-     */
-    setMessage: (message: any) => void;
-
-    /**
-     * Prevent the process from exiting.
-     */
-    cancel: () => void;
-  }) => MaybePromise<void>;
+      /**
+       * Prevent the process from exiting.
+       */
+      cancel: () => void;
+    }>,
+  ) => MaybePromise<void>;
 
   /**
    * Called whenever an error is thrown.
    */
-  beforeError: (payload: {
-    /**
-     * The CLI context object.
-     */
-    context: Context;
+  beforeError: (
+    payload: ContextHookPayload<{
+      /**
+       * The error that was thrown.
+       */
+      error: unknown;
 
-    /**
-     * The error that was thrown.
-     */
-    error: unknown;
+      /**
+       * Override the error that will be thrown.
+       * @param error - New error to throw.
+       */
+      setError: (error: unknown) => void;
 
-    /**
-     * Override the error that will be thrown.
-     * @param error - New error to throw.
-     */
-    setError: (error: unknown) => void;
-
-    /**
-     * Prevent the error from being thrown.
-     */
-    ignore: () => void;
-  }) => MaybePromise<void>;
+      /**
+       * Prevent the error from being thrown.
+       */
+      ignore: () => void;
+    }>,
+  ) => MaybePromise<void>;
 }
 
 /**
@@ -495,11 +292,11 @@ export interface LifecycleHooks {
  * @example
  * ```ts
  * const hooks = new HookRegistry<{
- *   beforeRun: (payload: { command: string }) => void;
+ *  beforeRun: (payload: { command: string }) => void;
  * }>();
  *
  * hooks.on('beforeRun', ({ command }) => {
- *   console.log('Running command:', command);
+ *  console.log('Running command:', command);
  * });
  *
  * hooks.call('beforeRun', { command: 'foo bar' }); // -> 'Running command: foo bar'

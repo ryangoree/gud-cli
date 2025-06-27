@@ -122,11 +122,10 @@ export async function getHelp({
   const allOptions: OptionsConfig = { ...context.options };
 
   // Get the last resolved command
-  const finalResolved =
-    context.resolvedCommands[context.resolvedCommands.length - 1];
+  const finalResolved = context.commandQueue[context.commandQueue.length - 1];
 
   // Build up the usage string based on the resolved commands
-  for (const resolved of context.resolvedCommands) {
+  for (const resolved of context.commandQueue) {
     const { paramName, spreadOperator } = parseFileName(resolved.commandName);
     if (paramName) {
       rows.usage.text += ` <${paramName}${spreadOperator ? ' ...' : ''}>`;

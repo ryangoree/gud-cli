@@ -8,7 +8,7 @@ import { hideBin } from 'src/utils/argv';
 import { joinTokens } from 'src/utils/tokens';
 import { Context } from './context';
 import { CliError } from './errors';
-import { HookRegistry, type LifecycleHooks } from './hooks';
+import type { LifecycleHooks } from './hooks';
 import type { OptionsConfig } from './options/options';
 import type { Plugin } from './plugin';
 
@@ -115,13 +115,13 @@ export async function run({
     commandsDir,
     options,
     plugins,
-    hooks: new HookRegistry(hooks),
+    hooks,
     client,
     parseFn,
     resolveFn,
   });
 
-  // Intercept process exit events to ensure they are handled by the context.
+  // Intercept process exit events to ensure they're handled by the context.
   process.on('exit', context.exit);
 
   // Attempt to prepare and execute the command and return the result.

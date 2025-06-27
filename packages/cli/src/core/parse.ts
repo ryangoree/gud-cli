@@ -121,3 +121,14 @@ export function parseCommand(
 
   return { tokens, options };
 }
+
+export async function removeLeadingOptions(
+  commandString: string,
+  optionsConfig: OptionsConfig,
+  parseFn: ParseCommandFn = parseCommand,
+) {
+  const { tokens } = await parseFn(commandString, optionsConfig);
+  if (!tokens.length) return '';
+  const indexOfNextCommand = commandString.indexOf(tokens[0]!);
+  return commandString.slice(indexOfNextCommand);
+}

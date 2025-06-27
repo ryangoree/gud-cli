@@ -54,7 +54,7 @@ export function help({
         return helpFlags;
       },
     },
-    init: ({ addOptions, hooks }) => {
+    init: ({ setOptions: addOptions, hooks }) => {
       let usageError: UsageError | undefined = undefined;
 
       addOptions({
@@ -75,57 +75,55 @@ export function help({
       });
 
       // Allow the command to be executed with just the help flag
-      hooks.on('beforeResolve', async ({ commandString, skip }) => {
-        if (commandString.length) {
+      hooks.on(
+        'beforeResolve',
+        async ({ context, remainingCommandString, skip }) => {
+          // If there's already a usage error, skip resolving the next command
+          if (usageError) {
+            skip();
+            return;
+          }
+
+          if (!remainingCommandString.length) return;
+
           const commandStringWithoutHelp = removeOptionTokens(
-            commandString,
+            remainingCommandString,
             Object.fromEntries(helpFlags.map((flag) => [flag, true])),
           );
 
           // If the command string is empty after removing the help flag, skip
           // resolving the command which would cause a usage error.
-          if (!commandStringWithoutHelp.length) skip();
-        }
-      });
+          if (!commandStringWithoutHelp.length) {
+            skip();
+            return;
+          }
 
-      hooks.on('beforeResolveNext', async ({ context, skip, lastResolved }) => {
-        // If there's already a usage error, skip resolving the next command
-        if (usageError) {
-          skip();
-          return;
-        }
+          // check if the help flag was present in the previously resolved
+          // command string. If it's in the remaining command string we can
+          // ignore it for now to build up context for the help text.
+          const resolvedCommandString = context.commandString.slice(
+            0,
+            remainingCommandString.length,
+          );
+          const { options } = await context.parseCommand(resolvedCommandString);
 
-        // check if the help flag was present in the previously resolved command
-        // string. If it's in the remaining command string we can ignore it for
-        // now to build up context for the help text.
-        const stringToCheck = context.commandString.slice(
-          0,
-          -lastResolved.remainingCommandString.length,
-        );
-        const { options } = await context.parseCommand(stringToCheck);
+          if (options[optionKey]) skip();
+        },
+      );
 
-        if (options[optionKey]) skip();
-      });
-
-      // Skip execution if the help flag is present or if a usage error was
-      // already thrown.
       hooks.on('beforeExecute', async ({ state, skip }) => {
-        const helpFlag = (await state.options[optionKey]?.()) === true;
+        const helpFlag = await state.options[optionKey]?.();
         if (usageError || helpFlag) skip();
       });
 
-      hooks.on('afterExecute', async ({ setResult, state }) => {
+      hooks.on('afterExecute', async ({ state }) => {
         const { client, context, options } = state;
         const helpFlag = await options[optionKey]?.();
-
-        if (!usageError && !helpFlag) return;
-
-        if (!helpFlag) {
-          client.error(usageError);
-          setResult(usageError);
-        }
-
         if (usageError) {
+          if (!helpFlag) {
+            client.error(usageError);
+            state.setData(usageError);
+          }
           const helpText = await getHelp({ context, maxWidth })
             .then(({ helpText }) => helpText)
             .catch((error) => {

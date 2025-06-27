@@ -78,7 +78,7 @@ export class State<
   #context: Context;
   #data: unknown;
   #i = -1;
-  #commands: ResolvedCommand[];
+  #commandQueue: ResolvedCommand[];
   #options: OptionsGetter;
   #params: RouteParams = {};
 
@@ -99,11 +99,11 @@ export class State<
     initialData,
     commands,
     options = context.options,
-    optionValues = context.parsedOptions,
+    optionValues = context.optionValues,
   }: StateParams<TData>) {
     this.#context = context;
     this.#data = initialData as TData;
-    this.#commands = commands || context.resolvedCommands;
+    this.#commandQueue = commands || context.commandQueue;
 
     // Create a getter to dynamically get the options from context.
     this.#options = createOptionsGetter({
@@ -125,14 +125,14 @@ export class State<
    * Information about the current command module being executed.
    */
   get command() {
-    return this.commands[this.i];
+    return this.commandQueue[this.i];
   }
 
   /**
    * Information about all command modules loaded for the current execution.
    */
-  get commands() {
-    return this.#commands;
+  get commandQueue() {
+    return this.#commandQueue;
   }
 
   /**
@@ -140,6 +140,21 @@ export class State<
    */
   get context() {
     return this.#context;
+  }
+
+  /**
+   * An {@linkcode OptionsGetter} to dynamically retrieve options.
+   */
+  get options() {
+    return this.#options as OptionsGetter<TOptions>;
+  }
+
+  /**
+   * A client that wraps the Node.js console and provides additional methods for
+   * logging, error handling, and user prompts.
+   */
+  get client() {
+    return this.context.client;
   }
 
   /**
@@ -159,18 +174,18 @@ export class State<
   }
 
   /**
-   * An {@linkcode OptionsGetter} to dynamically retrieve options.
+   * Set the data for the current state.
    */
-  get options() {
-    return this.#options as OptionsGetter<TOptions>;
+  setData(data: TData) {
+    this.#data = data;
   }
 
   /**
-   * A client that wraps the Node.js console and provides additional methods for
-   * logging, error handling, and user prompts.
+   * Set the parameters for the current state, merging them with any
+   * existing parameters.
    */
-  get client() {
-    return this.context.client;
+  setParams(params: RouteParams) {
+    Object.assign(this.#params, params);
   }
 
   /**
@@ -210,9 +225,11 @@ export class State<
    */
   readonly next = async (data = this.#data): Promise<unknown> => {
     this.#actionCallCount++;
-    let _data = data;
+    const _data = data;
     const nextIndex = this.i + 1;
-    let nextCommand = this.commands[nextIndex] as ResolvedCommand | undefined;
+    const nextCommand = this.commandQueue[nextIndex] as
+      | ResolvedCommand
+      | undefined;
 
     if (nextCommand) {
       // If there is a next command, increment the step index and call the
@@ -227,32 +244,23 @@ export class State<
         },
       });
 
+      const actionCallCountBefore = this.#actionCallCount;
+      let skipped = false;
+
       await this.context.hooks.call('beforeCommand', {
         state: this,
-        command: nextCommand,
-        data: _data,
-        params: this.params,
-        setData: (data) => {
-          _data = data;
-        },
-        setParams: (params) => {
-          this.#params = params;
-        },
-        setCommand: (command) => {
-          nextCommand = command;
+        skip: () => {
+          skipped = true;
         },
       });
 
-      const actionCallCountBefore = this.#actionCallCount;
-      await nextCommand.command.handler(this);
+      if (!skipped) {
+        await nextCommand.command.handler(this);
+      }
 
       await this.context.hooks.call('afterCommand', {
         state: this,
-        command: nextCommand,
-        data: _data,
-        setData: (data) => {
-          _data = data;
-        },
+        skipped,
       });
 
       // Prevent the process from hanging if a command handler neglects to call
@@ -261,10 +269,7 @@ export class State<
         await this.next(_data);
       }
     } else {
-      // If there is no next command, end the steps.
-      await this.#applyState({
-        data: _data,
-      });
+      await this.#applyState({ data: _data });
 
       // Resolve the promise to return the data to callers of `start()`.
       this.#resolvePromise?.();
@@ -284,15 +289,9 @@ export class State<
     // endOptions: EndOptions = {},
   ): Promise<unknown> => {
     this.#actionCallCount++;
-    let _data = data;
+    const _data = data;
 
-    await this.context.hooks.call('beforeEnd', {
-      state: this,
-      data,
-      setData: (data) => {
-        _data = data;
-      },
-    });
+    await this.context.hooks.call('beforeEnd', { state: this });
 
     // TODO: Re-think this. It could be implemented as a plugin/hook.
     // const nextCommand = this.commands[this.i + 1] as
@@ -314,7 +313,7 @@ export class State<
 
     await this.#applyState({
       data: _data,
-      i: this.commands.length - 1,
+      i: this.commandQueue.length - 1,
     });
 
     // Resolve the promise to return the data to callers of `start()`.
@@ -418,6 +417,7 @@ export class State<
   // Should be called every state change.
   async #applyState(nextState: Partial<NextState>) {
     let _changes = nextState;
+    let skipped = false;
 
     // pre hook
     await this.context.hooks.call('beforeStateChange', {
@@ -434,30 +434,33 @@ export class State<
             2,
           )}`,
         );
-        _changes = {};
+        skipped = true;
       },
     });
 
-    // Set new state values if defined.
-    if (_changes.i !== undefined) {
-      this.#i = _changes.i;
-    }
-    if (_changes.params !== undefined) {
-      this.#params = _changes.params;
-    }
-    if (_changes.options !== undefined) {
-      Object.assign(this.#options.values, _changes.options);
-    }
+    if (!skipped) {
+      // Set new state values if defined.
+      if (_changes.i !== undefined) {
+        this.#i = _changes.i;
+      }
+      if (_changes.params !== undefined) {
+        this.#params = _changes.params;
+      }
+      if (_changes.options !== undefined) {
+        Object.assign(this.#options.values, _changes.options);
+      }
 
-    // Data can be undefined, so we simply check if the key exists.
-    if ('data' in _changes) {
-      this.#data = _changes.data as TData;
+      // Data can be undefined, so we simply check if the key exists.
+      if ('data' in _changes) {
+        this.#data = _changes.data as TData;
+      }
     }
 
     // post hook
     await this.context.hooks.call('afterStateChange', {
       state: this,
       changes: _changes,
+      skipped,
     });
   }
 }

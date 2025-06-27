@@ -179,60 +179,61 @@ export function logger({
 
   // Create hook functions.
   function beforeExecute({ state }: HookPayload<'beforeExecute'>) {
-    const { client, commands } = state;
+    const { client, commandQueue: commands } = state;
     log(client, 'Starting execution', {
       commandString: state.context.commandString,
       commandCount: commands.length,
-      commands: state.commands.map((cmd) => cmd.commandName).join(' → '),
+      commands: state.commandQueue.map((cmd) => cmd.commandName).join(' → '),
     });
   }
-  function beforeCommand({ state, data }: HookPayload<'beforeCommand'>) {
-    const { command, client, params } = state;
-    if (!command) return;
-    const { commandName } = command;
-    log(client, 'Executing command', {
-      name: commandName,
-      params,
-      data,
-      step: `${state.i + 1}/${state.commands.length}`,
+  function beforeCommand({ state }: HookPayload<'beforeCommand'>) {
+    if (!state.command) return;
+    log(state.client, 'Executing command', {
+      name: state.command.commandName,
+      params: state.params,
+      data: state.data,
+      step: `${state.i + 1}/${state.commandQueue.length}`,
     });
   }
-  function afterCommand({ state, command, data }: HookPayload<'afterCommand'>) {
+  function afterCommand({ state }: HookPayload<'afterCommand'>) {
     log(state.client, 'Completed command', {
-      commandName: command.commandName,
-      data,
+      commandName: state.command?.commandName,
+      data: state.data,
     });
   }
-  function afterExecute({ state, result }: HookPayload<'afterExecute'>) {
+  function afterExecute({ state }: HookPayload<'afterExecute'>) {
     log(state.client, 'Execution completed', {
-      finalResult: result,
-      commandsExecuted: state.commands.length,
+      finalResult: state.data,
+      commandsExecuted: state.commandQueue.length,
     });
   }
 
   // Verbose logging hook functions.
   function beforeResolve({
     context,
-    commandString,
-    commandsDir,
+    remainingCommandString,
+    nextCommandsDir,
   }: HookPayload<'beforeResolve'>) {
-    log(context.client, 'Resolving commands', {
-      commandString,
-      commandsDir: relative(process.cwd(), commandsDir),
+    log(context.client, 'Resolving command', {
+      commandString: remainingCommandString,
+      commandsDir: relative(process.cwd(), nextCommandsDir),
     });
   }
   function afterResolve({
     context,
-    resolvedCommands,
+    remainingCommandString,
+    skipped,
   }: HookPayload<'afterResolve'>) {
-    log(
-      context.client,
-      'Commands resolved',
-      resolvedCommands.map((cmd) => ({
-        name: cmd.commandName,
-        path: relative(process.cwd(), cmd.commandPath),
-      })),
-    );
+    if (!remainingCommandString && !skipped) {
+      log(
+        context.client,
+        'Command resolved',
+        context.commandQueue.map((cmd) => ({
+          name: cmd.commandName,
+          path: relative(process.cwd(), cmd.commandPath),
+        })),
+      );
+    }
   }
   function beforeError({ context, error }: HookPayload<'beforeError'>) {
     const { name, message } =

@@ -334,7 +334,7 @@ describe('run', () => {
       // Expect the hook to have been called with the correct payload
       expect(beforeExecute).toHaveBeenCalledWith({
         initialData: undefined,
-        setInitialData: expect.any(Function),
+        setData: expect.any(Function),
         setResultAndSkip: expect.any(Function),
         skip: expect.any(Function),
         state: expect.any(State),
