@@ -8,6 +8,7 @@
     "@gud/cli-menu": "0.0.0"
   },
   "changesets": [
-    "blue-dingos-exist"
+    "blue-dingos-exist",
+    "khaki-doodles-heal"
   ]
 }
