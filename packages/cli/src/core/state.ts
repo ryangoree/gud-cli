@@ -99,7 +99,7 @@ export class State<
     initialData,
     commands,
     options = context.options,
-    optionValues = context.parsedOptions,
+    optionValues = context.optionValues,
   }: StateParams<TData>) {
     this.#context = context;
     this.#data = initialData as TData;

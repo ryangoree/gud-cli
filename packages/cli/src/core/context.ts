@@ -38,12 +38,12 @@ export class SubcommandRequiredError extends UsageError {
  */
 export interface ContextParams<TOptions extends OptionsConfig = OptionsConfig> {
   /*
-   *  The command string to be executed
+   * The command string to be executed
    */
   commandString: string;
 
   /*
-   *  The path to the directory containing command modules
+   * The path to the directory containing command modules
    */
   commandsDir: string;
 
@@ -69,12 +69,12 @@ export interface ContextParams<TOptions extends OptionsConfig = OptionsConfig> {
   options?: TOptions;
 
   /*
-   *  An optional function to replace the default command resolver
+   * An optional function to replace the default command resolver
    */
   resolveFn?: ResolveCommandFn;
 
   /*
-   *  An optional function to replace the default command parser
+   * An optional function to replace the default command parser
    */
   parseFn?: ParseCommandFn;
 }
@@ -127,12 +127,12 @@ export interface ContextParams<TOptions extends OptionsConfig = OptionsConfig> {
  */
 export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   /*
-   *  The command string to be executed.
+   * The command string to be executed.
    */
   readonly commandString: string;
 
   /*
-   *  The path to the directory containing command modules.
+   * The path to the directory containing command modules.
    */
   readonly commandsDir: string;
 
@@ -161,7 +161,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
 
   #isParsed = false;
   #parseFn: ParseCommandFn;
-  #parsedOptions: OptionValues = {};
+  #optionValues: OptionValues = {};
 
   #isResolved = false;
   #resolveFn: ResolveCommandFn;
@@ -212,28 +212,28 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   // Getters //
 
   /*
-   *  The options config for the command.
+   * The options config for the command.
    */
   get options() {
     return this.#options;
   }
 
   /*
-   *  A list of the resolved commands.
+   * A list of the resolved commands to be executed in order.
    */
   get resolvedCommands() {
     return this.#resolvedCommands;
   }
 
   /*
-   *  The parsed option values for the command.
+   * The parsed option values for the command.
    */
-  get parsedOptions() {
-    return this.#parsedOptions;
+  get optionValues() {
+    return this.#optionValues;
   }
 
   /*
-   *  The result of the most recent execution.
+   * The result of the most recent execution.
    */
   get result() {
     return this.#result;
@@ -611,7 +611,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
         this.#parseFn = parseFn;
       },
       setParsedOptionsAndSkip: (optionValues) => {
-        this.#parsedOptions = optionValues;
+        this.#optionValues = optionValues;
         this.#isParsed = true;
       },
       skip: () => {
@@ -622,15 +622,15 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     // Don't parse if the hook skipped
     if (!this.#isParsed) {
       const { options } = await this.parseCommand();
-      this.#parsedOptions = options;
+      this.#optionValues = options;
       this.#isParsed = true;
     }
 
     await this.hooks.call('afterParse', {
       context: this,
-      parsedOptions: this.#parsedOptions,
+      parsedOptions: this.#optionValues,
       setParsedOptions: (optionValues) => {
-        this.#parsedOptions = optionValues;
+        this.#optionValues = optionValues;
       },
     });
   }
