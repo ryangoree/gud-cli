@@ -4,11 +4,13 @@ import type { Context } from './context';
 
 /**
  * A plugin for @gud/cli
+ *
  * @group Plugin
  */
 export type Plugin<TMeta extends AnyObject = AnyObject> = PluginInfo<TMeta> & {
   /**
    * Initialize the plugin.
+   *
    * @param context - The context the plugin is being initialized in.
    */
   init?: (context: Context) => MaybePromise<void>;
@@ -16,7 +18,7 @@ export type Plugin<TMeta extends AnyObject = AnyObject> = PluginInfo<TMeta> & {
 
 /**
  * Information about a plugin.
- * @catgory Core
+ *
  * @group Plugin
  */
 export type PluginInfo<TMeta extends AnyObject = AnyObject> = {
@@ -42,6 +44,8 @@ export type PluginInfo<TMeta extends AnyObject = AnyObject> = {
 
 /**
  * Factory function to create a {@linkcode Plugin} with strong typing.
+ *
+ * @group Plugin
  */
 export function plugin<TMeta extends AnyObject = AnyObject>(
   plugin: Plugin<TMeta>,
@@ -51,6 +55,7 @@ export function plugin<TMeta extends AnyObject = AnyObject>(
 
 /**
  * An error that can be thrown by a plugin.
+ *
  * @group Errors
  */
 export class PluginError extends CliError {

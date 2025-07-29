@@ -8,6 +8,9 @@ export {
 } from 'src/core/client';
 export {
   command,
+  passThroughCommand,
+  passThroughHandler,
+  validateCommandString,
   type CommandFactoryConfig,
   type CommandFactoryReturn,
   type CommandHandler,
@@ -34,14 +37,17 @@ export type {
 } from 'src/core/help';
 export {
   HookRegistry,
+  type HookHandler,
+  type HookHandlers,
   type HookName,
-  type LifecycleHooks,
   type HookPayload,
+  type LifecycleHooks,
 } from 'src/core/hooks';
 export {
   MissingDefaultExportError,
   prepareResolvedCommand,
   resolveCommand,
+  resolveDefaultCommandsDir,
   type RouteParams,
   type ResolveCommandFn,
   type ResolveCommandParams,
@@ -104,6 +110,7 @@ export {
   OptionsError,
   validateOptionType,
   validateOptions,
+  type ValidateOptionsParams,
 } from 'src/core/options/validate-options';
 
 // plugins
@@ -115,7 +122,9 @@ export {
   type Tokens,
 } from 'src/core/parse';
 export type {
+  plugin,
   Plugin,
+  PluginError,
   PluginInfo,
 } from 'src/core/plugin';
 export {

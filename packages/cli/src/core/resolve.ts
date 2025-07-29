@@ -269,6 +269,8 @@ export async function prepareResolvedCommand(
  * to determine the directory of the caller file. Defaults to `0`.
  * @returns The resolved path to the commands directory.
  * @throws {CliError} if no commands directory is found.
+ *
+ * @group Resolve
  */
 export function resolveDefaultCommandsDir(callerDepth = 0): string {
   // keep track of paths that were tried for the error message

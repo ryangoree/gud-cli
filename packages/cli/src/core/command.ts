@@ -11,7 +11,6 @@ import type { MaybePromise } from 'src/utils/types';
  *
  * @typeParam TData - The data type the handler expects to receive.
  * @typeParam TOptions - The `OptionsConfig` type for the command.
- *
  * @group Command
  */
 export type CommandState<
@@ -22,6 +21,7 @@ export type CommandState<
 /**
  * A command handler function that receives the current state and performs some
  * action.
+ *
  * @typeParam TData - The data type the handler expects to receive.
  * @typeParam TOptions - The `OptionsConfig` type for the command.
  * @typeParam TReturn - The return type.
@@ -36,6 +36,7 @@ export type CommandHandler<
 
 /**
  * A command module that can be executed by the CLI engine.
+ *
  * @typeParam TData - The data type the handler expects to receive.
  * @typeParam TOptions - The `OptionsConfig` type for the command.
  * @typeParam TReturn - The return type of the command handler.
@@ -78,6 +79,7 @@ export interface CommandModule<
 
 /**
  * The configuration object for the {@linkcode command} function.
+ * 
  * @group Command
  */
 export type CommandFactoryConfig<
@@ -91,6 +93,7 @@ export type CommandFactoryConfig<
 
 /**
  * The return type of the {@linkcode command} function.
+ * 
  * @group Command
  */
 export type CommandFactoryReturn<
@@ -137,6 +140,8 @@ export function command<
 /**
  * A pass-through command handler that simply returns the current state data
  * without any modifications.
+ *
+ * @group Command
  */
 export function passThroughHandler(state: CommandState) {
   return state.next(state.data);
@@ -145,6 +150,8 @@ export function passThroughHandler(state: CommandState) {
 /**
  * A pass-through command that does not perform any action and simply returns
  * the current state data.
+ *
+ * @group Command
  */
 export const passThroughCommand = command();
 
@@ -153,9 +160,9 @@ export const passThroughCommand = command();
  * contain a relative path.
  *
  * @param commandString - The command string to validate.
- *
  * @throws {OptionsError | UsageError} Throws an error if the command name looks
  * like an option or a relative path.
+ * @group Command
  */
 export function validateCommandString(commandString: string): void {
   // Check if the first token is an option.
