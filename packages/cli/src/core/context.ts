@@ -242,6 +242,27 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   // Methods //
 
   /**
+   * Prepare the plugins for execution by calling their initialization
+   * functions, if defined.
+   *
+   * @remarks This method is idempotent. It will only call the initialization
+   * functions of plugins that have not been marked as ready.
+   */
+  async preparePlugins() {
+    try {
+      for (const { name, init } of this.#plugins) {
+        const info = this.plugins[name];
+        if (!info || info.isReady) continue;
+        await init?.(this);
+        info.isReady = true;
+        Object.freeze(info);
+      }
+    } catch (error) {
+      await this.throw(error);
+    }
+  }
+
+  /**
    * Prepare the context for execution.
    *
    * 1. Initialize plugins
@@ -257,13 +278,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
 
     try {
       // 1. Initialize plugins
-      for (const { name, init } of this.#plugins) {
-        const info = this.plugins[name];
-        if (!info) continue;
-        await init?.(this);
-        info.isReady = true;
-        Object.freeze(info);
-      }
+      await this.preparePlugins();
 
       // 2. Resolve the command string into a list of imported command modules
       await this.#resolveWithHooks();

@@ -257,7 +257,6 @@ export async function prepareResolvedCommand(
   if (!isMiddleware && resolved.remainingCommandString) {
     resolved.command.handler = passThroughHandler;
   }
-
   return resolved;
 }
 
