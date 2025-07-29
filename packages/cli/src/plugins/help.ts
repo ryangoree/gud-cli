@@ -54,10 +54,10 @@ export function help({
         return helpFlags;
       },
     },
-    init: ({ addOptions, hooks }) => {
+    init: ({ setOptions, hooks }) => {
       let usageError: UsageError | undefined = undefined;
 
-      addOptions({
+      setOptions({
         [optionKey]: {
           alias,
           description: 'Prints help information.',

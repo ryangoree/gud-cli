@@ -285,12 +285,12 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   // correct `this` context.
 
   /**
-   * Append additional options to the context's options config. Typically, this
-   * is done by plugins during initialization.
+   * Set the options config for the context, merging it with the existing
+   * options config. Typically, this is done by plugins during initialization.
    * @param options - The options config to be merged with the context's options
    * config.
    */
-  readonly addOptions = (options: OptionsConfig) => {
+  readonly setOptions = (options: OptionsConfig) => {
     Object.assign(this.#options, options);
   };
 
@@ -305,7 +305,6 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
    * context's command string.
    * @param commandsDir - The path to the directory containing command modules.
    * Defaults to the context's commands directory.
-   *
    * @returns A `ResolvedCommand` object.
    */
   readonly resolveCommand = (
@@ -324,13 +323,12 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
    * `parseFn` and the context's options config.
    *
    * This function has no side effects and is simply a wrapper around the
-   * configured `parseFn`.
+   * configured `parseFn` and options config.
    *
    * @param commandString - The command string to be parsed. Defaults to the
    * context's command string.
    * @param optionsConfig - Additional options config to be merged with the
    * context's options config.
-   *
    * @returns A `ParsedCommand` object containing the parsed command tokens and
    * option values.
    */
@@ -367,6 +365,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
       ...validationParams,
       values: parsed.options,
     });
+
     return parsed;
   };
 
@@ -498,7 +497,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     for (const resolved of resolvedCommands) {
       this.#commandQueue.push(resolved);
       if (resolved.command.options) {
-        this.addOptions(resolved.command.options);
+        this.setOptions(resolved.command.options);
       }
     }
   }
@@ -543,7 +542,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     while (pendingCommand) {
       this.#commandQueue.push(pendingCommand);
       if (pendingCommand.command.options) {
-        this.addOptions(pendingCommand.command.options);
+        this.setOptions(pendingCommand.command.options);
       }
 
       if (!pendingCommand.remainingCommandString) break;
