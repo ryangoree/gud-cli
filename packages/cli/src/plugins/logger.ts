@@ -179,11 +179,11 @@ export function logger({
 
   // Create hook functions.
   function beforeExecute({ state }: HookPayload<'beforeExecute'>) {
-    const { client, commands } = state;
+    const { client, commandQueue } = state;
     log(client, 'Starting execution', {
       commandString: state.context.commandString,
-      commandCount: commands.length,
-      commands: state.commands.map((cmd) => cmd.commandName).join(' → '),
+      commandCount: commandQueue.length,
+      commands: state.commandQueue.map((cmd) => cmd.commandName).join(' → '),
     });
   }
   function beforeCommand({ state, data }: HookPayload<'beforeCommand'>) {
@@ -194,7 +194,7 @@ export function logger({
       name: commandName,
       params,
       data,
-      step: `${state.i + 1}/${state.commands.length}`,
+      step: `${state.i + 1}/${state.commandQueue.length}`,
     });
   }
   function afterCommand({ state, command, data }: HookPayload<'afterCommand'>) {
@@ -206,7 +206,7 @@ export function logger({
   function afterExecute({ state, result }: HookPayload<'afterExecute'>) {
     log(state.client, 'Execution completed', {
       finalResult: result,
-      commandsExecuted: state.commands.length,
+      commandsExecuted: state.commandQueue.length,
     });
   }
 

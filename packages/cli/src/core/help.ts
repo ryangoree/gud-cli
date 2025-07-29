@@ -121,12 +121,8 @@ export async function getHelp({
 
   const allOptions: OptionsConfig = { ...context.options };
 
-  // Get the last resolved command
-  const finalResolved =
-    context.resolvedCommands[context.resolvedCommands.length - 1];
-
-  // Build up the usage string based on the resolved commands
-  for (const resolved of context.resolvedCommands) {
+  // Build up the usage string based on the command queue
+  for (const resolved of context.commandQueue) {
     const { paramName, spreadOperator } = parseFileName(resolved.commandName);
     if (paramName) {
       rows.usage.text += ` <${paramName}${spreadOperator ? ' ...' : ''}>`;
@@ -136,10 +132,13 @@ export async function getHelp({
     Object.assign(allOptions, resolved?.command.options);
   }
 
+  // Get the last resolved command
+  const finalCommand = context.commandQueue[context.commandQueue.length - 1];
+
   // Add description row
-  if (finalResolved?.command.description) {
+  if (finalCommand?.command.description) {
     rows.description = {
-      text: finalResolved?.command.description,
+      text: finalCommand?.command.description,
       padding: [1, 0, 0, 0],
     };
   }
@@ -160,13 +159,13 @@ export async function getHelp({
   }
 
   // Add subcommand rows
-  const subcommandsDir = finalResolved?.subcommandsDir || context.commandsDir;
+  const subcommandsDir = finalCommand?.subcommandsDir || context.commandsDir;
   const hasSubcommands = isDirectory(subcommandsDir);
   if (hasSubcommands) {
     Object.assign(
       rows,
       await commandRows({
-        command: finalResolved,
+        command: finalCommand,
         commandsDir: subcommandsDir,
         context,
         maxWidth: maxWidth / 2,
@@ -174,8 +173,8 @@ export async function getHelp({
     );
   }
 
-  const requiresSubcommand = finalResolved?.command.requiresSubcommand;
-  if (hasSubcommands && finalResolved?.command.isMiddleware === false) {
+  const requiresSubcommand = finalCommand?.command.requiresSubcommand;
+  if (hasSubcommands && finalCommand?.command.isMiddleware === false) {
     rows.usage.text +=
       hasRequiredOptions || requiresSubcommand
         ? ' (<OPTIONS> | <COMMAND>)'

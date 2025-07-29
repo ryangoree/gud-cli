@@ -78,7 +78,7 @@ export class State<
   #context: Context;
   #data: unknown;
   #i = -1;
-  #commands: ResolvedCommand[];
+  #commandQueue: ResolvedCommand[];
   #options: OptionsGetter;
   #params: RouteParams = {};
 
@@ -103,7 +103,7 @@ export class State<
   }: StateParams<TData>) {
     this.#context = context;
     this.#data = initialData as TData;
-    this.#commands = commands || context.resolvedCommands;
+    this.#commandQueue = commands || context.commandQueue;
 
     // Create a getter to dynamically get the options from context.
     this.#options = createOptionsGetter({
@@ -125,14 +125,14 @@ export class State<
    * Information about the current command module being executed.
    */
   get command() {
-    return this.commands[this.i];
+    return this.commandQueue[this.i];
   }
 
   /**
    * Information about all command modules loaded for the current execution.
    */
-  get commands() {
-    return this.#commands;
+  get commandQueue() {
+    return this.#commandQueue;
   }
 
   /**
@@ -212,7 +212,9 @@ export class State<
     this.#actionCallCount++;
     let _data = data;
     const nextIndex = this.i + 1;
-    let nextCommand = this.commands[nextIndex] as ResolvedCommand | undefined;
+    let nextCommand = this.commandQueue[nextIndex] as
+      | ResolvedCommand
+      | undefined;
 
     if (nextCommand) {
       // If there is a next command, increment the step index and call the
@@ -314,7 +316,7 @@ export class State<
 
     await this.#applyState({
       data: _data,
-      i: this.commands.length - 1,
+      i: this.commandQueue.length - 1,
     });
 
     // Resolve the promise to return the data to callers of `start()`.

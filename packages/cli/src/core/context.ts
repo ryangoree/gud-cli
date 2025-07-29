@@ -165,7 +165,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
 
   #isResolved = false;
   #resolveFn: ResolveCommandFn;
-  #resolvedCommands: ResolvedCommand[] = [];
+  #commandQueue: ResolvedCommand[] = [];
 
   #isReady = false;
   #result: unknown;
@@ -221,8 +221,8 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   /*
    * A list of the resolved commands to be executed in order.
    */
-  get resolvedCommands() {
-    return this.#resolvedCommands;
+  get commandQueue() {
+    return this.#commandQueue;
   }
 
   /*
@@ -496,7 +496,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
    */
   #addResolvedCommands(resolvedCommands: ResolvedCommand[]) {
     for (const resolved of resolvedCommands) {
-      this.#resolvedCommands.push(resolved);
+      this.#commandQueue.push(resolved);
       if (resolved.command.options) {
         this.addOptions(resolved.command.options);
       }
@@ -541,7 +541,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     // Continue resolving until the last command is reached or the
     // `beforeResolveNext` hook skips
     while (pendingCommand) {
-      this.#resolvedCommands.push(pendingCommand);
+      this.#commandQueue.push(pendingCommand);
       if (pendingCommand.command.options) {
         this.addOptions(pendingCommand.command.options);
       }
@@ -578,14 +578,14 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
 
     await this.hooks.call('afterResolve', {
       context: this,
-      resolvedCommands: this.#resolvedCommands,
+      resolvedCommands: this.#commandQueue,
       addResolvedCommands: (resolvedCommands) => {
         this.#addResolvedCommands(resolvedCommands);
       },
     });
 
     // Throw an error if the last command requires a subcommand.
-    const lastCommand = this.#resolvedCommands.at(-1);
+    const lastCommand = this.#commandQueue.at(-1);
     if (lastCommand?.command.requiresSubcommand) {
       await this.throw(new SubcommandRequiredError(this.commandString));
     }
