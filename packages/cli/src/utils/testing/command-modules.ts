@@ -41,9 +41,9 @@ vi.mock('node:fs', async (importOriginal) => {
       }),
     },
     // Mock fs.readdir to return the command names for command directories
-    readdirSync: vi.fn((path, opts) => {
+    readdirSync: vi.fn((path, options) => {
       try {
-        return fs.readdirSync(path, opts);
+        return fs.readdirSync(path, options);
       } catch {
         // If the path is a command directory, return the command names
         if (mockCommandDirs.has(path.toString())) {
@@ -51,9 +51,9 @@ vi.mock('node:fs', async (importOriginal) => {
         }
       }
     }),
-    statSync: vi.fn((path, opts) => {
+    statSync: vi.fn((path, options) => {
       try {
-        return fs.statSync(path, opts);
+        return fs.statSync(path, { ...options, throwIfNoEntry: true });
       } catch (err) {
         // If the path is a command directory, return isDirectory() = true
         if (mockCommandDirs.has(path.toString())) {
@@ -62,8 +62,9 @@ vi.mock('node:fs', async (importOriginal) => {
           } as any;
         }
 
-        // Otherwise, throw
-        throw err;
+        if (options?.throwIfNoEntry) {
+          throw err;
+        }
       }
     }),
   };

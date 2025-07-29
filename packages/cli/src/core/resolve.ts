@@ -343,7 +343,7 @@ async function resolveParamCommand({
 
     const commandName = removeFileExtension(fileName);
     const commandPath = join(commandsDir, formatFileName(commandName));
-    const subcommandsDir = removeFileExtension(commandPath);
+    const subcommandsDir = join(commandsDir, commandName);
     const [commandToken, ...remainingTokens] = tokens;
 
     // Empty the remaining command string if the param has a spread operator
@@ -405,8 +405,6 @@ async function resolveParamCommand({
     }
 
     // match found, stop searching
-    break;
+    return resolved;
   }
-
-  return resolved;
 }
