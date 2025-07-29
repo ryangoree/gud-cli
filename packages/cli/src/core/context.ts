@@ -309,6 +309,10 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     Object.assign(this.#options, options);
   };
 
+  readonly setOptionValues = (optionValues: OptionValues) => {
+    Object.assign(this.#optionValues, optionValues);
+  };
+
   /**
    * Append to the list of resolved commands to be executed.
    */
@@ -624,7 +628,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
         this.#parseFn = parseFn;
       },
       setParsedOptionsAndSkip: (optionValues) => {
-        this.#optionValues = optionValues;
+        this.setOptionValues(optionValues);
         this.#isParsed = true;
       },
       skip: () => {
@@ -635,16 +639,14 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     // Don't parse if the hook skipped
     if (!this.#isParsed) {
       const { options } = await this.parseCommand();
-      this.#optionValues = options;
+      this.setOptionValues(options);
       this.#isParsed = true;
     }
 
     await this.hooks.call('afterParse', {
       context: this,
       parsedOptions: this.#optionValues,
-      setParsedOptions: (optionValues) => {
-        this.#optionValues = optionValues;
-      },
+      setParsedOptions: this.setOptionValues,
     });
   }
 }
