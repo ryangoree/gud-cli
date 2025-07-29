@@ -1,6 +1,6 @@
 {
   "name": "@gud/cli-menu",
-  "version": "0.0.0",
+  "version": "1.0.0-beta.0",
   "description": "Adds command menus to Gud CLI apps.",
   "license": "MIT",
   "type": "module",
@@ -18,14 +18,14 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@gud/cli": "^0.0.0"
+    "@gud/cli": "^1.0.0-beta.0"
   },
   "dependencies": {
     "cfonts": "^3.3.0",
     "colors": "^1.4.0"
   },
   "devDependencies": {
-    "@gud/cli": "^0.0.0",
+    "@gud/cli": "^1.0.0-beta.0",
     "@types/node": "^22.15.21",
     "tsup": "^8.5.0",
     "tsx": "^4.19.4",
@@ -44,6 +44,14 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
-  "keywords": ["gud", "cli", "menu", "command", "prompt"]
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "gud",
+    "cli",
+    "menu",
+    "command",
+    "prompt"
+  ]
 }

@@ -5,13 +5,15 @@
   "private": true,
   "bin": "cli.js",
   "main": "cli.js",
-  "files": ["cli"],
+  "files": [
+    "cli"
+  ],
   "scripts": {
     "dev": "NODE_ENV=development node cli.js",
     "prod": "node cli.js"
   },
   "dependencies": {
-    "@gud/cli": "*",
-    "@gud/cli-menu": "*"
+    "@gud/cli": "1.0.0-beta.0",
+    "@gud/cli-menu": "1.0.0-beta.0"
   }
 }
