@@ -32,6 +32,20 @@ export type Eval<T> = { [K in keyof T]: T[K] } & unknown;
 export type Replace<T, U> = Omit<T, keyof U> & U;
 
 /**
+ * The opposite of {@linkcode Readonly<T>}. Make all properties in `T` mutable.
+ *
+ * @typeParam T - The type to make writable.
+ * @typeParam TDeep - If `true`, recursively make all properties writable.
+ */
+export type Writable<T, TDeep extends boolean = false> = {
+  -readonly [P in keyof T]: TDeep extends true
+    ? NonNullable<T[P]> extends AnyObject | any[]
+      ? Eval<Writable<T[P], TDeep>>
+      : T[P]
+    : T[P];
+};
+
+/**
  * Get a union of all property keys on `T` that are functions
  */
 export type FunctionKey<T> = keyof {

@@ -1,22 +1,23 @@
-import type { Context } from 'src/core/context';
 import type { Plugin, PluginInfo } from 'src/core/plugin';
+import type { Eval, Replace, Writable } from 'src/utils/types';
 
-export const mockPluginInfo = {
-  name: 'mock-plugin',
-  version: '0.0.0',
-} as const satisfies PluginInfo;
+export function createStubPluginInfo<const T extends Partial<PluginInfo> = {}>(
+  overrides = {} as T,
+): Eval<Replace<PluginInfo, Writable<T>>> {
+  return {
+    name: 'mock-plugin',
+    version: '0.0.0',
+    ...overrides,
+  };
+}
 
-export const mockPlugin = {
-  ...mockPluginInfo,
-  init() {},
-} as const satisfies Plugin;
-
-export const notReadyMockPlugin = {
-  ...mockPluginInfo,
-  isReady: false,
-} as const satisfies Context['plugins'][string];
-
-export const readyMockPlugin = {
-  ...mockPluginInfo,
-  isReady: true,
-} as const satisfies Context['plugins'][string];
+export function createStubPlugin<const T extends Partial<Plugin> = {}>(
+  overrides = {} as T,
+): Eval<Replace<Plugin, Writable<T>>> {
+  return {
+    name: 'mock-plugin',
+    version: '0.0.0',
+    init: () => {},
+    ...overrides,
+  };
+}

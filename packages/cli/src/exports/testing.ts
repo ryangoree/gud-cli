@@ -5,8 +5,6 @@ export {
   unmockAllCommandModules,
 } from 'src/utils/testing/command-modules';
 export {
-  mockPlugin,
-  mockPluginInfo,
-  notReadyMockPlugin,
-  readyMockPlugin,
+  createStubPlugin,
+  createStubPluginInfo,
 } from 'src/utils/testing/plugin';

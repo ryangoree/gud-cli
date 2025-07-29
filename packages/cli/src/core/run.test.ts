@@ -14,7 +14,7 @@ import type { HookPayload } from 'src/core/hooks';
 import type { Plugin } from 'src/core/plugin';
 import { run } from 'src/core/run';
 import { State } from 'src/core/state';
-import { mockPlugin, mockPluginInfo } from 'src/utils/testing/plugin';
+import { createStubPlugin } from 'src/utils/testing/plugin';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -67,22 +67,26 @@ describe('run', () => {
 
   it('initializes plugins with the correct context', async () => {
     mockCommandModule('commands/foo');
+    const plugin = createStubPlugin({
+      init: vi.fn(),
+    });
+    const { init, ...pluginInfo } = plugin;
 
     // Run
     await run({
       command: 'foo',
       commandsDir: 'commands',
-      plugins: [mockPlugin],
+      plugins: [plugin],
     });
 
     // Expect the plugin to have been initialized with the correct context
-    expect(mockPlugin.init).toHaveBeenCalledWith(expect.any(Context));
-    expect(mockPlugin.init).toHaveBeenCalledWith(
+    expect(init).toHaveBeenCalledWith(expect.any(Context));
+    expect(init).toHaveBeenCalledWith(
       expect.objectContaining({
         commandString: 'foo',
         commandsDir: 'commands',
         plugins: {
-          [mockPlugin.name]: expect.objectContaining(mockPluginInfo),
+          [plugin.name]: expect.objectContaining(pluginInfo),
         },
       } satisfies Partial<Context>),
     );
