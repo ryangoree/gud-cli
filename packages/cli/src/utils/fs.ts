@@ -21,10 +21,11 @@ export function isFile(
   path: string,
   fallbackExtensions: string[] = ['.js', '.cjs', '.mjs', '.ts', '.cts', '.mts'],
 ): boolean {
-  for (const extension of ['', ...fallbackExtensions]) {
-    const fullPath = extension ? formatFileName(path, extension) : path;
-    const isFile = statSync(fullPath, { throwIfNoEntry: false })?.isFile();
-    if (isFile) return true;
-  }
-  return false;
+  return (
+    statSync(path, { throwIfNoEntry: false })?.isFile() ??
+    fallbackExtensions.some((ext) => {
+      const fullPath = formatFileName(path, ext);
+      return statSync(fullPath, { throwIfNoEntry: false })?.isFile() ?? false;
+    })
+  );
 }
