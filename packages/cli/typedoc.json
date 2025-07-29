@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["./src/index.ts"],
+  "entryPoints": ["./src/exports/index.ts"],
   "out": "docs",
   "navigationLinks": {
     "github": "https://github.com/ryangoree/@gud/cli"
