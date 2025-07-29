@@ -125,17 +125,15 @@ export function help({
           setResult(usageError);
         }
 
-        if (usageError) {
-          const helpText = await getHelp({ context, maxWidth })
-            .then(({ helpText }) => helpText)
-            .catch((error) => {
-              const errorMessage =
-                error instanceof Error ? error.message : String(error);
-              return `Error generating help text: ${errorMessage}`;
-            });
+        const helpText = await getHelp({ context, maxWidth })
+          .then(({ helpText }) => helpText)
+          .catch((error) => {
+            const errorMessage =
+              error instanceof Error ? error.message : String(error);
+            return `Error generating help text: ${errorMessage}`;
+          });
 
-          client.log(helpText);
-        }
+        client.log(helpText);
       });
     },
   });
