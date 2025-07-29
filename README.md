@@ -89,7 +89,7 @@ export default command({
 
 ### 3. Run it
 
-```bash
+```sh
 $ tsx src/cli.ts hello
 ? What's your name? › Alice
 Hello, Alice! 👋
@@ -108,7 +108,7 @@ Error: Missing required option --environment
 
 Gud CLI can guide users through required options:
 
-```bash
+```sh
 $ mycli deploy
 ? Enter environment › 
 ❯ dev
@@ -362,7 +362,3 @@ export default command({
 - [API Documentation](https://ryangoree.github.io/gud-cli/)
 - [Examples Repository](examples/)
 - [Plugin Development Guide](docs/plugins.md)
-
----
-
-**Ready to build better CLIs?** `npm install @gud/cli`
