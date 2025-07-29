@@ -310,6 +310,18 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   };
 
   /**
+   * Append to the list of resolved commands to be executed.
+   */
+  readonly enqueueCommand = (resolvedCommands: ResolvedCommand[]) => {
+    for (const resolved of resolvedCommands) {
+      this.#commandQueue.push(resolved);
+      if (resolved.command.options) {
+        this.setOptions(resolved.command.options);
+      }
+    }
+  };
+
+  /**
    * Resolve the first command module from a command string using the configured
    * `resolveFn` and `parseFn`.
    *
@@ -505,19 +517,6 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   };
 
   /**
-   * Add a list of resolved commands to the context's
-   * `resolvedCommands` and `options`.
-   */
-  #addResolvedCommands(resolvedCommands: ResolvedCommand[]) {
-    for (const resolved of resolvedCommands) {
-      this.#commandQueue.push(resolved);
-      if (resolved.command.options) {
-        this.setOptions(resolved.command.options);
-      }
-    }
-  }
-
-  /**
    * Resolve the command string into a list of imported command modules, setting
    * the context's `resolvedCommands` property.
    *
@@ -540,7 +539,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
       },
       addResolvedCommands: (resolvedCommands) => {
         pendingCommand = resolvedCommands.pop();
-        this.#addResolvedCommands(resolvedCommands);
+        this.enqueueCommand(resolvedCommands);
       },
       skip: () => {
         skipped = true;
@@ -575,7 +574,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
         },
         addResolvedCommands: (resolvedCommands) => {
           pendingCommand = resolvedCommands.pop();
-          this.#addResolvedCommands(resolvedCommands);
+          this.enqueueCommand(resolvedCommands);
         },
         skip: () => {
           skipped = true;
@@ -594,7 +593,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
       context: this,
       resolvedCommands: this.#commandQueue,
       addResolvedCommands: (resolvedCommands) => {
-        this.#addResolvedCommands(resolvedCommands);
+        this.enqueueCommand(resolvedCommands);
       },
     });
 
