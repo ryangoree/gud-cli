@@ -10,21 +10,21 @@ vi.mock('./command-prompt', async (importOriginal) => {
   const original: any = await importOriginal();
   return {
     ...original,
-    commandPrompt: vi.fn<
-      (options: CommandPromptOptions) => ResolvedCommand[]
-    >(({ commandsDir }): ResolvedCommand[] => [
-      {
-        command: {
-          handler: vi.fn(({ next, data }) => next(data)),
+    commandPrompt: vi.fn<(options: CommandPromptOptions) => ResolvedCommand[]>(
+      ({ commandsDir }): ResolvedCommand[] => [
+        {
+          command: {
+            handler: vi.fn(({ next, data }) => next(data)),
+          },
+          commandName: 'mock-command',
+          remainingCommandString: '',
+          commandPath: `${commandsDir}/mock-command`,
+          commandTokens: ['mock-command'],
+          subcommandsDir: `${commandsDir}/mock-command`,
+          params: {},
         },
-        commandName: 'mock-command',
-        remainingCommandString: '',
-        commandPath: `${commandsDir}/mock-command`,
-        commandTokens: ['mock-command'],
-        subcommandsDir: `${commandsDir}/mock-command`,
-        params: {},
-      },
-    ]),
+      ],
+    ),
   };
 });
 
@@ -44,8 +44,7 @@ test('It shows the command menu when no command string is provided', async () =>
   expect(commandPrompt).toHaveBeenCalled();
 });
 
-// biome-ignore lint/suspicious/noFocusedTests: <explanation>
-test.only('It shows the command menu when the last resolved command requires a subcommand', async () => {
+test('It shows the command menu when the last resolved command requires a subcommand', async () => {
   mockCommandModule('commands/foo', command({ requiresSubcommand: true }));
 
   await run({
