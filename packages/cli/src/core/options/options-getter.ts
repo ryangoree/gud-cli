@@ -34,7 +34,9 @@ type OptionGetterParams<T extends OptionConfig = OptionConfig> = Pick<
   /**
    * The prompt to show the user if no value is provided (optional).
    */
-  prompt?: string | Omit<PromptParams<OptionPromptType<T['type']>>, 'validate'>;
+  prompt?:
+    | string
+    | Omit<PromptParams<OptionPromptType<T['type']>, T['type']>, 'validate'>;
 };
 
 /**

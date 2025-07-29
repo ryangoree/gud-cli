@@ -15,7 +15,7 @@ export type OptionPromptTypeMap = KeyMap<
   {
     array: 'autocompleteMultiselect' | 'list' | 'multiselect';
     boolean: 'confirm' | 'toggle';
-    number: 'number';
+    number: 'number' | 'select';
     secret: 'invisible' | 'password';
     string:
       | 'autocomplete'
@@ -32,7 +32,7 @@ export type OptionPromptType<T extends OptionType> = OptionPromptTypeMap[T];
 // Functions + Function Types //
 
 export type OptionPromptParams<T extends OptionConfig = OptionConfig> = Replace<
-  PromptParams,
+  PromptParams<OptionPromptType<T['type']>, T['type']>,
   {
     /**
      * The name of the option.

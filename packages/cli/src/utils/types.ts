@@ -29,7 +29,7 @@ export type Eval<T> = { [K in keyof T]: T[K] } & unknown;
 /**
  * Replace properties in `T` with properties in `U`.
  */
-export type Replace<T, U> = Omit<T, keyof U> & U;
+export type Replace<T, U extends Partial<T> | {}> = Omit<T, keyof U> & U;
 
 /**
  * The opposite of {@linkcode Readonly<T>}. Make all properties in `T` mutable.
