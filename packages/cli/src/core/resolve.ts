@@ -13,7 +13,11 @@ import {
   NotFoundError,
   UsageError,
 } from 'src/core/errors';
-import { type ParseCommandFn, parseCommand } from 'src/core/parse';
+import {
+  type ParseCommandFn,
+  parseCommand,
+  removeLeadingOptions,
+} from 'src/core/parse';
 import { getCallerPath } from 'src/utils/caller-path';
 import {
   formatFileName,
@@ -221,18 +225,7 @@ export async function resolveCommand({
     throw new NotFoundError(commandName, commandsDir);
   }
 
-  return prepareResolvedCommand({ resolved, parseFn });
-}
-
-interface PrepareResolvedCommandParams {
-  resolved: ResolvedCommand;
-
-  /**
-   * A function to parse the command string and options. Used to determine if
-   * the command string contains any options and to remove them from the
-   * remaining command string.
-   */
-  parseFn?: ParseCommandFn;
+  return prepareResolvedCommand(resolved, parseFn);
 }
 
 /**
@@ -244,36 +237,21 @@ interface PrepareResolvedCommandParams {
  *
  * @group Resolve
  */
-export async function prepareResolvedCommand({
-  resolved,
-  parseFn = parseCommand,
-}: PrepareResolvedCommandParams) {
+export async function prepareResolvedCommand(
+  resolved: ResolvedCommand,
+  parseFn: ParseCommandFn = parseCommand,
+) {
   const isMiddleware = resolved.command.isMiddleware ?? true;
 
   // Ensure the remaining command string starts with a subcommand name by
   // removing any leading options. This will ensure they aren't treated as
-  // command names which would cause errors during resolution. Example: `--help
-  // foo` -> `foo`
-  if (resolved.remainingCommandString.length) {
-    // Parse the remaining command string to separate the tokens from the
-    // options.
-    const { tokens } = await parseFn(
-      resolved.remainingCommandString,
-      isMiddleware ? resolved.command.options || {} : {},
-    );
-
-    // If there are only options left, then empty the remaining command string.
-    if (!tokens.length) {
-      resolved.remainingCommandString = '';
-    } else {
-      // Otherwise, remove the leading options.
-      const indexOfNextCommand = resolved.remainingCommandString.indexOf(
-        tokens[0]!,
-      );
-      resolved.remainingCommandString =
-        resolved.remainingCommandString.slice(indexOfNextCommand);
-    }
-  }
+  // command names which would cause errors during resolution. For example:
+  // `--help foo` -> `foo`
+  resolved.remainingCommandString = await removeLeadingOptions(
+    resolved.remainingCommandString,
+    isMiddleware ? resolved.command.options || {} : {},
+    parseFn,
+  );
 
   // Replace the handler if the command won't be executed.
   if (!isMiddleware && resolved.remainingCommandString) {

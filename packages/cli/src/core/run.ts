@@ -121,7 +121,7 @@ export async function run({
     resolveFn,
   });
 
-  // Intercept process exit events to ensure they are handled by the context.
+  // Intercept process exit events to ensure they're handled by the context.
   process.on('exit', context.exit);
 
   // Attempt to prepare and execute the command and return the result.

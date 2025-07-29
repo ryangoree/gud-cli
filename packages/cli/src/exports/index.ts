@@ -109,6 +109,7 @@ export {
 // plugins
 export {
   parseCommand,
+  removeLeadingOptions,
   type ParseCommandFn,
   type ParsedCommand,
   type Tokens,

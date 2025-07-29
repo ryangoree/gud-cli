@@ -121,3 +121,19 @@ export function parseCommand(
 
   return { tokens, options };
 }
+
+/**
+ * Remove leading options from a command string by parsing it with the provided
+ * parse function and returning the remaining command string.
+ */
+export async function removeLeadingOptions(
+  commandString: string,
+  optionsConfig: OptionsConfig,
+  parseFn: ParseCommandFn = parseCommand,
+) {
+  if (!commandString) return '';
+  const { tokens } = await parseFn(commandString, optionsConfig);
+  if (!tokens.length) return '';
+  const indexOfNextCommand = commandString.indexOf(tokens[0]!);
+  return commandString.slice(indexOfNextCommand);
+}
