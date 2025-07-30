@@ -1,5 +1,14 @@
 # @gud/cli-menu
 
+## 1.0.0-beta.2
+
+### Patch Changes
+
+- 13bd423: Bump deps
+- Updated dependencies [613b97d]
+- Updated dependencies [13bd423]
+  - @gud/cli@1.0.0-beta.4
+
 ## 1.0.0-beta.1
 
 ### Patch Changes

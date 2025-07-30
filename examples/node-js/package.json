@@ -13,7 +13,7 @@
     "prod": "node cli.js"
   },
   "dependencies": {
-    "@gud/cli": "1.0.0-beta.3",
-    "@gud/cli-menu": "1.0.0-beta.1"
+    "@gud/cli": "1.0.0-beta.4",
+    "@gud/cli-menu": "1.0.0-beta.2"
   }
 }

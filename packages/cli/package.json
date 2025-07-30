@@ -1,6 +1,6 @@
 {
   "name": "@gud/cli",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "description": "A framework for building flexible and extensible CLIs",
   "license": "MIT",
   "type": "module",
@@ -61,5 +61,7 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }

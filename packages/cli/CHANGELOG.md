@@ -1,5 +1,12 @@
 # @gud/cli
 
+## 1.0.0-beta.4
+
+### Patch Changes
+
+- 613b97d: Patched bug in `removeFileExtension`
+- 13bd423: Bump deps
+
 ## 1.0.0-beta.3
 
 ### Patch Changes
