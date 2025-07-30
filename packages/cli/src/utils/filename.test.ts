@@ -122,7 +122,7 @@ describe('filename', () => {
     });
   });
 
-  describe('remove-file-extension', () => {
+  describe('removeFileExtension', () => {
     it('removes the file extension from a string', () => {
       expect(removeFileExtension('foo.ts')).toBe('foo');
     });
@@ -139,6 +139,10 @@ describe('filename', () => {
       expect(removeFileExtension('[...foo].ts')).toBe('[...foo]');
       expect(removeFileExtension('[...foo]')).toBe('[...foo]');
       expect(removeFileExtension('foo..bar')).toBe('foo..bar');
+    });
+
+    it('handles dirnames that look like file names', () => {
+      expect(removeFileExtension('/foo/v24.3.0.js/bar')).toBe('/foo/v24.3.0.js/bar');
     });
   });
 });

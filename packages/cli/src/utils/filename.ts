@@ -8,12 +8,7 @@
  * @group Utils
  */
 export function removeFileExtension(path: string): string {
-  // Slightly more performant than regex on warm paths.
-  const lastDot = path.lastIndexOf('.');
-  if (lastDot === -1 || lastDot === 0 || path[lastDot - 1] === '.') {
-    return path;
-  }
-  return path.slice(0, lastDot);
+  return path.replace(/(?<!\.)\.\w+$/, '');
 }
 
 /**
