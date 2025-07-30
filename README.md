@@ -1,5 +1,11 @@
 # Gud CLI
 
+[![GitHub](https://img.shields.io/badge/ryangoree%2Fgud--cli-151b23?logo=github)](https://github.com/ryangoree/gud-cli)
+[![NPM
+Version](https://img.shields.io/badge/%40gud%2Fcli-cb3837?logo=npm)](https://npmjs.com/package/@gud/cli)
+[![License:
+Apache-2.0](https://img.shields.io/badge/Apache%202.0-23454d?logo=apache)](./LICENSE)
+
 **Build delightful command-line tools that your users will actually enjoy
 using.**
 
