@@ -233,8 +233,11 @@ export function createOptionsGetter<
         // Return cached value if it exists
         if (value !== undefined) return value;
 
+        value = normalizeOptionValue(value, config);
+        const isMissing = config.required && value === undefined;
+
         // Prompt for the value if required or a prompt is provided.
-        if (config.required || params?.prompt) {
+        if (isMissing || params?.prompt) {
           value = await optionPrompt({
             //    ^?
             client,
@@ -248,14 +251,12 @@ export function createOptionsGetter<
                   message: prompt || `Enter ${key}`,
                 }),
           });
-        } else {
-          value = normalizeOptionValue(value, config);
         }
 
         // Validate and set the value to avoid prompting again
         validateOptionType({ config, name: key, value });
-        getter.set(key, value);
-        return value as OptionConfigPrimitiveType as any;
+        getter.set(key, value as OptionConfigPrimitiveType<any>);
+        return value as OptionConfigPrimitiveType<any>;
       };
     }
   }

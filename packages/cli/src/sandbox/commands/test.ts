@@ -6,6 +6,7 @@ export default command({
     name: {
       required: true,
       type: 'string',
+      default: 'World',
     },
   },
 
