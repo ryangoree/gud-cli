@@ -1,5 +1,11 @@
 # @gud/cli
 
+## 1.0.0-beta.2
+
+### Patch Changes
+
+- 0c41eee: Updated the options getter to avoid prompting when a default value is provided for required options unless a prompt is explicitly passed.
+
 ## 1.0.0-beta.1
 
 ### Minor Changes
