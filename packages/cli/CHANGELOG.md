@@ -1,5 +1,11 @@
 # @gud/cli
 
+## 1.0.0-beta.3
+
+### Patch Changes
+
+- a8b5196: Patched the help menu to display falsey default values.
+
 ## 1.0.0-beta.2
 
 ### Patch Changes
