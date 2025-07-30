@@ -305,7 +305,7 @@ function optionRows({ options, maxWidth = 40 }: OptionRowsOptions): {
         description += ` (choices: ${option.choices.join(', ')})`;
       }
 
-      if (option.default) {
+      if (option.default !== undefined) {
         if (option.type === 'secret') {
           description += ' (default: *****)';
         } else {
