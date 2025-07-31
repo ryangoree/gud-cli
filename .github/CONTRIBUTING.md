@@ -106,13 +106,11 @@ framework.
 ```sh
 packages/cli/
 ├── src/
-│   ├── cli/ # used as a sandbox to test features, may eventually be a real CLI
 │   ├── core/ # the main code for @gud/cli
+│   ├── exports/ # the public API of the @gud/cli package
 │   ├── plugins/ # built-in plugins that enable optional features like help
+│   ├── sandbox/ # used as a sandbox to test features
 │   └── utils/ # utilities used throughout, should not reference any code outside utils
-├── test/
-│   ├── units/ # unit tests
-│   └── utils/ # utilities for testing
 ├── .gitignore
 ├── CHANGELOG.md # auto-generated changelog from changesets
 ├── README.md
