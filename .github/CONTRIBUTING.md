@@ -21,16 +21,16 @@ issue and start a conversation.
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org) 22.x
+- [Node.js](https://nodejs.org) 24.x
 - [Yarn](https://yarnpkg.com)
 
 You can install Node.js using [nvm](https://github.com/nvm-sh/nvm). After
 following the [installation
 instructions](https://github.com/nvm-sh/nvm#installing-and-updating), run the
-following commands to install and use Node.js 22.x:
+following commands to install and use Node.js 24.x:
 
 ```sh
-nvm install 22
+nvm install 24
 nvm use # run from the root of the project
 ```
 
