@@ -1,5 +1,13 @@
 # @gud/cli-menu
 
+## 1.0.0-beta.3
+
+### Patch Changes
+
+- 262b8a2: Improved `titleColors` type.
+- Updated dependencies [60b73fa]
+  - @gud/cli@1.0.0-beta.5
+
 ## 1.0.0-beta.2
 
 ### Patch Changes
