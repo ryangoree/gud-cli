@@ -20,7 +20,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@changesets/cli": "^2.29.4",
-    "turbo": "^2.5.3"
+    "turbo": "^2.5.5"
   },
   "packageManager": "yarn@1.22.19"
 }
