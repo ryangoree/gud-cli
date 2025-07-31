@@ -21,8 +21,8 @@ export interface MenuOptions {
   message?: string;
 
   /**
-   * Set to false to prevent showing the command module's `describe` export in
-   * the choices.
+   * Set to false to prevent showing the command module's `description` in the
+   * choices.
    * @default true
    */
   showDescriptions?: boolean;
@@ -35,7 +35,7 @@ export interface MenuOptions {
   maxDescriptionLength?: number;
 
   /**
-   * Whether the command menu is enabled. Can be a boolean or a  predicate
+   * Whether the command menu is enabled. Can be a boolean or a predicate
    * function that determines whether the command menu should be shown. The
    * predicate will only be called if the conditions for showing the menu are
    * met.
