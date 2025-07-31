@@ -169,10 +169,12 @@ export function logger({
 
   // Create a function to centralize the logging logic.
   function log(client: Client, message: string, ...data: any[]) {
-    const formattedMessage = `${getPrefix()}${bold(message)}`;
+    let formattedMessage = getPrefix();
     if (logFile) {
+      formattedMessage += message;
       logToFile(logFile, formattedMessage, ...data);
     } else {
+      formattedMessage += bold(message);
       client.log(`${formattedMessage}:`, ...data.map((d) => formatData(d)));
     }
   }
