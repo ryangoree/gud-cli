@@ -45,11 +45,10 @@ export interface MenuOptions {
 
 /**
  * A Gud CLI plugin that:
- * 1. Prompts the user to choose a subcommand if the current command requires
- *    it.
- * 2. After a subcommand is chosen, checks if it also needs a subcommand.
- * 3. If further subcommands are needed, displays a new prompt with an added '↩
- *    back' option.
+ * 1. Prompts the user to choose a command or subcommand if required and not
+ *    already provided.
+ * 2. After a command is chosen, checks if it also needs a subcommand and
+ *    displays a new prompt with an added '↩ back' option if so.
  * 4. Continues this process until all necessary subcommands are selected.
  *
  * Note: The '↩ back' option allows users to return to the previous menu at any
