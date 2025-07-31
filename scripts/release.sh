@@ -3,4 +3,3 @@ set -e
 cp README.md packages/cli/README.md
 yarn build
 changeset publish
-rm packages/cli/README.md
