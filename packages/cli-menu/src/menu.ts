@@ -12,7 +12,7 @@ export interface MenuOptions {
    * @default
    * ['#2EFFAF', '#0FC2C2']
    */
-  titleColors?: `#${string}`[];
+  titleColors?: [`#${string}`, `#${string}`];
 
   /**
    * The message to show when prompting the user to select a command.
