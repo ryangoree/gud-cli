@@ -122,7 +122,7 @@ export async function commandPrompt(
   });
 
   if (!filename) {
-    onExit?.();
+    onExit();
     return selectionHistory;
   }
 
