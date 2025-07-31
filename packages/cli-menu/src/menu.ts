@@ -91,24 +91,22 @@ export function menu({
             if (!isEnabled) return;
           }
 
-          if (!commandString.length) {
-            const selectedCommands = await commandPrompt({
-              title,
-              titleColors,
-              message,
-              showDescriptions,
-              maxDescriptionLength,
-              client: context.client,
-              commandsDir,
-              resolveFn: ({ commandString, commandsDir }) =>
-                context.resolveCommand(commandString, commandsDir),
-              onCancel: async () => {
-                await context.exit();
-              },
-            });
-            addResolvedCommands(selectedCommands);
-            skip();
-          }
+          const selectedCommands = await commandPrompt({
+            title,
+            titleColors,
+            message,
+            showDescriptions,
+            maxDescriptionLength,
+            client: context.client,
+            commandsDir,
+            resolveFn: ({ commandString, commandsDir }) =>
+              context.resolveCommand(commandString, commandsDir),
+            onCancel: async () => {
+              await context.exit();
+            },
+          });
+          addResolvedCommands(selectedCommands);
+          skip();
         },
       );
 
