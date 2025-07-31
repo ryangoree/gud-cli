@@ -239,7 +239,6 @@ export function createOptionsGetter<
         // Prompt for the value if required or a prompt is provided.
         if (isMissing || params?.prompt) {
           value = await optionPrompt({
-            //    ^?
             client,
             config,
             name: key,
