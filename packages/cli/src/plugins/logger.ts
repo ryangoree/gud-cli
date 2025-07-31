@@ -187,12 +187,17 @@ export function logger({
       commands: state.commandQueue.map((cmd) => cmd.commandName).join(' → '),
     });
   }
-  function beforeCommand({ state, data }: HookPayload<'beforeCommand'>) {
+  function beforeCommand({
+    state,
+    command,
+    data,
+    params,
+  }: HookPayload<'beforeCommand'>) {
     if (!state.command) return;
     log(state.client, 'Executing command', {
-      name: state.command.commandName,
-      params: state.params,
+      name: command.commandName,
       data,
+      params,
       step: `${state.i + 1}/${state.commandQueue.length}`,
     });
   }
