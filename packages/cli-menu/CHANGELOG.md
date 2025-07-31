@@ -1,5 +1,15 @@
 # @gud/cli-menu
 
+## 1.0.0-beta.4
+
+### Patch Changes
+
+- aec0bcb: Patched logger plugin to remove ANSI bold formatting syntax when logging to a file.
+- fb0ee0e: Bumped deps.
+- 44e598d: Fixed README heading.
+- Updated dependencies [fb0ee0e]
+  - @gud/cli@1.0.0-beta.6
+
 ## 1.0.0-beta.3
 
 ### Patch Changes
