@@ -181,20 +181,17 @@ export function logger({
 
   // Create hook functions.
   function beforeExecute({ state }: HookPayload<'beforeExecute'>) {
-    const { client, commandQueue } = state;
-    log(client, 'Starting execution', {
+    log(state.client, 'Starting execution', {
       commandString: state.context.commandString,
-      commandCount: commandQueue.length,
+      commandCount: state.commandQueue.length,
       commands: state.commandQueue.map((cmd) => cmd.commandName).join(' → '),
     });
   }
   function beforeCommand({ state, data }: HookPayload<'beforeCommand'>) {
-    const { command, client, params } = state;
-    if (!command) return;
-    const { commandName } = command;
-    log(client, 'Executing command', {
-      name: commandName,
-      params,
+    if (!state.command) return;
+    log(state.client, 'Executing command', {
+      name: state.command.commandName,
+      params: state.params,
       data,
       step: `${state.i + 1}/${state.commandQueue.length}`,
     });
