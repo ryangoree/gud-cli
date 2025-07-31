@@ -5,8 +5,8 @@ import {
   type CommandModule,
   type ResolveCommandFn,
   type ResolvedCommand,
-  command,
   parseFileName,
+  passThroughCommand,
   removeFileExtension,
   resolveCommand,
 } from '@gud/cli';
@@ -179,5 +179,3 @@ export async function commandPrompt(
 
   return selectionHistory;
 }
-
-const passThroughCommand = command();
