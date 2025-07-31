@@ -1,4 +1,4 @@
-import path from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import type { CommandModule } from 'src/core/command';
 import { NotFoundError } from 'src/core/errors';
 import { parseCommand } from 'src/core/parse';
@@ -79,7 +79,7 @@ vi.mock('node:fs', async (importOriginal) => {
 export function unmockAllCommandModules() {
   for (const [commandDir, commandNames] of mockCommandDirs.entries()) {
     for (const commandName of commandNames) {
-      vi.doMock(path.join(commandDir, commandName), () => {
+      vi.doMock(join(commandDir, commandName), () => {
         const mod = {
           handler: vi.fn(() => {
             throw new NotFoundError(commandName, commandDir);
@@ -111,8 +111,8 @@ export function mockCommandModule<T extends CommandModule | undefined>(
   unmock: () => void;
 } {
   const formattedFilePath = formatFileName(commandPath);
-  const commandDir = path.dirname(commandPath);
-  const commandName = path.basename(commandPath);
+  const commandDir = dirname(commandPath);
+  const commandName = basename(commandPath);
 
   // Keep track of the command directories and names that have been mocked
   if (mockCommandDirs.has(commandDir)) {
@@ -184,7 +184,7 @@ export function mockCommandStringModules<TCommandString extends string>(
 
   // mock each command in the command string
   for (const token of tokens) {
-    commandPath = path.join(commandPath, token);
+    commandPath = join(commandPath, token);
     const { mock, unmock } = mockCommandModule(commandPath, {
       handler: vi.fn(({ next, data }) => next(data)),
     });

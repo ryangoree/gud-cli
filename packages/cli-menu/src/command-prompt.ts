@@ -1,5 +1,5 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import { readdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import {
   Client,
   type CommandModule,
@@ -68,7 +68,7 @@ export async function commandPrompt(
     });
   }
 
-  const commandDirItems = fs.readdirSync(commandsDir);
+  const commandDirItems = readdirSync(commandsDir);
   const choicesByName = new Map<string, Choice>();
 
   for (const filename of commandDirItems) {
@@ -76,7 +76,7 @@ export async function commandPrompt(
     let description: string | undefined;
 
     if (showDescriptions) {
-      const filepath = path.join(commandsDir, filename);
+      const filepath = join(commandsDir, filename);
       const { default: command }: { default: CommandModule } = await import(
         filepath
       ).catch(() => {
@@ -131,7 +131,7 @@ export async function commandPrompt(
     return await commandPrompt({
       ...options,
       title: undefined,
-      commandsDir: path.dirname(lastCommand.commandPath),
+      commandsDir: dirname(lastCommand.commandPath),
       selectionHistory,
     });
   }
