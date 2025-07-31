@@ -63,7 +63,7 @@ export async function commandPrompt(
   if (title) {
     cfonts.say(title, {
       font: 'tiny',
-      gradient: titleColors as [string, string],
+      gradient: titleColors,
       transitionGradient: true,
     });
   }
