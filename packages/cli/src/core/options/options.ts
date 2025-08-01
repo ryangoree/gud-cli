@@ -118,9 +118,9 @@ export type OptionConfig<
 			customType?: OptionCustomType<T>;
 
 			/**
-			 * The valid choices for the option (optional). If provided, the getter
-			 * will validate the value against the choices and, unless otherwise
-			 * specified, will use the choices when prompting.
+			 * The valid choices for the option. If provided, the getter will validate
+			 * the value against the choices and, unless otherwise specified, will use
+			 * the choices when prompting.
 			 */
 			choices?: OptionPrimitiveType<T>[];
 
@@ -131,7 +131,7 @@ export type OptionConfig<
 			string?: boolean;
 
 			/**
-			 * One or more aliases for the option (optional).
+			 * One or more aliases for the option.
 			 */
 			alias?: MaybeReadonly<TAlias[]>;
 
@@ -142,22 +142,22 @@ export type OptionConfig<
 
 			/**
 			 * Whether the option is required. If `true`, the getter will throw an
-			 * error if no value is provided (optional).
+			 * error if no value is provided.
 			 */
 			required?: boolean;
 
 			/**
-			 * Other options that are required for this option to be used (optional).
+			 * Other options that are required for this option to be used.
 			 */
 			requires?: MaybeReadonly<string[]>;
 
 			/**
-			 * Other options that are mutually exclusive with this option (optional).
+			 * Other options that are mutually exclusive with this option.
 			 */
 			conflicts?: MaybeReadonly<string[]>;
 
 			/**
-			 * The autocomplete function (optional).
+			 * The autocomplete function.
 			 */
 			// TODO: Not implemented yet
 			// autoComplete?: (input: string) => MaybePromise<string[]>;
@@ -167,25 +167,25 @@ export type OptionConfig<
 		} & (
 			| {
 					/**
-					 * The number of arguments the option accepts (optional).
+					 * The number of arguments the option accepts.
 					 */
 					nargs?: undefined;
 
 					/**
 					 * The default value to use. This will be the initial value that the
-					 * getter prompt will show (optional).
+					 * getter prompt will show.
 					 */
 					default?: OptionPrimitiveType<T> | string;
 			  }
 			| {
 					/**
-					 * The number of arguments the option accepts (optional).
+					 * The number of arguments the option accepts.
 					 */
 					nargs: number;
 
 					/**
 					 * The default value to use. This will be the initial value that the
-					 * getter prompt will show (optional).
+					 * getter prompt will show.
 					 */
 					default?:
 						| (OptionPrimitiveType<T> extends (infer T)[]
