@@ -1,57 +1,60 @@
 {
-  "name": "@gud/cli-menu",
-  "version": "1.0.0-beta.4",
-  "description": "Adds command menus to Gud CLI apps.",
-  "license": "MIT",
-  "type": "module",
-  "author": "ryan goree (https://github.com/ryangoree)",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ryangoree/gud-cli"
-  },
-  "scripts": {
-    "build": "tsup",
-    "dev": "NODE_ENV=development tsx example/cli.ts",
-    "test": "vitest run --reporter=verbose",
-    "test:watch": "vitest --reporter=verbose",
-    "test:ci": "vitest run",
-    "typecheck": "tsc --noEmit"
-  },
-  "peerDependencies": {
-    "@gud/cli": "^1.0.0-beta.6"
-  },
-  "dependencies": {
-    "cfonts": "^3.3.0",
-    "colors": "^1.4.0"
-  },
-  "devDependencies": {
-    "@gud/cli": "^1.0.0-beta.6",
-    "@types/node": "^24.1.0",
-    "tsup": "^8.5.0",
-    "tsx": "^4.20.3",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
-  },
-  "exports": {
-    ".": {
-      "types": {
-        "import": "./dist/index.d.ts",
-        "require": "./dist/index.d.cts"
-      },
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "gud",
-    "cli",
-    "menu",
-    "command",
-    "prompt"
-  ]
+	"name": "@gud/cli-menu",
+	"version": "1.0.0-beta.4",
+	"description": "Adds command menus to Gud CLI apps.",
+	"license": "Apache-2.0",
+	"author": "ryan goree (https://github.com/ryangoree)",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ryangoree/gud-cli.git"
+	},
+	"type": "module",
+	"sideEffects": false,
+	"exports": {
+		".": {
+			"require": {
+				"types": "./dist/index.d.cts",
+				"default": "./dist/index.cjs"
+			},
+			"import": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			}
+		}
+	},
+	"scripts": {
+		"build": "tsup",
+		"dev": "NODE_ENV=development tsx example/cli.ts",
+		"test": "vitest run --reporter=verbose",
+		"test:watch": "vitest --reporter=verbose",
+		"test:ci": "vitest run",
+		"typecheck": "tsc --noEmit"
+	},
+	"peerDependencies": {
+		"@gud/cli": "^1.0.0-beta.6"
+	},
+	"dependencies": {
+		"cfonts": "^3.3.0",
+		"colors": "^1.4.0"
+	},
+	"devDependencies": {
+		"@gud/cli": "^1.0.0-beta.6",
+		"@types/node": "^24.1.0",
+		"tsup": "^8.5.0",
+		"tsx": "^4.20.3",
+		"typescript": "^5.9.2",
+		"vitest": "^3.2.4"
+	},
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"keywords": [
+		"gud",
+		"cli",
+		"menu",
+		"command",
+		"prompt"
+	]
 }
