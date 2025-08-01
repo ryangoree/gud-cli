@@ -79,7 +79,7 @@ export interface CommandModule<
 
 /**
  * The configuration object for the {@linkcode command} function.
- * 
+ *
  * @group Command
  */
 export type CommandFactoryConfig<
@@ -93,7 +93,7 @@ export type CommandFactoryConfig<
 
 /**
  * The return type of the {@linkcode command} function.
- * 
+ *
  * @group Command
  */
 export type CommandFactoryReturn<

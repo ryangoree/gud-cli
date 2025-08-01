@@ -1,90 +1,90 @@
 {
-	"name": "@gud/cli",
-	"version": "1.0.0-beta.7",
-	"description": "A framework for building flexible and extensible CLIs",
-	"license": "Apache-2.0",
-	"author": "ryan goree (https://github.com/ryangoree)",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/ryangoree/gud-cli.git"
-	},
-	"type": "module",
-	"sideEffects": false,
-	"exports": {
-		".": {
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/index.cjs"
-			},
-			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
-			}
-		},
-		"./testing": {
-			"require": {
-				"types": "./dist/testing.d.cts",
-				"default": "./dist/testing.cjs"
-			},
-			"import": {
-				"types": "./dist/testing.d.ts",
-				"default": "./dist/testing.js"
-			}
-		}
-	},
-	"scripts": {
-		"build": "tsup",
-		"watch": "tsup --watch",
-		"build:docs": "typedoc",
-		"dev": "NODE_ENV=development tsx src/sandbox/index.ts",
-		"dev:watch": "NODE_ENV=development tsx --watch src/sandbox/index.ts",
-		"prod": "tsx src/sandbox/index.ts",
-		"prod:watch": "tsx --watch src/sandbox/index.ts",
-		"test": "vitest run --reporter=verbose",
-		"test:watch": "vitest --reporter=verbose",
-		"test:ci": "vitest run",
-		"coverage": "vitest run --coverage",
-		"typecheck": "tsc --noEmit"
-	},
-	"dependencies": {
-		"@types/prompts": "^2.4.9",
-		"cliui": "^8.0.1",
-		"prompts": "^2.4.2",
-		"yargs-parser": "^22.0.0"
-	},
-	"devDependencies": {
-		"@types/node": "^24.1.0",
-		"@types/signale": "^1.4.7",
-		"@types/yargs-parser": "^21.0.3",
-		"@vitest/coverage-v8": "^3.2.4",
-		"tsconfig-paths": "^4.2.0",
-		"tsup": "^8.5.0",
-		"tsx": "^4.20.3",
-		"typedoc": "^0.28.8",
-		"typescript": "^5.9.2",
-		"vitest": "^3.2.4"
-	},
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"typesVersions": {
-		"*": {
-			".": [
-				"./dist/index.d.ts"
-			],
-			"testing": [
-				"./dist/testing.d.ts"
-			]
-		}
-	},
-	"files": [
-		"dist"
-	],
-	"keywords": [
-		"gud",
-		"cli",
-		"command",
-		"option",
-		"arguments",
-		"argv"
-	]
+  "name": "@gud/cli",
+  "version": "1.0.0-beta.7",
+  "description": "A framework for building flexible and extensible CLIs",
+  "license": "Apache-2.0",
+  "author": "ryan goree (https://github.com/ryangoree)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryangoree/gud-cli.git"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./testing": {
+      "require": {
+        "types": "./dist/testing.d.cts",
+        "default": "./dist/testing.cjs"
+      },
+      "import": {
+        "types": "./dist/testing.d.ts",
+        "default": "./dist/testing.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "watch": "tsup --watch",
+    "build:docs": "typedoc",
+    "dev": "NODE_ENV=development tsx src/sandbox/index.ts",
+    "dev:watch": "NODE_ENV=development tsx --watch src/sandbox/index.ts",
+    "prod": "tsx src/sandbox/index.ts",
+    "prod:watch": "tsx --watch src/sandbox/index.ts",
+    "test": "vitest run --reporter=verbose",
+    "test:watch": "vitest --reporter=verbose",
+    "test:ci": "vitest run",
+    "coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@types/prompts": "^2.4.9",
+    "cliui": "^8.0.1",
+    "prompts": "^2.4.2",
+    "yargs-parser": "^22.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "@types/signale": "^1.4.7",
+    "@types/yargs-parser": "^21.0.3",
+    "@vitest/coverage-v8": "^3.2.4",
+    "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
+    "typedoc": "^0.28.8",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index.d.ts"
+      ],
+      "testing": [
+        "./dist/testing.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "gud",
+    "cli",
+    "command",
+    "option",
+    "arguments",
+    "argv"
+  ]
 }

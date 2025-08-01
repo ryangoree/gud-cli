@@ -142,7 +142,9 @@ describe('filename', () => {
     });
 
     it('handles dirnames that look like file names', () => {
-      expect(removeFileExtension('/foo/v24.3.0.js/bar')).toBe('/foo/v24.3.0.js/bar');
+      expect(removeFileExtension('/foo/v24.3.0.js/bar')).toBe(
+        '/foo/v24.3.0.js/bar',
+      );
     });
   });
 });
