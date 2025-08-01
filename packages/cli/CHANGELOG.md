@@ -1,5 +1,12 @@
 # @gud/cli
 
+## 1.0.0-beta.7
+
+### Patch Changes
+
+- ff2ce10: Fixed the doc comment for `options.type`.
+- dbb1db9: Patched package.json types and corrected license field.
+
 ## 1.0.0-beta.6
 
 ### Patch Changes

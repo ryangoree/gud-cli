@@ -1,6 +1,6 @@
 {
 	"name": "@gud/cli",
-	"version": "1.0.0-beta.6",
+	"version": "1.0.0-beta.7",
 	"description": "A framework for building flexible and extensible CLIs",
 	"license": "Apache-2.0",
 	"author": "ryan goree (https://github.com/ryangoree)",

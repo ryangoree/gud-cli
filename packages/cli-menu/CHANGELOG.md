@@ -1,5 +1,14 @@
 # @gud/cli-menu
 
+## 1.0.0-beta.5
+
+### Patch Changes
+
+- dbb1db9: Patched package.json types and corrected license field.
+- Updated dependencies [ff2ce10]
+- Updated dependencies [dbb1db9]
+  - @gud/cli@1.0.0-beta.7
+
 ## 1.0.0-beta.4
 
 ### Patch Changes
