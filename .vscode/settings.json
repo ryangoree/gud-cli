@@ -1,4 +1,27 @@
 {
+  "prettier.configPath": ".prettierrc.cjs",
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "src/index.*",
+    "src/exports*"
+  ],
   "cSpell.words": [
     "cfonts",
     "cliui",
@@ -8,24 +31,4 @@
     "signale",
     "unmock"
   ],
-  "editor.defaultFormatter": "biomejs.biome",
-  "[json]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[yaml]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "typescript.preferences.autoImportFileExcludePatterns": [
-    "src/index.*",
-    "src/exports*"
-  ]
 }
