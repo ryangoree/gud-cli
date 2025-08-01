@@ -30,8 +30,9 @@ instructions](https://github.com/nvm-sh/nvm#installing-and-updating), run the
 following commands to install and use Node.js 24.x:
 
 ```sh
-nvm install 24
-nvm use # run from the root of the project
+ # run from the root of the project
+nvm install
+nvm use
 ```
 
 If Yarn is not already installed, you can install it using npm:
