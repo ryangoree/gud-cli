@@ -11,10 +11,8 @@
   "scripts": {
     "build": "turbo run build",
     "build:packages": "turbo run build --filter=./packages/*",
-    "format": "biome format --write .",
-    "lint": "biome lint --diagnostic-level error .",
-    "lint:fix": "bun run lint --fix",
-    "lint:fix:unsafe": "bun run lint:fix --unsafe",
+    "check": "turbo run typecheck && biome check --diagnostic-level error .",
+    "fix": "biome check --diagnostic-level error . --write",
     "test": "turbo run test:ci",
     "typecheck": "turbo run typecheck",
     "release": "sh scripts/release.sh",
@@ -22,7 +20,7 @@
     "version": "changeset version && bun install"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.3",
+    "@biomejs/biome": "^2.6.2",
     "@changesets/cli": "^2.29.5",
     "turbo": "^2.5.5"
   },

@@ -1,5 +1,9 @@
 {
   "prettier.configPath": ".prettierrc.cjs",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -18,10 +22,6 @@
   "[jsonc]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "typescript.preferences.autoImportFileExcludePatterns": [
-    "src/index.*",
-    "src/exports*"
-  ],
   "cSpell.words": [
     "cfonts",
     "cliui",
@@ -30,5 +30,9 @@
     "nargs",
     "signale",
     "unmock"
+  ],
+  "js/ts.preferences.autoImportFileExcludePatterns": [
+    "src/index.*",
+    "src/exports*"
   ]
 }
