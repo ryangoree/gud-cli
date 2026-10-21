@@ -14,6 +14,7 @@
     "check": "turbo run typecheck && biome check --diagnostic-level error .",
     "fix": "biome check --diagnostic-level error . --write",
     "test": "turbo run test:ci",
+    "test:watch": "turbo run test:watch",
     "typecheck": "turbo run typecheck",
     "release": "sh scripts/release.sh",
     "reset-node-modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' + && bun pm cache rm && bun install",
@@ -21,8 +22,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.2",
-    "@changesets/cli": "^2.29.5",
-    "turbo": "^2.5.5"
+    "@changesets/cli": "^2.31.1",
+    "turbo": "^2.11.10"
   },
   "packageManager": "bun@1.4.3"
 }

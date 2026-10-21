@@ -10,6 +10,9 @@
   },
   "type": "module",
   "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
   "exports": {
     ".": {
       "require": {
@@ -25,8 +28,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "NODE_ENV=development tsx example/cli.ts",
-    "test": "vitest run --reporter=verbose",
-    "test:watch": "vitest --reporter=verbose",
+    "test": "vitest run --reporter=tree",
+    "test:watch": "vitest --reporter=tree",
     "test:ci": "vitest run",
     "typecheck": "tsc --noEmit"
   },
@@ -34,17 +37,17 @@
     "@gud/cli": "^1.0.0-beta.7"
   },
   "dependencies": {
-    "cfonts": "^3.3.0",
+    "cfonts": "^3.3.1",
     "colors": "^1.4.0"
   },
   "devDependencies": {
     "@gud/cli": "^1.0.0-beta.7",
-    "@types/node": "^24.1.0",
+    "@types/node": "^22",
     "@types/prompts": "^2.4.9",
     "tsup": "^8.5.0",
-    "tsx": "^4.20.3",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "^5.0.5"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
