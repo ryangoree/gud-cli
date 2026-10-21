@@ -15,18 +15,20 @@
   },
   "exports": {
     ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
       "require": {
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
-      },
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
       }
-    }
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
     "dev": "NODE_ENV=development tsx example/cli.ts",
     "test": "vitest run --reporter=tree",
     "test:watch": "vitest --reporter=tree",
@@ -44,13 +46,14 @@
     "@gud/cli": "^1.0.0-beta.7",
     "@types/node": "^22",
     "@types/prompts": "^2.4.9",
-    "tsup": "^8.5.0",
+    "tsdown": "^0.23.1",
     "tsx": "^4.23.15",
     "typescript": "^5.9.2",
     "vitest": "^5.0.5"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
   "files": [
     "dist"
   ],

@@ -1,4 +1,4 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from "tsdown";
 
 export default defineConfig({
   entry: {
@@ -6,11 +6,13 @@ export default defineConfig({
     testing: "src/exports/testing.ts",
   },
   format: ["esm", "cjs"],
+  target: "node22.12",
   sourcemap: true,
   dts: true,
-  clean: true,
   minify: true,
   shims: true,
-  cjsInterop: true,
-  keepNames: true,
+  outputOptions: {
+    // Error handling relies on `constructor.name` for custom error classes.
+    keepNames: true,
+  },
 });

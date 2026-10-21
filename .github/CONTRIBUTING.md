@@ -117,7 +117,7 @@ packages/cli/
 ├── README.md
 ├── package.json
 ├── tsconfig.json # typescript config
-├── tsup.config.ts # build config
+├── tsdown.config.ts # build config
 ├── typedoc.json # docs generator config
 └── vitest.config.ts # testing config
 ```
