@@ -1,5 +1,5 @@
-import { joinTokens, splitTokens } from "src/utils/tokens";
 import { describe, expect, it } from "vitest";
+import { joinTokens, splitTokens } from "#/utils/tokens";
 
 describe("tokens", () => {
   describe("joinTokens", () => {

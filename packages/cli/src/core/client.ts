@@ -1,9 +1,9 @@
 import { Console } from "node:console";
 import process from "node:process";
 import prompts, { type Choice, type PromptObject, type PromptType } from "prompts";
-import { CliError, type CliErrorOptions } from "src/core/errors";
-import type { OptionPrimitiveType, OptionType } from "src/core/options/options";
-import type { KeyMap, Replace } from "src/utils/types";
+import { CliError, type CliErrorOptions } from "#/core/errors";
+import type { OptionPrimitiveType, OptionType } from "#/core/options/options";
+import type { KeyMap, Replace } from "#/utils/types";
 
 // Errors //
 

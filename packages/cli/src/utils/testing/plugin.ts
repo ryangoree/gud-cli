@@ -1,5 +1,5 @@
-import type { Plugin, PluginInfo } from "src/core/plugin";
-import type { Eval, Replace, Writable } from "src/utils/types";
+import type { Plugin, PluginInfo } from "#/core/plugin";
+import type { Eval, Replace, Writable } from "#/utils/types";
 
 export function createStubPluginInfo<const T extends Partial<PluginInfo> = {}>(
   overrides = {} as T,

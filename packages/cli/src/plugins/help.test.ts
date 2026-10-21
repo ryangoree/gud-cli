@@ -1,16 +1,16 @@
 // Must be imported first so `node:fs` is mocked before other modules load it
-import "src/utils/testing/command-modules";
-import { mockCommandModule, unmockAllCommandModules } from "src/utils/testing/command-modules";
+import "#/utils/testing/command-modules";
+import { mockCommandModule, unmockAllCommandModules } from "#/utils/testing/command-modules";
 
-vi.mock("src/core/client");
+vi.mock("#/core/client");
 
-import { Client } from "src/core/client";
-import { Context } from "src/core/context";
-import { UsageError } from "src/core/errors";
-import * as helpModule from "src/core/help";
-import { run } from "src/core/run";
-import { help } from "src/plugins/help";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Client } from "#/core/client";
+import { Context } from "#/core/context";
+import { UsageError } from "#/core/errors";
+import * as helpModule from "#/core/help";
+import { run } from "#/core/run";
+import { help } from "#/plugins/help";
 
 // TODO: These tests check that the getHelp function is called, but don't check
 // check that the help text is displayed to the user. I should check that

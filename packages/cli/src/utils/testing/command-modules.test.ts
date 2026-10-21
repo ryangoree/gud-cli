@@ -1,8 +1,8 @@
 // Must be imported first so `node:fs` is mocked before other modules load it
-import "src/utils/testing/command-modules";
+import "#/utils/testing/command-modules";
 
-import type { CommandModule } from "src/core/command";
 import { describe, expect, it, test } from "vitest";
+import type { CommandModule } from "#/core/command";
 import { mockCommandModule, mockCommandModules, mockCommandStringModules } from "./command-modules";
 
 const modules = {

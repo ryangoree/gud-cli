@@ -1,5 +1,5 @@
-import { OptionsError, validateOptions } from "src/core/options/validate-options";
 import { describe, expect, it } from "vitest";
+import { OptionsError, validateOptions } from "#/core/options/validate-options";
 
 describe("options", () => {
   describe("validator", () => {

@@ -1,5 +1,5 @@
-import { HookRegistry } from "src/core/hooks";
 import { describe, expect, it, vi } from "vitest";
+import { HookRegistry } from "#/core/hooks";
 
 describe("hook registry", () => {
   it("calls registered hooks", async () => {

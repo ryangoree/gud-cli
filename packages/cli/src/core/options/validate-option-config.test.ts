@@ -1,5 +1,5 @@
-import { OptionsConfigError, validateOptionsConfig } from "src/core/options/validate-option-config";
 import { describe, expect, it } from "vitest";
+import { OptionsConfigError, validateOptionsConfig } from "#/core/options/validate-option-config";
 
 describe("options", () => {
   describe("validateOptionsConfig", () => {

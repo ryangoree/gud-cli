@@ -1,12 +1,12 @@
-import { Client, type PromptParams } from "src/core/client";
+import { Client, type PromptParams } from "#/core/client";
 import {
   normalizeOptionValue,
   type OptionConfig,
   type OptionConfigPrimitiveType,
   type OptionType,
-} from "src/core/options/options";
-import { validateOptionType } from "src/core/options/validate-options";
-import type { KeyMap, MaybePromise, Replace } from "src/utils/types";
+} from "#/core/options/options";
+import { validateOptionType } from "#/core/options/validate-options";
+import type { KeyMap, MaybePromise, Replace } from "#/utils/types";
 
 // Types //
 

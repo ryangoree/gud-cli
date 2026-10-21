@@ -11,9 +11,8 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
     "paths": {
-      "src/*": ["src/*"]
+      "#/*": ["./src/*"]
     },
 
     // Type Checking

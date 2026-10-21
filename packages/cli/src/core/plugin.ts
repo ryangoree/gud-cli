@@ -1,5 +1,5 @@
-import { CliError, type CliErrorOptions } from "src/core/errors";
-import type { AnyObject, MaybePromise } from "src/utils/types";
+import { CliError, type CliErrorOptions } from "#/core/errors";
+import type { AnyObject, MaybePromise } from "#/utils/types";
 import type { Context } from "./context";
 
 /**

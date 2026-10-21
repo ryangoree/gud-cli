@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     silent: "passed-only",
     alias: {
-      "src/": "/src/",
+      "#/": "/src/",
     },
     coverage: {
       include: ["src/**/*"],

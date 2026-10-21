@@ -1,12 +1,12 @@
-import { Client } from "src/core/client";
-import { CliError, type CliErrorOptions, UsageError } from "src/core/errors";
-import { HookRegistry } from "src/core/hooks";
-import type { OptionsConfig, OptionValues } from "src/core/options/options";
-import { type ValidateOptionsParams, validateOptions } from "src/core/options/validate-options";
-import { type ParseCommandFn, parseCommand } from "src/core/parse";
-import type { Plugin, PluginInfo } from "src/core/plugin";
-import { type ResolveCommandFn, type ResolvedCommand, resolveCommand } from "src/core/resolve";
-import { State } from "src/core/state";
+import { Client } from "#/core/client";
+import { CliError, type CliErrorOptions, UsageError } from "#/core/errors";
+import { HookRegistry } from "#/core/hooks";
+import type { OptionsConfig, OptionValues } from "#/core/options/options";
+import { type ValidateOptionsParams, validateOptions } from "#/core/options/validate-options";
+import { type ParseCommandFn, parseCommand } from "#/core/parse";
+import type { Plugin, PluginInfo } from "#/core/plugin";
+import { type ResolveCommandFn, type ResolvedCommand, resolveCommand } from "#/core/resolve";
+import { State } from "#/core/state";
 
 // Errors //
 

@@ -1,5 +1,5 @@
-import { CliError, type CliErrorOptions } from "src/core/errors";
-import type { OptionsConfig } from "src/core/options/options";
+import { CliError, type CliErrorOptions } from "#/core/errors";
+import type { OptionsConfig } from "#/core/options/options";
 
 // Errors //
 

@@ -1,5 +1,5 @@
 import { help, run } from "@gud/cli";
-import { menu } from "src/menu.js";
+import { menu } from "#/menu.js";
 
 run({
   plugins: [

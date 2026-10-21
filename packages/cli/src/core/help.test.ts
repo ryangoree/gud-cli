@@ -1,10 +1,10 @@
 // Must be imported first so `node:fs` is mocked before other modules load it
-import "src/utils/testing/command-modules";
+import "#/utils/testing/command-modules";
 
-import { Context } from "src/core/context";
-import { getHelp, type Help } from "src/core/help";
-import { mockCommandModule, unmockAllCommandModules } from "src/utils/testing/command-modules";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Context } from "#/core/context";
+import { getHelp, type Help } from "#/core/help";
+import { mockCommandModule, unmockAllCommandModules } from "#/utils/testing/command-modules";
 
 describe("help", () => {
   beforeEach(async () => {

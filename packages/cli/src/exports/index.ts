@@ -5,7 +5,7 @@ export {
   type PromptParams,
   type PromptPrimitiveType,
   type PromptTypeMap,
-} from "src/core/client";
+} from "#/core/client";
 export {
   type CommandFactoryConfig,
   type CommandFactoryReturn,
@@ -16,25 +16,25 @@ export {
   passThroughCommand,
   passThroughHandler,
   validateCommandString,
-} from "src/core/command";
+} from "#/core/command";
 export {
   Context,
   type ContextParams,
   SubcommandRequiredError,
-} from "src/core/context";
+} from "#/core/context";
 export {
   CliError,
   type CliErrorOptions,
   CommandRequiredError,
   NotFoundError,
   UsageError,
-} from "src/core/errors";
+} from "#/core/errors";
 export type {
   GetHelpOptions,
   getHelp,
   Help,
   HelpRows,
-} from "src/core/help";
+} from "#/core/help";
 export {
   type HookHandler,
   type HookHandlers,
@@ -42,13 +42,13 @@ export {
   type HookPayload,
   HookRegistry,
   type LifecycleHooks,
-} from "src/core/hooks";
+} from "#/core/hooks";
 export {
   type OptionPromptParams,
   type OptionPromptType,
   type OptionPromptTypeMap,
   optionPrompt,
-} from "src/core/options/option-prompt";
+} from "#/core/options/option-prompt";
 // options
 export {
   type CustomOptionTypes,
@@ -72,18 +72,18 @@ export {
   type OptionValues,
   option,
   options,
-} from "src/core/options/options";
+} from "#/core/options/options";
 export {
   type CreateOptionsGetterOptions,
   createOptionsGetter,
   type OptionGetter,
   type OptionsGetter,
-} from "src/core/options/options-getter";
-export { removeOptionTokens } from "src/core/options/remove-option-tokens";
+} from "#/core/options/options-getter";
+export { removeOptionTokens } from "#/core/options/remove-option-tokens";
 export {
   OptionsConfigError,
   validateOptionsConfig,
-} from "src/core/options/validate-option-config";
+} from "#/core/options/validate-option-config";
 export {
   OptionConflictsError,
   OptionRequiredError,
@@ -92,7 +92,7 @@ export {
   type ValidateOptionsParams,
   validateOptions,
   validateOptionType,
-} from "src/core/options/validate-options";
+} from "#/core/options/validate-options";
 // plugins
 export {
   type ParseCommandFn,
@@ -100,13 +100,13 @@ export {
   parseCommand,
   removeLeadingOptions,
   type Tokens,
-} from "src/core/parse";
+} from "#/core/parse";
 export type {
   Plugin,
   PluginError,
   PluginInfo,
   plugin,
-} from "src/core/plugin";
+} from "#/core/plugin";
 export {
   MissingDefaultExportError,
   prepareResolvedCommand,
@@ -116,49 +116,49 @@ export {
   type RouteParams,
   resolveCommand,
   resolveDefaultCommandsDir,
-} from "src/core/resolve";
+} from "#/core/resolve";
 export {
   type RunParams,
   run,
-} from "src/core/run";
+} from "#/core/run";
 export {
   type NextState,
   State,
-} from "src/core/state";
+} from "#/core/state";
 export {
   type HelpPluginOptions,
   help,
-} from "src/plugins/help";
+} from "#/plugins/help";
 export {
   disableLogger,
   enableLogger,
   type LoggerMeta,
   logger,
   toggleLogger,
-} from "src/plugins/logger";
+} from "#/plugins/logger";
 
 // utils
 export {
   getBin,
   hideBin,
-} from "src/utils/argv";
-export { getCallerPath } from "src/utils/caller-path";
+} from "#/utils/argv";
+export { getCallerPath } from "#/utils/caller-path";
 export {
   type CamelCase,
   camelCase,
-} from "src/utils/camel-case";
+} from "#/utils/camel-case";
 export {
   formatFileName,
   parseFileName,
   removeFileExtension,
-} from "src/utils/filename";
+} from "#/utils/filename";
 export {
   isDirectory,
   isFile,
-} from "src/utils/fs";
+} from "#/utils/fs";
 export {
   type JoinableTokens,
   type JoinTokenOptions,
   joinTokens,
   splitTokens,
-} from "src/utils/tokens";
+} from "#/utils/tokens";

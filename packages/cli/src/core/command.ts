@@ -1,8 +1,8 @@
-import { UsageError } from "src/core/errors";
-import type { OptionsConfig } from "src/core/options/options";
-import { OptionsError } from "src/core/options/validate-options";
-import type { State } from "src/core/state";
-import type { MaybePromise } from "src/utils/types";
+import { UsageError } from "#/core/errors";
+import type { OptionsConfig } from "#/core/options/options";
+import { OptionsError } from "#/core/options/validate-options";
+import type { State } from "#/core/state";
+import type { MaybePromise } from "#/utils/types";
 
 // Types //
 

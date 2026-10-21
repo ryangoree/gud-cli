@@ -1,9 +1,9 @@
-import { Client, type PromptParams } from "src/core/client";
+import { Client, type PromptParams } from "#/core/client";
 import {
   type OptionPromptParams,
   type OptionPromptType,
   optionPrompt,
-} from "src/core/options/option-prompt";
+} from "#/core/options/option-prompt";
 import {
   type ExpandedOptionsConfig,
   getOptionKeys,
@@ -16,10 +16,10 @@ import {
   type OptionsConfig,
   type OptionType,
   type OptionValues,
-} from "src/core/options/options";
-import { validateOptionType } from "src/core/options/validate-options";
-import { type CamelCase, camelCase } from "src/utils/camel-case";
-import type { AnyObject } from "src/utils/types";
+} from "#/core/options/options";
+import { validateOptionType } from "#/core/options/validate-options";
+import { type CamelCase, camelCase } from "#/utils/camel-case";
+import type { AnyObject } from "#/utils/types";
 
 // Types //
 

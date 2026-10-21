@@ -1,4 +1,4 @@
-import { command } from "src/core/command";
+import { command } from "#/core/command";
 
 export default command({
   description: "A test command that greets the user",

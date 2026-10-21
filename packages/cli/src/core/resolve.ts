@@ -5,20 +5,20 @@ import {
   passThroughCommand,
   passThroughHandler,
   validateCommandString,
-} from "src/core/command";
+} from "#/core/command";
 import {
   CliError,
   type CliErrorOptions,
   CommandRequiredError,
   NotFoundError,
   UsageError,
-} from "src/core/errors";
-import { type ParseCommandFn, parseCommand, removeLeadingOptions } from "src/core/parse";
-import { getCallerPath } from "src/utils/caller-path";
-import { formatFileName, parseFileName, removeFileExtension } from "src/utils/filename";
-import { isDirectory, isFile } from "src/utils/fs";
-import { joinTokens, splitTokens } from "src/utils/tokens";
-import type { MaybePromise } from "src/utils/types";
+} from "#/core/errors";
+import { type ParseCommandFn, parseCommand, removeLeadingOptions } from "#/core/parse";
+import { getCallerPath } from "#/utils/caller-path";
+import { formatFileName, parseFileName, removeFileExtension } from "#/utils/filename";
+import { isDirectory, isFile } from "#/utils/fs";
+import { joinTokens, splitTokens } from "#/utils/tokens";
+import type { MaybePromise } from "#/utils/types";
 
 /**
  * The default directory name for commands.

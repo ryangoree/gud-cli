@@ -1,9 +1,9 @@
-import type { CommandModule } from "src/core/command";
-import type { Context } from "src/core/context";
-import { CliError } from "src/core/errors";
-import type { OptionsConfig, OptionValues } from "src/core/options/options";
-import { createOptionsGetter, type OptionsGetter } from "src/core/options/options-getter";
-import type { ResolvedCommand, RouteParams } from "src/core/resolve";
+import type { CommandModule } from "#/core/command";
+import type { Context } from "#/core/context";
+import { CliError } from "#/core/errors";
+import type { OptionsConfig, OptionValues } from "#/core/options/options";
+import { createOptionsGetter, type OptionsGetter } from "#/core/options/options-getter";
+import type { ResolvedCommand, RouteParams } from "#/core/resolve";
 
 // Types //
 

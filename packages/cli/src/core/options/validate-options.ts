@@ -1,11 +1,11 @@
-import { type CliErrorOptions, UsageError } from "src/core/errors";
+import { type CliErrorOptions, UsageError } from "#/core/errors";
 import {
   getOptionDisplayName,
   getOptionKeys,
   type OptionConfig,
   type OptionsConfig,
   type OptionValues,
-} from "src/core/options/options";
+} from "#/core/options/options";
 
 // Errors //
 

@@ -1,9 +1,9 @@
 // Must be imported first so `node:fs` is mocked before other modules load it
-import "src/utils/testing/command-modules";
+import "#/utils/testing/command-modules";
 
-import { type ResolvedCommand, resolveCommand } from "src/core/resolve";
-import { mockCommandModules, unmockAllCommandModules } from "src/utils/testing/command-modules";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { type ResolvedCommand, resolveCommand } from "#/core/resolve";
+import { mockCommandModules, unmockAllCommandModules } from "#/utils/testing/command-modules";
 
 describe("resolve", () => {
   beforeEach(async () => {

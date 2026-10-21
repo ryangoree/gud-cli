@@ -1,8 +1,8 @@
-import { type Client, ClientError } from "src/core/client";
-import type { ParseCommandFn } from "src/core/parse";
-import { type ResolveCommandFn, resolveDefaultCommandsDir } from "src/core/resolve";
-import { hideBin } from "src/utils/argv";
-import { joinTokens } from "src/utils/tokens";
+import { type Client, ClientError } from "#/core/client";
+import type { ParseCommandFn } from "#/core/parse";
+import { type ResolveCommandFn, resolveDefaultCommandsDir } from "#/core/resolve";
+import { hideBin } from "#/utils/argv";
+import { joinTokens } from "#/utils/tokens";
 import { Context } from "./context";
 import { CliError } from "./errors";
 import { HookRegistry, type LifecycleHooks } from "./hooks";

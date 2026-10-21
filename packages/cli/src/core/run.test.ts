@@ -1,22 +1,22 @@
 // Must be imported first so `node:fs` is mocked before other modules load it
-import "src/utils/testing/command-modules";
+import "#/utils/testing/command-modules";
 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { Client } from "src/core/client";
-import { Context } from "src/core/context";
-import { CliError } from "src/core/errors";
-import type { HookPayload } from "src/core/hooks";
-import type { Plugin } from "src/core/plugin";
-import { run } from "src/core/run";
-import { State } from "src/core/state";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Client } from "#/core/client";
+import { Context } from "#/core/context";
+import { CliError } from "#/core/errors";
+import type { HookPayload } from "#/core/hooks";
+import type { Plugin } from "#/core/plugin";
+import { run } from "#/core/run";
+import { State } from "#/core/state";
 import {
   mockCommandModule,
   mockCommandModules,
   unmockAllCommandModules,
-} from "src/utils/testing/command-modules";
-import { createStubPlugin } from "src/utils/testing/plugin";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+} from "#/utils/testing/command-modules";
+import { createStubPlugin } from "#/utils/testing/plugin";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

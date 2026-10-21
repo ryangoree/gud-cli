@@ -1,5 +1,5 @@
 import { statSync } from "node:fs";
-import { formatFileName } from "src/utils/filename";
+import { formatFileName } from "#/utils/filename";
 
 /**
  * Determine if a path is a directory.

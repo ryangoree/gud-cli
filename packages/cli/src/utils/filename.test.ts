@@ -1,5 +1,5 @@
-import { formatFileName, parseFileName, removeFileExtension } from "src/utils/filename";
 import { describe, expect, it } from "vitest";
+import { formatFileName, parseFileName, removeFileExtension } from "#/utils/filename";
 
 describe("filename", () => {
   describe("formatFileName", () => {

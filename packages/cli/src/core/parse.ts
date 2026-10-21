@@ -1,7 +1,7 @@
-import type { OptionsConfig, OptionValues } from "src/core/options/options";
-import { validateOptionsConfig } from "src/core/options/validate-option-config";
-import type { MaybePromise } from "src/utils/types";
 import parse from "yargs-parser";
+import type { OptionsConfig, OptionValues } from "#/core/options/options";
+import { validateOptionsConfig } from "#/core/options/validate-option-config";
+import type { MaybePromise } from "#/utils/types";
 
 // Types //
 

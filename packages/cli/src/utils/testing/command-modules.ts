@@ -1,11 +1,11 @@
 import { basename, dirname, join } from "node:path";
-import type { CommandModule } from "src/core/command";
-import { NotFoundError } from "src/core/errors";
-import { parseCommand } from "src/core/parse";
-import type { State } from "src/core/state";
-import { formatFileName } from "src/utils/filename";
-import type { Eval } from "src/utils/types";
 import { type Mock, vi } from "vitest";
+import type { CommandModule } from "#/core/command";
+import { NotFoundError } from "#/core/errors";
+import { parseCommand } from "#/core/parse";
+import type { State } from "#/core/state";
+import { formatFileName } from "#/utils/filename";
+import type { Eval } from "#/utils/types";
 
 const mockCommandDirs = new Map<string, Set<string>>();
 

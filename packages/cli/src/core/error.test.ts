@@ -1,5 +1,5 @@
-import { CliError } from "src/core/errors";
 import { describe, expect, it } from "vitest";
+import { CliError } from "#/core/errors";
 
 describe("error", () => {
   describe("CliError", () => {

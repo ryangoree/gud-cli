@@ -1,5 +1,5 @@
-import { run } from "src/core/run";
-import { help } from "src/plugins/help";
+import { run } from "#/core/run";
+import { help } from "#/plugins/help";
 
 await run({
   plugins: [help({ maxWidth: 100 })],

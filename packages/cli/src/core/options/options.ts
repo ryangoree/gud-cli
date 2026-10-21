@@ -1,5 +1,5 @@
-import { type CamelCase, camelCase } from "src/utils/camel-case";
-import type { Eval, KeyWithMatchingValue, MaybeReadonly, Merge, Replace } from "src/utils/types";
+import { type CamelCase, camelCase } from "#/utils/camel-case";
+import type { Eval, KeyWithMatchingValue, MaybeReadonly, Merge, Replace } from "#/utils/types";
 
 // Types //
 

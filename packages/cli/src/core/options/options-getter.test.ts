@@ -1,5 +1,5 @@
-import { createOptionsGetter } from "src/core/options/options-getter";
 import { describe, expect, it } from "vitest";
+import { createOptionsGetter } from "#/core/options/options-getter";
 
 describe("options", () => {
   describe("createOptionsGetter", () => {

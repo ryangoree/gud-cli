@@ -1,10 +1,10 @@
 import { appendFileSync, mkdirSync } from "node:fs";
 import { dirname, relative } from "node:path";
 import { type InspectOptions, inspect } from "node:util";
-import type { Client } from "src/core/client";
-import { CliError } from "src/core/errors";
-import type { HookPayload } from "src/core/hooks";
-import { type Plugin, PluginError, plugin } from "src/core/plugin";
+import type { Client } from "#/core/client";
+import { CliError } from "#/core/errors";
+import type { HookPayload } from "#/core/hooks";
+import { type Plugin, PluginError, plugin } from "#/core/plugin";
 
 export interface LoggerMeta {
   /**
