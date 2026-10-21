@@ -1,12 +1,9 @@
-import type { CommandModule } from 'src/core/command';
-import type { Context } from 'src/core/context';
-import { CliError } from 'src/core/errors';
-import type { OptionsConfig, OptionValues } from 'src/core/options/options';
-import {
-  createOptionsGetter,
-  type OptionsGetter,
-} from 'src/core/options/options-getter';
-import type { ResolvedCommand, RouteParams } from 'src/core/resolve';
+import type { CommandModule } from "src/core/command";
+import type { Context } from "src/core/context";
+import { CliError } from "src/core/errors";
+import type { OptionsConfig, OptionValues } from "src/core/options/options";
+import { createOptionsGetter, type OptionsGetter } from "src/core/options/options-getter";
+import type { ResolvedCommand, RouteParams } from "src/core/resolve";
 
 // Types //
 
@@ -63,10 +60,7 @@ interface StateParams<TData = unknown> {
  *
  * @group State
  */
-export class State<
-  TData = unknown,
-  TOptions extends OptionsConfig = OptionsConfig,
-> {
+export class State<TData = unknown, TOptions extends OptionsConfig = OptionsConfig> {
   /**
    * The number of times `next()` or `end()` have been called. This is used to
    * prevent the process from hanging if a command handler neglects to call
@@ -181,7 +175,7 @@ export class State<
   readonly start = async (initialData: unknown = this.#data): Promise<void> => {
     // Avoid starting the steps if they're already started.
     if (this.#executionPromise) {
-      throw new CliError('Steps have already started.');
+      throw new CliError("Steps have already started.");
     }
 
     // Create a promise that will resolve when the steps are done.
@@ -216,9 +210,7 @@ export class State<
     this.#actionCallCount++;
     let _data = data;
     const nextIndex = this.i + 1;
-    let nextCommand = this.commandQueue[nextIndex] as
-      | ResolvedCommand
-      | undefined;
+    let nextCommand = this.commandQueue[nextIndex] as ResolvedCommand | undefined;
 
     if (nextCommand) {
       // If there is a next command, increment the step index and call the
@@ -233,7 +225,7 @@ export class State<
         },
       });
 
-      await this.context.hooks.call('beforeCommand', {
+      await this.context.hooks.call("beforeCommand", {
         state: this,
         command: nextCommand,
         data: _data,
@@ -252,7 +244,7 @@ export class State<
       const actionCallCountBefore = this.#actionCallCount;
       await nextCommand.command.handler(this);
 
-      await this.context.hooks.call('afterCommand', {
+      await this.context.hooks.call("afterCommand", {
         state: this,
         command: nextCommand,
         data: _data,
@@ -292,7 +284,7 @@ export class State<
     this.#actionCallCount++;
     let _data = data;
 
-    await this.context.hooks.call('beforeEnd', {
+    await this.context.hooks.call("beforeEnd", {
       state: this,
       data,
       setData: (data) => {
@@ -356,9 +348,7 @@ export class State<
      * Options to merge/override the current options.
      */
     optionValues?: OptionValues<
-      TCommand['options'] extends OptionsConfig
-        ? TCommand['options']
-        : OptionsConfig
+      TCommand["options"] extends OptionsConfig ? TCommand["options"] : OptionsConfig
     >;
 
     /**
@@ -373,16 +363,16 @@ export class State<
     for (const command of commands) {
       let resolved: ResolvedCommand | undefined;
 
-      if ('command' in command) {
+      if ("command" in command) {
         resolved = command;
       } else {
         resolved = {
           command,
-          commandName: 'fork-command',
-          remainingCommandString: '',
-          commandPath: '',
+          commandName: "fork-command",
+          remainingCommandString: "",
+          commandPath: "",
           commandTokens: [],
-          subcommandsDir: '',
+          subcommandsDir: "",
           params: {
             ...this.params,
             ...paramValues,
@@ -426,7 +416,7 @@ export class State<
     let _changes = nextState;
 
     // pre hook
-    await this.context.hooks.call('beforeStateChange', {
+    await this.context.hooks.call("beforeStateChange", {
       state: this,
       changes: _changes,
       setChanges: (changes: Partial<NextState>) => {
@@ -434,11 +424,7 @@ export class State<
       },
       skip: () => {
         this.context.client.warn(
-          `Skipping state update. Next state: ${JSON.stringify(
-            _changes,
-            null,
-            2,
-          )}`,
+          `Skipping state update. Next state: ${JSON.stringify(_changes, null, 2)}`,
         );
         _changes = {};
       },
@@ -456,12 +442,12 @@ export class State<
     }
 
     // Data can be undefined, so we simply check if the key exists.
-    if ('data' in _changes) {
+    if ("data" in _changes) {
       this.#data = _changes.data as TData;
     }
 
     // post hook
-    await this.context.hooks.call('afterStateChange', {
+    await this.context.hooks.call("afterStateChange", {
       state: this,
       changes: _changes,
     });

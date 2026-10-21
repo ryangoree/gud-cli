@@ -1,47 +1,44 @@
 // Must be imported first so `node:fs` is mocked before other modules load it
-import 'src/utils/testing/command-modules';
-import {
-  mockCommandModules,
-  unmockAllCommandModules,
-} from 'src/utils/testing/command-modules';
+import "src/utils/testing/command-modules";
 
-import { type ResolvedCommand, resolveCommand } from 'src/core/resolve';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { type ResolvedCommand, resolveCommand } from "src/core/resolve";
+import { mockCommandModules, unmockAllCommandModules } from "src/utils/testing/command-modules";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-describe('resolve', () => {
+describe("resolve", () => {
   beforeEach(async () => {
     vi.restoreAllMocks();
     unmockAllCommandModules();
   });
 
-  it('resolves commands using the file system', async () => {
+  it("resolves commands using the file system", async () => {
     const commandModules = {
-      'commands/foo.js': {
+      "commands/foo.js": {
         handler: () => {},
       },
-      'commands/foo/bar.js': {
+      "commands/foo/bar.js": {
         handler: () => {},
       },
-      'commands/foo/bar/baz.js': {
+      "commands/foo/bar/baz.js": {
         handler: () => {},
       },
     };
     mockCommandModules(commandModules);
 
-    const commandString = 'foo bar baz';
-    const commandsDir = 'commands';
+    const commandString = "foo bar baz";
+    const commandsDir = "commands";
     let resolved = await resolveCommand({
       commandString,
       commandsDir,
     });
 
     expect(resolved).toMatchObject({
-      command: commandModules['commands/foo.js'],
-      commandPath: 'commands/foo.js',
-      commandName: 'foo',
-      commandTokens: ['foo'],
-      remainingCommandString: 'bar baz',
-      subcommandsDir: 'commands/foo',
+      command: commandModules["commands/foo.js"],
+      commandPath: "commands/foo.js",
+      commandName: "foo",
+      commandTokens: ["foo"],
+      remainingCommandString: "bar baz",
+      subcommandsDir: "commands/foo",
     } as ResolvedCommand);
 
     resolved = await resolveCommand({
@@ -50,12 +47,12 @@ describe('resolve', () => {
     });
 
     expect(resolved).toMatchObject({
-      command: commandModules['commands/foo/bar.js'],
-      commandPath: 'commands/foo/bar.js',
-      commandName: 'bar',
-      commandTokens: ['bar'],
-      remainingCommandString: 'baz',
-      subcommandsDir: 'commands/foo/bar',
+      command: commandModules["commands/foo/bar.js"],
+      commandPath: "commands/foo/bar.js",
+      commandName: "bar",
+      commandTokens: ["bar"],
+      remainingCommandString: "baz",
+      subcommandsDir: "commands/foo/bar",
     } as ResolvedCommand);
 
     resolved = await resolveCommand({
@@ -64,43 +61,43 @@ describe('resolve', () => {
     });
 
     expect(resolved).toMatchObject({
-      command: commandModules['commands/foo/bar/baz.js'],
-      commandPath: 'commands/foo/bar/baz.js',
-      commandName: 'baz',
-      commandTokens: ['baz'],
-      remainingCommandString: '',
-      subcommandsDir: 'commands/foo/bar/baz',
+      command: commandModules["commands/foo/bar/baz.js"],
+      commandPath: "commands/foo/bar/baz.js",
+      commandName: "baz",
+      commandTokens: ["baz"],
+      remainingCommandString: "",
+      subcommandsDir: "commands/foo/bar/baz",
     } as ResolvedCommand);
   });
 
-  it('resolves param commands', async () => {
+  it("resolves param commands", async () => {
     const commandModules = {
-      'commands/[qux].js': {
+      "commands/[qux].js": {
         handler: () => {},
       },
-      'commands/[qux]/[...quux].js': {
+      "commands/[qux]/[...quux].js": {
         handler: () => {},
       },
     };
     mockCommandModules(commandModules);
 
-    const commandString = 'do re mi';
-    const commandsDir = 'commands';
+    const commandString = "do re mi";
+    const commandsDir = "commands";
     let resolved = await resolveCommand({
       commandString,
       commandsDir,
     });
 
     expect(resolved).toEqual({
-      command: commandModules['commands/[qux].js'],
-      commandName: '[qux]',
-      commandPath: 'commands/[qux].js',
-      commandTokens: ['do'],
-      remainingCommandString: 're mi',
+      command: commandModules["commands/[qux].js"],
+      commandName: "[qux]",
+      commandPath: "commands/[qux].js",
+      commandTokens: ["do"],
+      remainingCommandString: "re mi",
       params: {
-        qux: 'do',
+        qux: "do",
       },
-      subcommandsDir: 'commands/[qux]',
+      subcommandsDir: "commands/[qux]",
     } as ResolvedCommand);
 
     resolved = await resolveCommand({
@@ -109,15 +106,15 @@ describe('resolve', () => {
     });
 
     expect(resolved).toEqual({
-      command: commandModules['commands/[qux]/[...quux].js'],
-      commandName: '[...quux]',
-      commandPath: 'commands/[qux]/[...quux].js',
-      commandTokens: ['re', 'mi'],
-      remainingCommandString: '',
+      command: commandModules["commands/[qux]/[...quux].js"],
+      commandName: "[...quux]",
+      commandPath: "commands/[qux]/[...quux].js",
+      commandTokens: ["re", "mi"],
+      remainingCommandString: "",
       params: {
-        quux: ['re', 'mi'],
+        quux: ["re", "mi"],
       },
-      subcommandsDir: 'commands/[qux]/[...quux]',
+      subcommandsDir: "commands/[qux]/[...quux]",
     } as ResolvedCommand);
   });
 });

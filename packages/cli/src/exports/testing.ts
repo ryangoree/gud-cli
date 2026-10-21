@@ -3,8 +3,8 @@ export {
   mockCommandModules,
   mockCommandStringModules,
   unmockAllCommandModules,
-} from 'src/utils/testing/command-modules';
+} from "src/utils/testing/command-modules";
 export {
   createStubPlugin,
   createStubPluginInfo,
-} from 'src/utils/testing/plugin';
+} from "src/utils/testing/plugin";

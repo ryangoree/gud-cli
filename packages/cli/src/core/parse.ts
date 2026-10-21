@@ -1,7 +1,7 @@
-import type { OptionValues, OptionsConfig } from 'src/core/options/options';
-import { validateOptionsConfig } from 'src/core/options/validate-option-config';
-import type { MaybePromise } from 'src/utils/types';
-import parse from 'yargs-parser';
+import type { OptionsConfig, OptionValues } from "src/core/options/options";
+import { validateOptionsConfig } from "src/core/options/validate-option-config";
+import type { MaybePromise } from "src/utils/types";
+import parse from "yargs-parser";
 
 // Types //
 
@@ -42,10 +42,7 @@ export type ParseCommandFn = (
  * @returns The parsed command tokens and options values.
  * @group Parse
  */
-export function parseCommand(
-  commandString: string,
-  optionsConfig: OptionsConfig,
-): ParsedCommand {
+export function parseCommand(commandString: string, optionsConfig: OptionsConfig): ParsedCommand {
   validateOptionsConfig(optionsConfig);
 
   // Prepare the options config for yargs-parser
@@ -75,13 +72,13 @@ export function parseCommand(
     }
 
     switch (option.type) {
-      case 'array':
+      case "array":
         parseOptions.array.push(key);
         break;
-      case 'boolean':
+      case "boolean":
         parseOptions.boolean.push(key);
         break;
-      case 'number':
+      case "number":
         parseOptions.number.push(key);
         break;
       default:
@@ -94,9 +91,9 @@ export function parseCommand(
   const { _, ...options } = parse(commandString, {
     ...parseOptions,
     configuration: {
-      'duplicate-arguments-array': false,
-      'unknown-options-as-args': true,
-      'parse-numbers': false,
+      "duplicate-arguments-array": false,
+      "unknown-options-as-args": true,
+      "parse-numbers": false,
     },
   });
 
@@ -105,8 +102,8 @@ export function parseCommand(
 
   // Treat unknown options as boolean flags
   tokens = tokens.filter((token) => {
-    if (token.startsWith('-')) {
-      options[token.replace(/^-+/, '')] = true;
+    if (token.startsWith("-")) {
+      options[token.replace(/^-+/, "")] = true;
       return false;
     }
     return true;
@@ -115,7 +112,7 @@ export function parseCommand(
   // Split array options by commas
   for (const [key, value] of Object.entries(options)) {
     if (Array.isArray(value)) {
-      options[key] = value.flatMap((value) => value.split(',')).filter(Boolean);
+      options[key] = value.flatMap((value) => value.split(",")).filter(Boolean);
     }
   }
 
@@ -131,9 +128,9 @@ export async function removeLeadingOptions(
   optionsConfig: OptionsConfig,
   parseFn: ParseCommandFn = parseCommand,
 ) {
-  if (!commandString) return '';
+  if (!commandString) return "";
   const { tokens } = await parseFn(commandString, optionsConfig);
-  if (!tokens.length) return '';
+  if (!tokens.length) return "";
   const indexOfNextCommand = commandString.indexOf(tokens[0]!);
   return commandString.slice(indexOfNextCommand);
 }

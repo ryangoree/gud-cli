@@ -1,8 +1,8 @@
-import { UsageError } from 'src/core/errors';
-import type { OptionsConfig } from 'src/core/options/options';
-import { OptionsError } from 'src/core/options/validate-options';
-import type { State } from 'src/core/state';
-import type { MaybePromise } from 'src/utils/types';
+import { UsageError } from "src/core/errors";
+import type { OptionsConfig } from "src/core/options/options";
+import { OptionsError } from "src/core/options/validate-options";
+import type { State } from "src/core/state";
+import type { MaybePromise } from "src/utils/types";
 
 // Types //
 
@@ -16,7 +16,7 @@ import type { MaybePromise } from 'src/utils/types';
 export type CommandState<
   TData = unknown,
   TOptions extends OptionsConfig = OptionsConfig,
-> = Readonly<Omit<State<TData, TOptions>, 'start'>>;
+> = Readonly<Omit<State<TData, TOptions>, "start">>;
 
 /**
  * A command handler function that receives the current state and performs some
@@ -84,9 +84,7 @@ export interface CommandModule<
  */
 export type CommandFactoryConfig<
   TOptions extends OptionsConfig = OptionsConfig,
-  TModule extends Partial<
-    CommandModule<any, any, any>
-  > = Partial<CommandModule>,
+  TModule extends Partial<CommandModule<any, any, any>> = Partial<CommandModule>,
 > = TModule & {
   options?: TOptions;
 };
@@ -97,21 +95,16 @@ export type CommandFactoryConfig<
  * @group Command
  */
 export type CommandFactoryReturn<
-  TModule extends Partial<
-    CommandModule<any, any, any>
-  > = Partial<CommandModule>,
-> = TModule extends Partial<
-  CommandModule<infer TData, infer TOptions, infer TReturn>
->
-  ? TModule & {
-      isMiddleware: TModule['isMiddleware'] extends boolean
-        ? TModule['isMiddleware']
-        : true;
-      handler: TModule['handler'] extends Function
-        ? TModule['handler']
-        : CommandHandler<TData, TOptions, TReturn>;
-    }
-  : never;
+  TModule extends Partial<CommandModule<any, any, any>> = Partial<CommandModule>,
+> =
+  TModule extends Partial<CommandModule<infer TData, infer TOptions, infer TReturn>>
+    ? TModule & {
+        isMiddleware: TModule["isMiddleware"] extends boolean ? TModule["isMiddleware"] : true;
+        handler: TModule["handler"] extends Function
+          ? TModule["handler"]
+          : CommandHandler<TData, TOptions, TReturn>;
+      }
+    : never;
 
 /**
  * Factory function to create a {@linkcode CommandModule} with strong typing.
@@ -124,9 +117,7 @@ export type CommandFactoryReturn<
 export function command<
   TOptions extends OptionsConfig,
   const TModule extends Partial<CommandModule<any, TOptions>>,
->(
-  command?: CommandFactoryConfig<TOptions, TModule>,
-): CommandFactoryReturn<TModule> {
+>(command?: CommandFactoryConfig<TOptions, TModule>): CommandFactoryReturn<TModule> {
   const mod = { ...command };
 
   if (!mod.handler) {
@@ -166,7 +157,7 @@ export const passThroughCommand = command();
  */
 export function validateCommandString(commandString: string): void {
   // Check if the first token is an option.
-  if (commandString.startsWith('-')) {
+  if (commandString.startsWith("-")) {
     throw new OptionsError(`Unknown option "${commandString}"`);
   }
 

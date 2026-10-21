@@ -1,13 +1,13 @@
-const { command } = require('@gud/cli');
+const { command } = require("@gud/cli");
 
 module.exports = command({
-  description: 'Say hello',
+  description: "Say hello",
   options: {
     name: {
-      type: 'string',
-      description: 'Name to say hello to',
-      alias: ['n'],
-      default: 'World',
+      type: "string",
+      description: "Name to say hello to",
+      alias: ["n"],
+      default: "World",
     },
   },
   isMiddleware: false,

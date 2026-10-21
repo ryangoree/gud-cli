@@ -1,25 +1,25 @@
-import { Client, type PromptParams } from 'src/core/client';
+import { Client, type PromptParams } from "src/core/client";
 import {
   type OptionPromptParams,
   type OptionPromptType,
   optionPrompt,
-} from 'src/core/options/option-prompt';
+} from "src/core/options/option-prompt";
 import {
   type ExpandedOptionsConfig,
+  getOptionKeys,
+  getOptionTypeFromValue,
+  normalizeOptionValue,
   type OptionAlias,
   type OptionConfig,
   type OptionConfigPrimitiveType,
   type OptionKey,
+  type OptionsConfig,
   type OptionType,
   type OptionValues,
-  type OptionsConfig,
-  getOptionKeys,
-  getOptionTypeFromValue,
-  normalizeOptionValue,
-} from 'src/core/options/options';
-import { validateOptionType } from 'src/core/options/validate-options';
-import { type CamelCase, camelCase } from 'src/utils/camel-case';
-import type { AnyObject } from 'src/utils/types';
+} from "src/core/options/options";
+import { validateOptionType } from "src/core/options/validate-options";
+import { type CamelCase, camelCase } from "src/utils/camel-case";
+import type { AnyObject } from "src/utils/types";
 
 // Types //
 
@@ -29,14 +29,12 @@ import type { AnyObject } from 'src/utils/types';
  */
 type OptionGetterParams<T extends OptionConfig = OptionConfig> = Pick<
   OptionPromptParams<T>,
-  'validate'
+  "validate"
 > & {
   /**
    * The prompt to show the user if no value is provided (optional).
    */
-  prompt?:
-    | string
-    | Omit<PromptParams<OptionPromptType<T['type']>, T['type']>, 'validate'>;
+  prompt?: string | Omit<PromptParams<OptionPromptType<T["type"]>, T["type"]>, "validate">;
 };
 
 /**
@@ -55,9 +53,7 @@ export type OptionGetter<T extends OptionConfig> = <V extends T>(
  * @group Options
  */
 export type OptionsGetter<TOptions extends OptionsConfig = OptionsConfig> = {
-  [K in keyof ExpandedOptionsConfig<TOptions>]: OptionGetter<
-    ExpandedOptionsConfig<TOptions>[K]
-  >;
+  [K in keyof ExpandedOptionsConfig<TOptions>]: OptionGetter<ExpandedOptionsConfig<TOptions>[K]>;
 } & {
   /**
    * Get the values of the specified options. This is useful when you want to
@@ -71,9 +67,7 @@ export type OptionsGetter<TOptions extends OptionsConfig = OptionsConfig> = {
   get: <K extends keyof ExpandedOptionsConfig<TOptions>>(
     ...optionNames: K[]
   ) => Promise<{
-    [O in K as O | CamelCase<O>]: OptionConfigPrimitiveType<
-      ExpandedOptionsConfig<TOptions>[O]
-    >;
+    [O in K as O | CamelCase<O>]: OptionConfigPrimitiveType<ExpandedOptionsConfig<TOptions>[O]>;
   }>;
 
   /**
@@ -84,9 +78,7 @@ export type OptionsGetter<TOptions extends OptionsConfig = OptionsConfig> = {
    */
   set: <
     K extends keyof ExpandedOptionsConfig<TOptions>,
-    V extends
-      | OptionConfigPrimitiveType<ExpandedOptionsConfig<TOptions>[K]>
-      | undefined,
+    V extends OptionConfigPrimitiveType<ExpandedOptionsConfig<TOptions>[K]> | undefined,
   >(
     optionName: K,
     value: V,
@@ -98,10 +90,9 @@ export type OptionsGetter<TOptions extends OptionsConfig = OptionsConfig> = {
    * option values without triggering any validation or prompting.
    */
   readonly values: {
-    [K in keyof TOptions as OptionKey<
-      K,
-      OptionAlias<TOptions[K]>
-    >]: OptionConfigPrimitiveType<TOptions[K]>;
+    [K in keyof TOptions as OptionKey<K, OptionAlias<TOptions[K]>>]: OptionConfigPrimitiveType<
+      TOptions[K]
+    >;
   };
 };
 
@@ -166,20 +157,14 @@ export interface CreateOptionsGetterOptions<
 export function createOptionsGetter<
   TKey extends string = string,
   TType extends OptionType = OptionType,
-  TOptionsConfig extends OptionsConfig<TKey, TType> = OptionsConfig<
-    TKey,
-    TType
-  >,
+  TOptionsConfig extends OptionsConfig<TKey, TType> = OptionsConfig<TKey, TType>,
   TOptionValues extends OptionValues = OptionValues,
 >({
   client = new Client(),
   optionsConfig,
   optionValues = {} as TOptionValues,
   onPromptCancel = process.exit,
-}: CreateOptionsGetterOptions<
-  TOptionsConfig,
-  TOptionValues
->): OptionsGetter<TOptionsConfig> {
+}: CreateOptionsGetterOptions<TOptionsConfig, TOptionValues>): OptionsGetter<TOptionsConfig> {
   const expandedConfig: AnyObject<OptionConfig> = {};
 
   const getter = {
@@ -244,7 +229,7 @@ export function createOptionsGetter<
             name: key,
             onCancel: onPromptCancel,
             validate,
-            ...(typeof prompt === 'object'
+            ...(typeof prompt === "object"
               ? prompt
               : {
                   message: prompt || `Enter ${key}`,

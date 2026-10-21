@@ -1,12 +1,12 @@
-import { command } from 'src/core/command';
+import { command } from "src/core/command";
 
 export default command({
-  description: 'A test command that greets the user',
+  description: "A test command that greets the user",
   options: {
     name: {
       required: true,
-      type: 'string',
-      default: 'World',
+      type: "string",
+      default: "World",
     },
   },
 
@@ -15,6 +15,6 @@ export default command({
     const message = `Hello, ${name}!`;
     client.log(message);
     await next(message);
-    client.log('Goodbye!');
+    client.log("Goodbye!");
   },
 });

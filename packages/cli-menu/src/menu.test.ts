@@ -1,13 +1,13 @@
 // Must be imported first so `node:fs` is mocked before other modules load it
-import '@gud/cli/testing';
-import { mockCommandModule } from '@gud/cli/testing';
+import "@gud/cli/testing";
 
-import { type ResolvedCommand, command, run } from '@gud/cli';
-import { type Mock, beforeEach, expect, test, vi } from 'vitest';
-import { type CommandPromptOptions, commandPrompt } from './command-prompt';
-import { menu } from './menu';
+import { command, type ResolvedCommand, run } from "@gud/cli";
+import { mockCommandModule } from "@gud/cli/testing";
+import { beforeEach, expect, type Mock, test, vi } from "vitest";
+import { type CommandPromptOptions, commandPrompt } from "./command-prompt";
+import { menu } from "./menu";
 
-vi.mock('./command-prompt', async (importOriginal) => {
+vi.mock("./command-prompt", async (importOriginal) => {
   const original: any = await importOriginal();
   return {
     ...original,
@@ -17,10 +17,10 @@ vi.mock('./command-prompt', async (importOriginal) => {
           command: {
             handler: vi.fn(({ next, data }) => next(data)),
           },
-          commandName: 'mock-command',
-          remainingCommandString: '',
+          commandName: "mock-command",
+          remainingCommandString: "",
           commandPath: `${commandsDir}/mock-command`,
-          commandTokens: ['mock-command'],
+          commandTokens: ["mock-command"],
           subcommandsDir: `${commandsDir}/mock-command`,
           params: {},
         },
@@ -33,24 +33,24 @@ beforeEach(() => {
   (commandPrompt as Mock).mockClear();
 });
 
-test('It shows the command menu when no command string is provided', async () => {
+test("It shows the command menu when no command string is provided", async () => {
   await run({
-    command: '',
+    command: "",
     // Pass a commandsDir to prevent @gud/cli from trying to auto-detect it,
     // which would cause an error because there is none.
-    commandsDir: 'commands',
+    commandsDir: "commands",
     plugins: [menu()],
   });
 
   expect(commandPrompt).toHaveBeenCalled();
 });
 
-test('It shows the command menu when the last resolved command requires a subcommand', async () => {
-  mockCommandModule('commands/foo', command({ requiresSubcommand: true }));
+test("It shows the command menu when the last resolved command requires a subcommand", async () => {
+  mockCommandModule("commands/foo", command({ requiresSubcommand: true }));
 
   await run({
-    command: 'foo',
-    commandsDir: 'commands',
+    command: "foo",
+    commandsDir: "commands",
     plugins: [menu()],
   });
 
@@ -58,11 +58,11 @@ test('It shows the command menu when the last resolved command requires a subcom
 });
 
 test("It doesn't show the command menu when the last resolved command doesn't require a subcommand", async () => {
-  mockCommandModule('commands/foo');
+  mockCommandModule("commands/foo");
 
   await run({
-    command: 'foo',
-    commandsDir: 'commands',
+    command: "foo",
+    commandsDir: "commands",
     plugins: [],
   });
 

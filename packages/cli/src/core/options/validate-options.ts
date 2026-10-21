@@ -1,11 +1,11 @@
-import { type CliErrorOptions, UsageError } from 'src/core/errors';
+import { type CliErrorOptions, UsageError } from "src/core/errors";
 import {
-  type OptionConfig,
-  type OptionValues,
-  type OptionsConfig,
   getOptionDisplayName,
   getOptionKeys,
-} from 'src/core/options/options';
+  type OptionConfig,
+  type OptionsConfig,
+  type OptionValues,
+} from "src/core/options/options";
 
 // Errors //
 
@@ -16,7 +16,7 @@ import {
 export class OptionsError extends UsageError {
   constructor(message: string, options?: CliErrorOptions) {
     super(message, {
-      name: 'OptionsError',
+      name: "OptionsError",
       ...options,
     });
   }
@@ -29,7 +29,7 @@ export class OptionsError extends UsageError {
 export class OptionRequiredError extends OptionsError {
   constructor(optionName: string, options?: CliErrorOptions) {
     super(`Option "${optionName}" is required`, {
-      name: 'OptionRequiredError',
+      name: "OptionRequiredError",
       ...options,
     });
   }
@@ -40,13 +40,9 @@ export class OptionRequiredError extends OptionsError {
  * @group Errors
  */
 export class OptionRequiresError extends OptionsError {
-  constructor(
-    optionName: string,
-    requiresName: string,
-    options?: CliErrorOptions,
-  ) {
+  constructor(optionName: string, requiresName: string, options?: CliErrorOptions) {
     super(`Option "${optionName}" requires option "${requiresName}"`, {
-      name: 'OptionRequiresError',
+      name: "OptionRequiresError",
       ...options,
     });
   }
@@ -57,13 +53,9 @@ export class OptionRequiresError extends OptionsError {
  * @group Errors
  */
 export class OptionConflictsError extends OptionsError {
-  constructor(
-    optionName: string,
-    conflictName: string,
-    options?: CliErrorOptions,
-  ) {
+  constructor(optionName: string, conflictName: string, options?: CliErrorOptions) {
     super(`Option "${optionName}" conflicts with option "${conflictName}"`, {
-      name: 'OptionConflictsError',
+      name: "OptionConflictsError",
       ...options,
     });
   }
@@ -93,11 +85,7 @@ export interface ValidateOptionsParams {
  *
  * @group Options
  */
-export function validateOptions({
-  config,
-  values,
-  validations,
-}: ValidateOptionsParams) {
+export function validateOptions({ config, values, validations }: ValidateOptionsParams) {
   const {
     type: validateType = false,
     required: validateRequired = false,
@@ -166,10 +154,7 @@ export function validateOptions({
     if (valueConfig.requires) {
       for (const dependency of valueConfig.requires) {
         if (!(dependency in expandedValues)) {
-          const dependencyName = getOptionDisplayName(
-            dependency,
-            expandedConfig[dependency],
-          );
+          const dependencyName = getOptionDisplayName(dependency, expandedConfig[dependency]);
           throw new OptionRequiresError(valueKey, dependencyName);
         }
       }
@@ -181,17 +166,9 @@ export function validateOptions({
         if (conflictingKey in expandedValues) {
           // Find the key provided in the values object that conflicts
           const conflictConfig = expandedConfig[conflictingKey]!;
-          const allKeysForConflict = getOptionKeys(
-            conflictingKey,
-            conflictConfig,
-          );
-          const conflictingValueKey = allKeysForConflict.find(
-            (key) => key in values,
-          );
-          throw new OptionConflictsError(
-            valueKey,
-            conflictingValueKey || conflictingKey,
-          );
+          const allKeysForConflict = getOptionKeys(conflictingKey, conflictConfig);
+          const conflictingValueKey = allKeysForConflict.find((key) => key in values);
+          throw new OptionConflictsError(valueKey, conflictingValueKey || conflictingKey);
         }
       }
     }
@@ -246,21 +223,17 @@ export function validateOptionType({
 
   if (nargs) {
     // let value: any[];
-    value = Array.isArray(value)
-      ? value
-      : typeof value === 'string'
-        ? value.split(',')
-        : [value];
+    value = Array.isArray(value) ? value : typeof value === "string" ? value.split(",") : [value];
 
     if ((value as any[]).length !== nargs) {
       details.push(
-        `Expected ${nargs} value${nargs === 1 ? '' : 's'}, received ${(value as any[]).length}.`,
+        `Expected ${nargs} value${nargs === 1 ? "" : "s"}, received ${(value as any[]).length}.`,
       );
       isValid = false;
     }
 
     if (isValid) {
-      if (type === 'array') {
+      if (type === "array") {
         isValid = !!isValidValueType(value, config);
       } else {
         isValid = (value as any[]).every((v) => isValidValueType(v, config));
@@ -272,17 +245,17 @@ export function validateOptionType({
 
   if (!isValid && throws) {
     if (choices) {
-      details.push(`Choices: ${choices.join(', ')}`);
+      details.push(`Choices: ${choices.join(", ")}`);
     }
 
     let errorString = `Invalid value for ${type} option "${name}": ${value}`;
 
     if (details.length) {
-      errorString += `\n\n${details.join('\n')}\n`;
+      errorString += `\n\n${details.join("\n")}\n`;
     }
 
     const optionTypeString =
-      !nargs || nargs < 2 ? type : `${new Array(nargs).fill(type).join(', ')}`;
+      !nargs || nargs < 2 ? type : `${new Array(nargs).fill(type).join(", ")}`;
     errorString += `Type: ${optionTypeString}\n`;
 
     throw new OptionsError(errorString);
@@ -298,15 +271,15 @@ function isValidValueType(value: unknown, config: OptionConfig) {
   const { choices, type } = config;
 
   switch (type) {
-    case 'number':
-      return typeof value === 'number' && !Number.isNaN(value);
+    case "number":
+      return typeof value === "number" && !Number.isNaN(value);
 
-    case 'boolean':
-      return typeof value === 'boolean';
+    case "boolean":
+      return typeof value === "boolean";
 
-    case 'array':
-      if (typeof value === 'string') {
-        value = value.split(',').length > 0;
+    case "array":
+      if (typeof value === "string") {
+        value = value.split(",").length > 0;
       }
       return (
         Array.isArray(value) &&
@@ -315,10 +288,6 @@ function isValidValueType(value: unknown, config: OptionConfig) {
       );
 
     default:
-      return (
-        typeof value === 'string' &&
-        value.length > 0 &&
-        (!choices || choices.includes(value))
-      );
+      return typeof value === "string" && value.length > 0 && (!choices || choices.includes(value));
   }
 }

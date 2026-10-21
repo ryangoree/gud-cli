@@ -8,14 +8,14 @@
  * @group Utils
  */
 export function removeFileExtension(path: string): string {
-  return path.replace(/(?<!\.)\.\w+$/, '');
+  return path.replace(/(?<!\.)\.\w+$/, "");
 }
 
 /**
  * Formats a file name to ensure it ends with `.js`.
  * @group Resolve
  */
-export function formatFileName(fileName: string, extension = '.js'): string {
+export function formatFileName(fileName: string, extension = ".js"): string {
   return `${removeFileExtension(fileName)}${extension}`;
 }
 
@@ -75,8 +75,7 @@ export function parseFileName(fileName: string): {
   paramName: string | undefined;
   extension: string | undefined;
 } {
-  const [_, spreadOperator, paramName, extension] =
-    fileName.match(PARAM_FILE_NAME_REGEX) || [];
+  const [_, spreadOperator, paramName, extension] = fileName.match(PARAM_FILE_NAME_REGEX) || [];
 
   return {
     spreadOperator,

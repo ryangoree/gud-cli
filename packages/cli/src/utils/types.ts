@@ -171,16 +171,16 @@ export type Merge<T> = Eval<
  * // }
  * ```
  */
-export type OneOf<T extends AnyObject> = UnionKey<T> extends infer K extends
-  PropertyKey
-  ? T extends T
-    ? Eval<
-        T & {
-          [_ in Exclude<K, keyof T>]?: never;
-        }
-      >
-    : never
-  : never;
+export type OneOf<T extends AnyObject> =
+  UnionKey<T> extends infer K extends PropertyKey
+    ? T extends T
+      ? Eval<
+          T & {
+            [_ in Exclude<K, keyof T>]?: never;
+          }
+        >
+      : never
+    : never;
 
 /**
  * Get {@linkcode T}, ensuring that all keys from {@linkcode K} are present. If
@@ -227,9 +227,7 @@ export type OneOf<T extends AnyObject> = UnionKey<T> extends infer K extends
  */
 export type KeyMap<
   K extends string | number,
-  T extends [TDefault] extends [never]
-    ? Record<K, unknown>
-    : Partial<Record<K, unknown>>,
+  T extends [TDefault] extends [never] ? Record<K, unknown> : Partial<Record<K, unknown>>,
   TDefault = never,
 > = {
   [TKey in K]: TKey extends keyof T
@@ -265,7 +263,5 @@ export type KeyWithMatchingValue<
   TSourceKey extends keyof TSourceMap,
   TTargetMap extends AnyObject = TSourceMap,
 > = {
-  [K in keyof TTargetMap]: TTargetMap[K] extends TSourceMap[TSourceKey]
-    ? K
-    : never;
+  [K in keyof TTargetMap]: TTargetMap[K] extends TSourceMap[TSourceKey] ? K : never;
 }[keyof TTargetMap];

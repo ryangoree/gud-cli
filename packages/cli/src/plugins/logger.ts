@@ -1,10 +1,10 @@
-import { appendFileSync, mkdirSync } from 'node:fs';
-import { dirname, relative } from 'node:path';
-import { type InspectOptions, inspect } from 'node:util';
-import type { Client } from 'src/core/client';
-import { CliError } from 'src/core/errors';
-import type { HookPayload } from 'src/core/hooks';
-import { type Plugin, PluginError, plugin } from 'src/core/plugin';
+import { appendFileSync, mkdirSync } from "node:fs";
+import { dirname, relative } from "node:path";
+import { type InspectOptions, inspect } from "node:util";
+import type { Client } from "src/core/client";
+import { CliError } from "src/core/errors";
+import type { HookPayload } from "src/core/hooks";
+import { type Plugin, PluginError, plugin } from "src/core/plugin";
 
 export interface LoggerMeta {
   /**
@@ -153,7 +153,7 @@ export function logger({
   prefix = logFile ? defaultLogFilePrefix : defaultPrefix,
   verbose = false,
 }: LoggerOptions = {}): Plugin<LoggerMeta> {
-  const getPrefix = typeof prefix === 'function' ? prefix : () => prefix;
+  const getPrefix = typeof prefix === "function" ? prefix : () => prefix;
 
   // if a logFile is provided, ensure the directory exists.
   if (logFile) {
@@ -161,9 +161,7 @@ export function logger({
       const dir = dirname(logFile);
       mkdirSync(dir, { recursive: true });
     } catch (error) {
-      throw new PluginError(
-        `Failed to create log directory for file "${logFile}": ${error}`,
-      );
+      throw new PluginError(`Failed to create log directory for file "${logFile}": ${error}`);
     }
   }
 
@@ -180,81 +178,67 @@ export function logger({
   }
 
   // Create hook functions.
-  function beforeExecute({ state }: HookPayload<'beforeExecute'>) {
-    log(state.client, 'Starting execution', {
+  function beforeExecute({ state }: HookPayload<"beforeExecute">) {
+    log(state.client, "Starting execution", {
       commandString: state.context.commandString,
       commandCount: state.commandQueue.length,
-      commands: state.commandQueue.map((cmd) => cmd.commandName).join(' → '),
+      commands: state.commandQueue.map((cmd) => cmd.commandName).join(" → "),
     });
   }
-  function beforeCommand({
-    state,
-    command,
-    data,
-    params,
-  }: HookPayload<'beforeCommand'>) {
+  function beforeCommand({ state, command, data, params }: HookPayload<"beforeCommand">) {
     if (!state.command) return;
-    log(state.client, 'Executing command', {
+    log(state.client, "Executing command", {
       name: command.commandName,
       data,
       params,
       step: `${state.i + 1}/${state.commandQueue.length}`,
     });
   }
-  function afterCommand({ state, command, data }: HookPayload<'afterCommand'>) {
-    log(state.client, 'Completed command', {
+  function afterCommand({ state, command, data }: HookPayload<"afterCommand">) {
+    log(state.client, "Completed command", {
       commandName: command.commandName,
       data,
     });
   }
-  function afterExecute({ state, result }: HookPayload<'afterExecute'>) {
-    log(state.client, 'Execution completed', {
+  function afterExecute({ state, result }: HookPayload<"afterExecute">) {
+    log(state.client, "Execution completed", {
       finalResult: result,
       commandsExecuted: state.commandQueue.length,
     });
   }
 
   // Verbose logging hook functions.
-  function beforeResolve({
-    context,
-    commandString,
-    commandsDir,
-  }: HookPayload<'beforeResolve'>) {
-    log(context.client, 'Resolving commands', {
+  function beforeResolve({ context, commandString, commandsDir }: HookPayload<"beforeResolve">) {
+    log(context.client, "Resolving commands", {
       commandString,
       commandsDir: relative(process.cwd(), commandsDir),
     });
   }
-  function afterResolve({
-    context,
-    resolvedCommands,
-  }: HookPayload<'afterResolve'>) {
+  function afterResolve({ context, resolvedCommands }: HookPayload<"afterResolve">) {
     log(
       context.client,
-      'Commands resolved',
+      "Commands resolved",
       resolvedCommands.map((cmd) => ({
         name: cmd.commandName,
         path: relative(process.cwd(), cmd.commandPath),
       })),
     );
   }
-  function beforeError({ context, error }: HookPayload<'beforeError'>) {
+  function beforeError({ context, error }: HookPayload<"beforeError">) {
     const { name, message } =
-      error instanceof Error
-        ? error
-        : new CliError(error, { name: 'UnknownError' });
-    log(context.client, 'Error occurred', {
+      error instanceof Error ? error : new CliError(error, { name: "UnknownError" });
+    log(context.client, "Error occurred", {
       error: name,
       message,
     });
   }
-  function beforeExit({ code, context, message }: HookPayload<'beforeExit'>) {
-    log(context.client, 'Exiting', { code, message });
+  function beforeExit({ code, context, message }: HookPayload<"beforeExit">) {
+    log(context.client, "Exiting", { code, message });
   }
 
   return plugin<LoggerMeta>({
-    name: 'logger',
-    description: 'Logs the result of each execution step.',
+    name: "logger",
+    description: "Logs the result of each execution step.",
     meta: {
       get enabled() {
         return _enabled;
@@ -271,35 +255,35 @@ export function logger({
     init: async ({ hooks, plugins }) => {
       if (plugins.logger?.isReady) {
         throw new PluginError(
-          'Logger plugin is already registered. Please remove the duplicate registration.',
+          "Logger plugin is already registered. Please remove the duplicate registration.",
         );
       }
 
       _enabled = enabled;
 
       _enableLogger = () => {
-        hooks.on('beforeExecute', beforeExecute);
-        hooks.on('beforeCommand', beforeCommand);
-        hooks.on('afterCommand', afterCommand);
-        hooks.on('afterExecute', afterExecute);
+        hooks.on("beforeExecute", beforeExecute);
+        hooks.on("beforeCommand", beforeCommand);
+        hooks.on("afterCommand", afterCommand);
+        hooks.on("afterExecute", afterExecute);
         if (verbose) {
-          hooks.on('beforeResolve', beforeResolve);
-          hooks.on('afterResolve', afterResolve);
-          hooks.on('beforeError', beforeError);
-          hooks.on('beforeExit', beforeExit);
+          hooks.on("beforeResolve", beforeResolve);
+          hooks.on("afterResolve", afterResolve);
+          hooks.on("beforeError", beforeError);
+          hooks.on("beforeExit", beforeExit);
         }
         _enabled = true;
       };
 
       _disableLogger = () => {
-        hooks.off('beforeExecute', beforeExecute);
-        hooks.off('beforeCommand', beforeCommand);
-        hooks.off('afterExecute', afterExecute);
+        hooks.off("beforeExecute", beforeExecute);
+        hooks.off("beforeCommand", beforeCommand);
+        hooks.off("afterExecute", afterExecute);
         if (verbose) {
-          hooks.off('beforeResolve', beforeResolve);
-          hooks.off('afterResolve', afterResolve);
-          hooks.off('beforeError', beforeError);
-          hooks.off('beforeExit', beforeExit);
+          hooks.off("beforeResolve", beforeResolve);
+          hooks.off("afterResolve", afterResolve);
+          hooks.off("beforeError", beforeError);
+          hooks.off("beforeExit", beforeExit);
         }
         _enabled = false;
       };
@@ -310,11 +294,11 @@ export function logger({
 }
 
 function bold(...msg: string[]) {
-  return `\u001b[1m${msg.join(' ')}\u001b[0m`;
+  return `\u001b[1m${msg.join(" ")}\u001b[0m`;
 }
 
 function defaultPrefix() {
-  return '🪵  ';
+  return "🪵  ";
 }
 
 function defaultLogFilePrefix() {
@@ -322,9 +306,7 @@ function defaultLogFilePrefix() {
 }
 
 function logToFile(logFile: string, message: string, ...data: any[]) {
-  const formattedData = data
-    .map((d) => formatData(d, { colors: false }))
-    .join(' ');
+  const formattedData = data.map((d) => formatData(d, { colors: false })).join(" ");
   appendFileSync(logFile, `${message}: ${formattedData}\n`);
 }
 

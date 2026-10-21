@@ -1,13 +1,9 @@
-import { Console } from 'node:console';
-import process from 'node:process';
-import prompts, {
-  type Choice,
-  type PromptObject,
-  type PromptType,
-} from 'prompts';
-import { CliError, type CliErrorOptions } from 'src/core/errors';
-import type { OptionPrimitiveType, OptionType } from 'src/core/options/options';
-import type { KeyMap, Replace } from 'src/utils/types';
+import { Console } from "node:console";
+import process from "node:process";
+import prompts, { type Choice, type PromptObject, type PromptType } from "prompts";
+import { CliError, type CliErrorOptions } from "src/core/errors";
+import type { OptionPrimitiveType, OptionType } from "src/core/options/options";
+import type { KeyMap, Replace } from "src/utils/types";
 
 // Errors //
 
@@ -18,7 +14,7 @@ import type { KeyMap, Replace } from 'src/utils/types';
 export class ClientError extends CliError {
   constructor(message: unknown, options?: CliErrorOptions) {
     super(message, {
-      name: 'Error',
+      name: "Error",
       ...options,
     });
   }
@@ -48,8 +44,7 @@ export type PromptTypeMap = KeyMap<
  * Get the primitive type for a prompt type.
  * @group Client
  */
-export type PromptPrimitiveType<T extends PromptType = PromptType> =
-  PromptTypeMap[T];
+export type PromptPrimitiveType<T extends PromptType = PromptType> = PromptTypeMap[T];
 
 // Functions + Function Types //
 
@@ -67,11 +62,11 @@ export type PromptParams<
   T extends PromptType = PromptType,
   TOptionType extends OptionType = OptionType,
 > = Replace<
-  Omit<PromptObject, 'name' | 'separator'>,
+  Omit<PromptObject, "name" | "separator">,
   {
     // make the message property required since prompts throws an error if it's
     // not defined.
-    message: NonNullable<prompts.PromptObject['message']>;
+    message: NonNullable<prompts.PromptObject["message"]>;
     // make the type property optional since we'll default to 'text'
     type?: T;
     choices?: Replace<
@@ -105,7 +100,7 @@ export class Client extends Console {
     const clientError = new ClientError(error);
     console.error(
       `\n${
-        process.env.NODE_ENV === 'development'
+        process.env.NODE_ENV === "development"
           ? clientError.stack
           : `${CliError.prefix}Error: ${clientError.message}`
       }`,
@@ -124,12 +119,12 @@ export class Client extends Console {
     prompt: PromptParams<T>,
   ): Promise<PromptPrimitiveType<T>> {
     const { value } = await prompts({
-      type: 'text',
-      active: 'yes',
-      inactive: 'no',
+      type: "text",
+      active: "yes",
+      inactive: "no",
       ...prompt,
-      name: 'value',
-      separator: ',',
+      name: "value",
+      separator: ",",
     });
     return value;
   }
@@ -142,6 +137,6 @@ export class Client extends Console {
    * @returns Whether the user confirmed.
    */
   async confirm(message: string, initial = true): Promise<boolean> {
-    return this.prompt({ type: 'confirm', initial, message });
+    return this.prompt({ type: "confirm", initial, message });
   }
 }

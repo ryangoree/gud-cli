@@ -8,9 +8,7 @@
  */
 export function camelCase<S>(str: S): CamelCase<S> {
   return (
-    typeof str === 'string'
-      ? str.replace(/-+([^-])/g, (_, c) => c.toUpperCase())
-      : str
+    typeof str === "string" ? str.replace(/-+([^-])/g, (_, c) => c.toUpperCase()) : str
   ) as CamelCase<S>;
 }
 

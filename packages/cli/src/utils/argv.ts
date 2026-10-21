@@ -3,7 +3,7 @@
  * @group Utils
  */
 export function getBin() {
-  return process.argv[getBinIndex()] || '';
+  return process.argv[getBinIndex()] || "";
 }
 
 /**

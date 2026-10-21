@@ -1,37 +1,29 @@
-import { readdirSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { readdirSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import {
   type CommandModule,
   passThroughCommand,
   passThroughHandler,
   validateCommandString,
-} from 'src/core/command';
+} from "src/core/command";
 import {
   CliError,
   type CliErrorOptions,
   CommandRequiredError,
   NotFoundError,
   UsageError,
-} from 'src/core/errors';
-import {
-  type ParseCommandFn,
-  parseCommand,
-  removeLeadingOptions,
-} from 'src/core/parse';
-import { getCallerPath } from 'src/utils/caller-path';
-import {
-  formatFileName,
-  parseFileName,
-  removeFileExtension,
-} from 'src/utils/filename';
-import { isDirectory, isFile } from 'src/utils/fs';
-import { joinTokens, splitTokens } from 'src/utils/tokens';
-import type { MaybePromise } from 'src/utils/types';
+} from "src/core/errors";
+import { type ParseCommandFn, parseCommand, removeLeadingOptions } from "src/core/parse";
+import { getCallerPath } from "src/utils/caller-path";
+import { formatFileName, parseFileName, removeFileExtension } from "src/utils/filename";
+import { isDirectory, isFile } from "src/utils/fs";
+import { joinTokens, splitTokens } from "src/utils/tokens";
+import type { MaybePromise } from "src/utils/types";
 
 /**
  * The default directory name for commands.
  */
-export const DEFAULT_COMMANDS_DIR_NAME = 'commands';
+export const DEFAULT_COMMANDS_DIR_NAME = "commands";
 
 /**
  * An error indicating a command is missing a default export.
@@ -40,7 +32,7 @@ export const DEFAULT_COMMANDS_DIR_NAME = 'commands';
 export class MissingDefaultExportError extends CliError {
   constructor(token: string | number, path: string, options?: CliErrorOptions) {
     super(`Missing default export for command "${token}" at "${path}"`, {
-      name: 'MissingDefaultExportError',
+      name: "MissingDefaultExportError",
       ...options,
     });
   }
@@ -51,9 +43,7 @@ export class MissingDefaultExportError extends CliError {
  * directory path, returning the first matching command.
  * @group Resolve
  */
-export type ResolveCommandFn = (
-  options: ResolveCommandParams,
-) => MaybePromise<ResolvedCommand>;
+export type ResolveCommandFn = (options: ResolveCommandParams) => MaybePromise<ResolvedCommand>;
 
 /**
  * Params that were parsed from the command string.
@@ -159,10 +149,7 @@ export async function resolveCommand({
 }: ResolveCommandParams): Promise<ResolvedCommand> {
   if (!commandString.length) throw new CommandRequiredError();
 
-  const [commandName, ...remainingTokens] = splitTokens(commandString) as [
-    string,
-    ...string[],
-  ];
+  const [commandName, ...remainingTokens] = splitTokens(commandString) as [string, ...string[]];
 
   // Validate the command name and commands directory before resolving a command.
   validateResolvable(commandName, commandsDir);
@@ -175,9 +162,7 @@ export async function resolveCommand({
 
   // Attempt to load the command file.
   try {
-    const { default: command }: { default: CommandModule } = await import(
-      commandPath
-    );
+    const { default: command }: { default: CommandModule } = await import(commandPath);
 
     if (!command) {
       throw new MissingDefaultExportError(commandName, commandPath);
@@ -282,7 +267,7 @@ export function resolveDefaultCommandsDir(callerDepth = 0): string {
   // if "<cwd>/commands" doesn't exist, try "<caller-dir>/commands"
   if (!isDirectory(defaultCommandsDir)) {
     triedPaths.push(defaultCommandsDir);
-    const callerDirPath = dirname(getCallerPath(callerDepth) || '');
+    const callerDirPath = dirname(getCallerPath(callerDepth) || "");
     defaultCommandsDir = join(callerDirPath, DEFAULT_COMMANDS_DIR_NAME);
   }
 
@@ -292,8 +277,8 @@ export function resolveDefaultCommandsDir(callerDepth = 0): string {
     throw new CliError(
       [
         'Unable to find commands directory. Specify the path to a directory containing command modules using the "commandsDir" option or create the directory at one of the following locations:',
-        `- ${triedPaths.join('\n  - ')}\n`,
-      ].join('\n  '),
+        `- ${triedPaths.join("\n  - ")}\n`,
+      ].join("\n  "),
     );
   }
 
@@ -328,7 +313,7 @@ async function resolveParamCommand({
   commandsDir,
   parseFn = parseCommand,
 }: ResolveCommandParams): Promise<ResolvedCommand | undefined> {
-  if (!commandString.length) throw new UsageError('Command required.');
+  if (!commandString.length) throw new UsageError("Command required.");
 
   const fileNames = readdirSync(commandsDir);
   let tokens = splitTokens(commandString) as [string, ...string[]];
@@ -351,9 +336,7 @@ async function resolveParamCommand({
     // Empty the remaining command string if the param has a spread operator
     // (e.g., [...param].ts) indicating that all remaining tokens should be
     // passed to the command.
-    const remainingCommandString = spreadOperator
-      ? ''
-      : joinTokens(remainingTokens);
+    const remainingCommandString = spreadOperator ? "" : joinTokens(remainingTokens);
 
     // Attempt to load the command file.
     try {

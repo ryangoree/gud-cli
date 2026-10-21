@@ -1,5 +1,5 @@
-import { CliError, type CliErrorOptions } from 'src/core/errors';
-import type { OptionsConfig } from 'src/core/options/options';
+import { CliError, type CliErrorOptions } from "src/core/errors";
+import type { OptionsConfig } from "src/core/options/options";
 
 // Errors //
 
@@ -10,7 +10,7 @@ import type { OptionsConfig } from 'src/core/options/options';
 export class OptionsConfigError extends CliError {
   constructor(message: string, options?: CliErrorOptions) {
     super(message, {
-      name: 'OptionsConfigError',
+      name: "OptionsConfigError",
       ...options,
     });
   }
@@ -34,9 +34,7 @@ export function validateOptionsConfig(options: OptionsConfig) {
     }
 
     if (required && requires?.length) {
-      throw new OptionsConfigError(
-        `Option "${name}" cannot be required and require other options`,
-      );
+      throw new OptionsConfigError(`Option "${name}" cannot be required and require other options`);
     }
   }
 }

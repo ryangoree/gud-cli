@@ -1,16 +1,16 @@
-import { basename, dirname, join } from 'node:path';
-import type { CommandModule } from 'src/core/command';
-import { NotFoundError } from 'src/core/errors';
-import { parseCommand } from 'src/core/parse';
-import type { State } from 'src/core/state';
-import { formatFileName } from 'src/utils/filename';
-import type { Eval } from 'src/utils/types';
-import { type Mock, vi } from 'vitest';
+import { basename, dirname, join } from "node:path";
+import type { CommandModule } from "src/core/command";
+import { NotFoundError } from "src/core/errors";
+import { parseCommand } from "src/core/parse";
+import type { State } from "src/core/state";
+import { formatFileName } from "src/utils/filename";
+import type { Eval } from "src/utils/types";
+import { type Mock, vi } from "vitest";
 
 const mockCommandDirs = new Map<string, Set<string>>();
 
-vi.mock('node:fs', async (importOriginal) => {
-  const fs = (await importOriginal()) as typeof import('fs');
+vi.mock("node:fs", async (importOriginal) => {
+  const fs = (await importOriginal()) as typeof import("fs");
   const mod = {
     ...fs,
     promises: {
@@ -153,12 +153,11 @@ export function mockCommandModule<T extends CommandModule | undefined>(
  *   },
  * });
  */
-export function mockCommandModules<
-  TModules extends Record<string, CommandModule>,
->(commandModules: TModules) {
-  const results = Object.entries(commandModules).map(
-    ([commandPath, commandModule]) =>
-      mockCommandModule(commandPath, commandModule),
+export function mockCommandModules<TModules extends Record<string, CommandModule>>(
+  commandModules: TModules,
+) {
+  const results = Object.entries(commandModules).map(([commandPath, commandModule]) =>
+    mockCommandModule(commandPath, commandModule),
   );
 
   return {
@@ -217,7 +216,7 @@ type CommandNameMap<
     ? Word extends `-${string}`
       ? CommandNameMap<Rest, TValues, TResult>
       : CommandNameMap<Rest, TValues, TResult & { [k in Word]: TValues }>
-    : TString extends '' | `-${string}`
+    : TString extends "" | `-${string}`
       ? TResult
-      : CommandNameMap<'', TValues, TResult & { [k in TString]: TValues }>
+      : CommandNameMap<"", TValues, TResult & { [k in TString]: TValues }>
 >;

@@ -1,12 +1,9 @@
-import {
-  OptionsError,
-  validateOptions,
-} from 'src/core/options/validate-options';
-import { describe, expect, it } from 'vitest';
+import { OptionsError, validateOptions } from "src/core/options/validate-options";
+import { describe, expect, it } from "vitest";
 
-describe('options', () => {
-  describe('validator', () => {
-    it('throws OptionsError on invalid option types', async () => {
+describe("options", () => {
+  describe("validator", () => {
+    it("throws OptionsError on invalid option types", async () => {
       expect(() => {
         validateOptions({
           values: {
@@ -14,7 +11,7 @@ describe('options', () => {
           },
           config: {
             foo: {
-              type: 'string', // <-- should be a string
+              type: "string", // <-- should be a string
             },
           },
           validations: {
@@ -26,11 +23,11 @@ describe('options', () => {
       expect(() => {
         validateOptions({
           values: {
-            foo: 'bar', // <-- string
+            foo: "bar", // <-- string
           },
           config: {
             foo: {
-              type: 'number', // <-- should be a number
+              type: "number", // <-- should be a number
             },
           },
           validations: {
@@ -42,11 +39,11 @@ describe('options', () => {
       expect(() => {
         validateOptions({
           values: {
-            foo: 'bar', // <-- string
+            foo: "bar", // <-- string
           },
           config: {
             foo: {
-              type: 'boolean', // <-- should be a boolean
+              type: "boolean", // <-- should be a boolean
             },
           },
           validations: {
@@ -58,11 +55,11 @@ describe('options', () => {
       expect(() => {
         validateOptions({
           values: {
-            foo: 'bar', // <-- string
+            foo: "bar", // <-- string
           },
           config: {
             foo: {
-              type: 'array', // <-- should be an array of strings
+              type: "array", // <-- should be an array of strings
             },
           },
           validations: {
@@ -72,13 +69,13 @@ describe('options', () => {
       }).toThrowError(OptionsError);
     });
 
-    it('throws OptionsError on missing required options', async () => {
+    it("throws OptionsError on missing required options", async () => {
       expect(() => {
         validateOptions({
           values: {}, // <-- no values
           config: {
             foo: {
-              type: 'string',
+              type: "string",
               required: true, // <-- required value
             },
           },
@@ -89,20 +86,20 @@ describe('options', () => {
       }).toThrowError(OptionsError);
     });
 
-    it('throws OptionsError on conflicts', async () => {
+    it("throws OptionsError on conflicts", async () => {
       expect(() => {
         validateOptions({
           values: {
-            a: 'foo',
-            b: 'bar', // <-- b is present
+            a: "foo",
+            b: "bar", // <-- b is present
           },
           config: {
             a: {
-              type: 'string',
-              conflicts: ['b'], // <-- conflicts with b
+              type: "string",
+              conflicts: ["b"], // <-- conflicts with b
             },
             b: {
-              type: 'string',
+              type: "string",
             },
           },
           validations: {
@@ -114,17 +111,17 @@ describe('options', () => {
       expect(() => {
         validateOptions({
           values: {
-            a: 'foo',
-            B: 'bar', // <-- B (b's alias) is present
+            a: "foo",
+            B: "bar", // <-- B (b's alias) is present
           },
           config: {
             a: {
-              type: 'string',
-              conflicts: ['b'], // <-- conflicts with b
+              type: "string",
+              conflicts: ["b"], // <-- conflicts with b
             },
             b: {
-              type: 'string',
-              alias: ['B'],
+              type: "string",
+              alias: ["B"],
             },
           },
           validations: {
@@ -136,17 +133,17 @@ describe('options', () => {
       expect(() => {
         validateOptions({
           values: {
-            a: 'foo',
-            b: 'bar', // <-- b is present
+            a: "foo",
+            b: "bar", // <-- b is present
           },
           config: {
             a: {
-              type: 'string',
-              conflicts: ['B'], // <-- conflicts with b's alias
+              type: "string",
+              conflicts: ["B"], // <-- conflicts with b's alias
             },
             b: {
-              type: 'string',
-              alias: ['B'],
+              type: "string",
+              alias: ["B"],
             },
           },
           validations: {
@@ -156,19 +153,19 @@ describe('options', () => {
       }).toThrowError(OptionsError);
     });
 
-    it('throws OptionsError on missing required option combos', async () => {
+    it("throws OptionsError on missing required option combos", async () => {
       expect(() => {
         validateOptions({
           values: {
-            a: 'foo', // <-- b is missing
+            a: "foo", // <-- b is missing
           },
           config: {
             a: {
-              type: 'string',
-              requires: ['b'], // <-- requires b
+              type: "string",
+              requires: ["b"], // <-- requires b
             },
             b: {
-              type: 'string',
+              type: "string",
             },
           },
           validations: {
@@ -180,16 +177,16 @@ describe('options', () => {
       expect(() => {
         validateOptions({
           values: {
-            a: 'foo', // <-- b is missing
+            a: "foo", // <-- b is missing
           },
           config: {
             a: {
-              type: 'string',
-              requires: ['B'], // <-- requires b's alias
+              type: "string",
+              requires: ["B"], // <-- requires b's alias
             },
             b: {
-              type: 'string',
-              alias: ['B'],
+              type: "string",
+              alias: ["B"],
             },
           },
           validations: {

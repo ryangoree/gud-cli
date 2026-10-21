@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-import { help, run } from '@gud/cli';
-import { menu } from '@gud/cli-menu';
+import { help, run } from "@gud/cli";
+import { menu } from "@gud/cli-menu";
 
 const result = await run({
   plugins: [
     help(),
     menu({
-      title: 'Foo CLI',
-      titleColors: ['#D89DFF', '#519BFF'],
+      title: "Foo CLI",
+      titleColors: ["#D89DFF", "#519BFF"],
     }),
   ],
 }).catch((e) => {

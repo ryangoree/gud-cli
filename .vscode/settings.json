@@ -22,17 +22,6 @@
   "[jsonc]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "cSpell.words": [
-    "cfonts",
-    "cliui",
-    "divs",
-    "narg",
-    "nargs",
-    "signale",
-    "unmock"
-  ],
-  "js/ts.preferences.autoImportFileExcludePatterns": [
-    "src/index.*",
-    "src/exports*"
-  ]
+  "cSpell.words": ["cfonts", "cliui", "divs", "narg", "nargs", "signale", "unmock"],
+  "js/ts.preferences.autoImportFileExcludePatterns": ["src/index.*", "src/exports*"]
 }

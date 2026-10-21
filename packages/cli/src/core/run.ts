@@ -1,16 +1,13 @@
-import { type Client, ClientError } from 'src/core/client';
-import type { ParseCommandFn } from 'src/core/parse';
-import {
-  type ResolveCommandFn,
-  resolveDefaultCommandsDir,
-} from 'src/core/resolve';
-import { hideBin } from 'src/utils/argv';
-import { joinTokens } from 'src/utils/tokens';
-import { Context } from './context';
-import { CliError } from './errors';
-import { HookRegistry, type LifecycleHooks } from './hooks';
-import type { OptionsConfig } from './options/options';
-import type { Plugin } from './plugin';
+import { type Client, ClientError } from "src/core/client";
+import type { ParseCommandFn } from "src/core/parse";
+import { type ResolveCommandFn, resolveDefaultCommandsDir } from "src/core/resolve";
+import { hideBin } from "src/utils/argv";
+import { joinTokens } from "src/utils/tokens";
+import { Context } from "./context";
+import { CliError } from "./errors";
+import { HookRegistry, type LifecycleHooks } from "./hooks";
+import type { OptionsConfig } from "./options/options";
+import type { Plugin } from "./plugin";
 
 /**
  * Params for the {@linkcode run} function.
@@ -105,7 +102,7 @@ export async function run({
   hooks,
 }: RunParams = {}) {
   let commandString = joinTokens(command);
-  if ((!commandString || commandString.startsWith('-')) && defaultCommand) {
+  if ((!commandString || commandString.startsWith("-")) && defaultCommand) {
     commandString = joinTokens(defaultCommand, command);
   }
 
@@ -122,7 +119,7 @@ export async function run({
   });
 
   // Intercept process exit events to ensure they're handled by the context.
-  process.on('exit', context.exit);
+  process.on("exit", context.exit);
 
   // Attempt to prepare and execute the command and return the result.
   try {

@@ -1,19 +1,19 @@
-import { readdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { readdirSync } from "node:fs";
+import { dirname, join } from "node:path";
 import {
   Client,
   type CommandModule,
-  type ResolveCommandFn,
-  type ResolvedCommand,
   parseFileName,
   passThroughCommand,
+  type ResolveCommandFn,
+  type ResolvedCommand,
   removeFileExtension,
   resolveCommand,
-} from '@gud/cli';
-import cfonts from 'cfonts';
-import colors from 'colors';
-import type { Choice } from 'prompts';
-import type { MenuOptions } from './menu.js';
+} from "@gud/cli";
+import cfonts from "cfonts";
+import colors from "colors";
+import type { Choice } from "prompts";
+import type { MenuOptions } from "./menu.js";
 
 export interface CommandPromptOptions extends MenuOptions {
   /**
@@ -44,14 +44,12 @@ export interface CommandPromptOptions extends MenuOptions {
   onCancel?: () => void;
 }
 
-export async function commandPrompt(
-  options: CommandPromptOptions,
-): Promise<ResolvedCommand[]> {
+export async function commandPrompt(options: CommandPromptOptions): Promise<ResolvedCommand[]> {
   const {
     client = new Client(),
     title,
-    titleColors = ['#2EFFAF', '#0FC2C2'],
-    message = 'Choose a command',
+    titleColors = ["#2EFFAF", "#0FC2C2"],
+    message = "Choose a command",
     showDescriptions = true,
     maxDescriptionLength = Number.POSITIVE_INFINITY,
     commandsDir,
@@ -62,7 +60,7 @@ export async function commandPrompt(
 
   if (title) {
     cfonts.say(title, {
-      font: 'tiny',
+      font: "tiny",
       gradient: titleColors,
       transitionGradient: true,
     });
@@ -77,9 +75,7 @@ export async function commandPrompt(
 
     if (showDescriptions) {
       const filepath = join(commandsDir, filename);
-      const { default: command }: { default: CommandModule } = await import(
-        filepath
-      ).catch(() => {
+      const { default: command }: { default: CommandModule } = await import(filepath).catch(() => {
         return {
           ...passThroughCommand,
           default: passThroughCommand,
@@ -97,9 +93,7 @@ export async function commandPrompt(
     // directory.
     if (!choicesByName.has(commandName) || description) {
       choicesByName.set(commandName, {
-        title: `${commandName}${
-          description ? colors.dim(` - ${description}`) : ''
-        }`,
+        title: `${commandName}${description ? colors.dim(` - ${description}`) : ""}`,
         value: filename,
       });
     }
@@ -108,15 +102,15 @@ export async function commandPrompt(
   const choices = [...choicesByName.values()];
 
   const backChoice = {
-    title: colors.italic('↩ back'),
-    value: 'command-menu-back',
+    title: colors.italic("↩ back"),
+    value: "command-menu-back",
   };
   if (selectionHistory.length) {
     choices.unshift(backChoice);
   }
 
   const filename = await client.prompt({
-    type: 'select',
+    type: "select",
     message,
     choices,
   });
@@ -142,10 +136,8 @@ export async function commandPrompt(
 
   if (paramName) {
     let commandStringWithValues = await client.prompt({
-      type: spreadOperator ? 'list' : 'text',
-      message: spreadOperator
-        ? `Enter values for ${paramName}`
-        : `Enter a value for ${paramName}`,
+      type: spreadOperator ? "list" : "text",
+      message: spreadOperator ? `Enter values for ${paramName}` : `Enter a value for ${paramName}`,
       initial: commandString,
     });
 
@@ -155,7 +147,7 @@ export async function commandPrompt(
     }
 
     if (Array.isArray(commandStringWithValues)) {
-      commandStringWithValues = commandStringWithValues.join(' ');
+      commandStringWithValues = commandStringWithValues.join(" ");
     }
 
     commandString = commandStringWithValues;

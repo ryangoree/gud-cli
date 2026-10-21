@@ -1,6 +1,6 @@
-import { CliError, type CliErrorOptions } from 'src/core/errors';
-import type { AnyObject, MaybePromise } from 'src/utils/types';
-import type { Context } from './context';
+import { CliError, type CliErrorOptions } from "src/core/errors";
+import type { AnyObject, MaybePromise } from "src/utils/types";
+import type { Context } from "./context";
 
 /**
  * A plugin for @gud/cli
@@ -38,18 +38,14 @@ export type PluginInfo<TMeta extends AnyObject = AnyObject> = {
    * plugin does.
    */
   description?: string;
-} & ({} extends TMeta
-  ? PluginMetaOption<TMeta>
-  : Required<PluginMetaOption<TMeta>>);
+} & ({} extends TMeta ? PluginMetaOption<TMeta> : Required<PluginMetaOption<TMeta>>);
 
 /**
  * Factory function to create a {@linkcode Plugin} with strong typing.
  *
  * @group Plugin
  */
-export function plugin<TMeta extends AnyObject = AnyObject>(
-  plugin: Plugin<TMeta>,
-): Plugin<TMeta> {
+export function plugin<TMeta extends AnyObject = AnyObject>(plugin: Plugin<TMeta>): Plugin<TMeta> {
   return plugin;
 }
 
@@ -61,7 +57,7 @@ export function plugin<TMeta extends AnyObject = AnyObject>(
 export class PluginError extends CliError {
   constructor(error: unknown, options?: CliErrorOptions) {
     super(error, {
-      name: 'PluginError',
+      name: "PluginError",
       ...options,
     });
   }

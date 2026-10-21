@@ -1,19 +1,12 @@
-import { Client } from 'src/core/client';
-import { CliError, type CliErrorOptions, UsageError } from 'src/core/errors';
-import { HookRegistry } from 'src/core/hooks';
-import type { OptionValues, OptionsConfig } from 'src/core/options/options';
-import {
-  type ValidateOptionsParams,
-  validateOptions,
-} from 'src/core/options/validate-options';
-import { type ParseCommandFn, parseCommand } from 'src/core/parse';
-import type { Plugin, PluginInfo } from 'src/core/plugin';
-import {
-  type ResolveCommandFn,
-  type ResolvedCommand,
-  resolveCommand,
-} from 'src/core/resolve';
-import { State } from 'src/core/state';
+import { Client } from "src/core/client";
+import { CliError, type CliErrorOptions, UsageError } from "src/core/errors";
+import { HookRegistry } from "src/core/hooks";
+import type { OptionsConfig, OptionValues } from "src/core/options/options";
+import { type ValidateOptionsParams, validateOptions } from "src/core/options/validate-options";
+import { type ParseCommandFn, parseCommand } from "src/core/parse";
+import type { Plugin, PluginInfo } from "src/core/plugin";
+import { type ResolveCommandFn, type ResolvedCommand, resolveCommand } from "src/core/resolve";
+import { State } from "src/core/state";
 
 // Errors //
 
@@ -24,7 +17,7 @@ import { State } from 'src/core/state';
 export class SubcommandRequiredError extends UsageError {
   constructor(commandString: string, options?: CliErrorOptions) {
     super(`Subcommand required for command "${commandString}".`, {
-      name: 'SubcommandRequiredError',
+      name: "SubcommandRequiredError",
       ...options,
     });
   }
@@ -421,7 +414,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     let skipped = false;
     let result = initialData;
 
-    await this.hooks.call('beforeExecute', {
+    await this.hooks.call("beforeExecute", {
       state,
       initialData,
       setInitialData: (newData) => {
@@ -440,9 +433,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     // Ensure the context is ready before proceeding
     if (!skipped && !this.#isReady) {
       // this.throw must be awaited since it could be ignored by an async hook
-      await this.throw(
-        new CliError("Context isn't ready. Did you forget to call prepare()?"),
-      );
+      await this.throw(new CliError("Context isn't ready. Did you forget to call prepare()?"));
     }
 
     // If the command wasn't skipped, begin execution
@@ -455,7 +446,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
       }
     }
 
-    await this.hooks.call('afterExecute', {
+    await this.hooks.call("afterExecute", {
       result,
       state,
       setResult: (newResult) => {
@@ -474,7 +465,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   readonly throw = async (error: unknown) => {
     let ignore = false;
 
-    await this.hooks.call('beforeError', {
+    await this.hooks.call("beforeError", {
       context: this,
       error,
       setError: (newError) => {
@@ -496,7 +487,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   readonly exit = async (code = 0, message?: any) => {
     let cancel = false;
 
-    await this.hooks.call('beforeExit', {
+    await this.hooks.call("beforeExit", {
       context: this,
       code,
       message,
@@ -531,7 +522,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     let pendingCommand: ResolvedCommand | undefined;
     let skipped = false;
 
-    await this.hooks.call('beforeResolve', {
+    await this.hooks.call("beforeResolve", {
       context: this,
       commandString: this.commandString,
       commandsDir: this.commandsDir,
@@ -565,7 +556,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
 
       if (!pendingCommand.remainingCommandString) break;
 
-      await this.hooks.call('beforeResolveNext', {
+      await this.hooks.call("beforeResolveNext", {
         context: this,
         commandString: pendingCommand.remainingCommandString,
         commandsDir: pendingCommand.subcommandsDir,
@@ -593,7 +584,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
       );
     }
 
-    await this.hooks.call('afterResolve', {
+    await this.hooks.call("afterResolve", {
       context: this,
       resolvedCommands: this.#commandQueue,
       addResolvedCommands: (resolvedCommands) => {
@@ -620,7 +611,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   async #parseWithHooks() {
     if (this.#isParsed) return;
 
-    await this.hooks.call('beforeParse', {
+    await this.hooks.call("beforeParse", {
       context: this,
       commandString: this.commandString,
       optionsConfig: this.options,
@@ -643,7 +634,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
       this.#isParsed = true;
     }
 
-    await this.hooks.call('afterParse', {
+    await this.hooks.call("afterParse", {
       context: this,
       parsedOptions: this.#optionValues,
       setParsedOptions: this.setOptionValues,

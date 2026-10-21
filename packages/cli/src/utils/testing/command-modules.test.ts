@@ -1,29 +1,24 @@
 // Must be imported first so `node:fs` is mocked before other modules load it
-import 'src/utils/testing/command-modules';
+import "src/utils/testing/command-modules";
 
-import { describe, expect, it, test } from 'vitest';
-import {
-  mockCommandModule,
-  mockCommandModules,
-  mockCommandStringModules,
-} from './command-modules';
-
-import type { CommandModule } from 'src/core/command';
+import type { CommandModule } from "src/core/command";
+import { describe, expect, it, test } from "vitest";
+import { mockCommandModule, mockCommandModules, mockCommandStringModules } from "./command-modules";
 
 const modules = {
-  'commands/foo.js': {
+  "commands/foo.js": {
     handler: ({ next, data }) => next(data),
   },
-  'commands/foo/bar.js': {
+  "commands/foo/bar.js": {
     handler: ({ next, data }) => next(data),
   },
-  'commands/foo/bar/baz.js': {
+  "commands/foo/bar/baz.js": {
     handler: ({ end, data }) => end(data),
   },
 } satisfies Record<string, CommandModule>;
 
-describe('mockCommandModule', () => {
-  it('Mocks and unmocks single command modules', async () => {
+describe("mockCommandModule", () => {
+  it("Mocks and unmocks single command modules", async () => {
     const [path] = Object.entries(modules)[0]!;
 
     const { mock, unmock } = mockCommandModule(path);
@@ -31,7 +26,7 @@ describe('mockCommandModule', () => {
       handler: expect.any(Function),
     });
 
-    mock.handler({ next: (data: unknown) => data, data: 'foo' } as any);
+    mock.handler({ next: (data: unknown) => data, data: "foo" } as any);
     expect(mock.handler).toHaveBeenCalledTimes(1);
 
     const imported = await import(path);
@@ -41,7 +36,7 @@ describe('mockCommandModule', () => {
     await expect(import(path)).rejects.toThrow();
   });
 
-  it('Uses the provided module', async () => {
+  it("Uses the provided module", async () => {
     const [path, module] = Object.entries(modules)[0]!;
 
     const { mock } = mockCommandModule(path, {
@@ -51,8 +46,8 @@ describe('mockCommandModule', () => {
   });
 });
 
-describe('mockCommandModules', () => {
-  it('Mocks and unmocks multiple command modules', async () => {
+describe("mockCommandModules", () => {
+  it("Mocks and unmocks multiple command modules", async () => {
     const { mocks, unmock } = mockCommandModules(modules);
 
     expect(mocks).toEqual(modules);
@@ -69,12 +64,9 @@ describe('mockCommandModules', () => {
   });
 });
 
-describe('mockCommandStringModules', () => {
-  test('Mocks and unmocks command string modules', async () => {
-    const { mocks, unmock } = mockCommandStringModules(
-      'foo bar baz',
-      'commands',
-    );
+describe("mockCommandStringModules", () => {
+  test("Mocks and unmocks command string modules", async () => {
+    const { mocks, unmock } = mockCommandStringModules("foo bar baz", "commands");
 
     expect(mocks).toEqual({
       foo: expect.objectContaining({ handler: expect.any(Function) }),
@@ -93,8 +85,8 @@ describe('mockCommandStringModules', () => {
     }
   });
 
-  it('Ignores options', async () => {
-    const { mocks } = mockCommandStringModules('foo --bar baz', 'commands');
+  it("Ignores options", async () => {
+    const { mocks } = mockCommandStringModules("foo --bar baz", "commands");
 
     expect(mocks).toEqual({
       foo: expect.objectContaining({ handler: expect.any(Function) }),

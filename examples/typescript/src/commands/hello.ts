@@ -1,13 +1,13 @@
-import { command } from '@gud/cli';
+import { command } from "@gud/cli";
 
 export default command({
-  description: 'Get a greeting',
+  description: "Get a greeting",
   options: {
     name: {
-      description: 'Your name',
-      alias: ['n'],
-      type: 'string',
-      default: 'World',
+      description: "Your name",
+      alias: ["n"],
+      type: "string",
+      default: "World",
     },
   },
   handler: async ({ options, end }) => {

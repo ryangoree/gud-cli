@@ -1,5 +1,5 @@
-import type { OptionValues, Plugin } from '@gud/cli';
-import { commandPrompt } from './command-prompt.js';
+import type { OptionValues, Plugin } from "@gud/cli";
+import { commandPrompt } from "./command-prompt.js";
 
 export interface MenuOptions {
   /**
@@ -56,33 +56,26 @@ export interface MenuOptions {
  */
 export function menu({
   title,
-  titleColors = ['#2EFFAF', '#0FC2C2'],
-  message = 'Choose a command',
+  titleColors = ["#2EFFAF", "#0FC2C2"],
+  message = "Choose a command",
   showDescriptions = true,
   maxDescriptionLength = 60,
   enabled,
 }: MenuOptions = {}): Plugin {
   return {
-    name: 'command-menu',
-    version: '0.1.0',
-    description:
-      'Prompts the user to select a subcommand when a command requires one.',
+    name: "command-menu",
+    version: "0.1.0",
+    description: "Prompts the user to select a subcommand when a command requires one.",
 
     init: ({ hooks }) => {
       if (enabled === false) return;
       const isPermanentlyEnabled = enabled === true;
-      const isEnabledFn = typeof enabled === 'function' ? enabled : () => true;
+      const isEnabledFn = typeof enabled === "function" ? enabled : () => true;
 
       // Show the menu if the command string is empty
       hooks.on(
-        'beforeResolve',
-        async ({
-          commandString,
-          commandsDir,
-          context,
-          addResolvedCommands,
-          skip,
-        }) => {
+        "beforeResolve",
+        async ({ commandString, commandsDir, context, addResolvedCommands, skip }) => {
           if (commandString.length) return;
 
           if (!isPermanentlyEnabled) {
@@ -111,35 +104,32 @@ export function menu({
       );
 
       // Show the menu if the last resolved command requires a subcommand
-      hooks.on(
-        'afterResolve',
-        async ({ context, resolvedCommands, addResolvedCommands }) => {
-          if (!isPermanentlyEnabled) {
-            const parsed = await context.parseCommand();
-            const isEnabled = await isEnabledFn(parsed.options);
-            if (!isEnabled) return;
-          }
+      hooks.on("afterResolve", async ({ context, resolvedCommands, addResolvedCommands }) => {
+        if (!isPermanentlyEnabled) {
+          const parsed = await context.parseCommand();
+          const isEnabled = await isEnabledFn(parsed.options);
+          if (!isEnabled) return;
+        }
 
-          const lastResolved = resolvedCommands[resolvedCommands.length - 1];
+        const lastResolved = resolvedCommands[resolvedCommands.length - 1];
 
-          if (lastResolved?.command.requiresSubcommand) {
-            const selectedSubcommands = await commandPrompt({
-              title,
-              titleColors,
-              commandsDir: lastResolved.subcommandsDir,
-              message,
-              showDescriptions,
-              maxDescriptionLength,
-              resolveFn: ({ commandString, commandsDir }) =>
-                context.resolveCommand(commandString, commandsDir),
-              onCancel: async () => {
-                await context.exit();
-              },
-            });
-            addResolvedCommands(selectedSubcommands);
-          }
-        },
-      );
+        if (lastResolved?.command.requiresSubcommand) {
+          const selectedSubcommands = await commandPrompt({
+            title,
+            titleColors,
+            commandsDir: lastResolved.subcommandsDir,
+            message,
+            showDescriptions,
+            maxDescriptionLength,
+            resolveFn: ({ commandString, commandsDir }) =>
+              context.resolveCommand(commandString, commandsDir),
+            onCancel: async () => {
+              await context.exit();
+            },
+          });
+          addResolvedCommands(selectedSubcommands);
+        }
+      });
     },
   };
 }

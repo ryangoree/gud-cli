@@ -37,8 +37,8 @@ export interface CliErrorOptions extends ErrorOptions {
  * @group Errors
  */
 export class CliError extends Error {
-  static prefix = '✖ ';
-  static name = 'CLI Error' as const;
+  static prefix = "✖ ";
+  static name = "CLI Error" as const;
 
   constructor(error: any, options?: CliErrorOptions) {
     // Coerce the error to a string, or throw the original error if unable.
@@ -69,9 +69,9 @@ export class CliError extends Error {
     const targetStack = stackTarget.stack;
 
     let customName: string | undefined;
-    if (error?.name && error.name !== 'Error') {
+    if (error?.name && error.name !== "Error") {
       customName = error.name;
-    } else if (isError && error.constructor.name !== 'Error') {
+    } else if (isError && error.constructor.name !== "Error") {
       customName = error.constructor.name;
     }
 
@@ -79,7 +79,7 @@ export class CliError extends Error {
     // to the prototype, which would be displayed in the stack trace. The getter
     // ensures the name and message are up-to-date when accessed (e.g., after
     // subclassing and changing the name).
-    Object.defineProperty(this, 'stack', {
+    Object.defineProperty(this, "stack", {
       get(): string {
         let stack = `${options?.prefix ?? CliError.prefix}${this.name}`;
 
@@ -88,26 +88,21 @@ export class CliError extends Error {
         }
 
         if (this.message) {
-          stack += `: ${this.message}`.replaceAll('\n', '\n  ');
+          stack += `: ${this.message}`.replaceAll("\n", "\n  ");
         }
 
         if (targetStack) {
-          let stackLines = targetStack.split('\n').slice(1);
+          let stackLines = targetStack.split("\n").slice(1);
           if (this.message) {
-            stackLines = stackLines.filter(
-              (line) => !this.message.includes(line.trim()),
-            );
+            stackLines = stackLines.filter((line) => !this.message.includes(line.trim()));
           }
           if (stackLines.length) {
-            stack += `\n${stackLines.join('\n')}`;
+            stack += `\n${stackLines.join("\n")}`;
           }
         }
 
         if (cause) {
-          stack += `\nCaused by: ${cause.stack || cause}`.replaceAll(
-            '\n',
-            '\n  ',
-          );
+          stack += `\nCaused by: ${cause.stack || cause}`.replaceAll("\n", "\n  ");
         }
 
         return stack.trim();
@@ -123,7 +118,7 @@ export class CliError extends Error {
 export class UsageError extends CliError {
   constructor(error: unknown, options?: CliErrorOptions) {
     super(error, {
-      name: 'UsageError',
+      name: "UsageError",
       ...options,
     });
   }
@@ -136,13 +131,13 @@ export class UsageError extends CliError {
 export class NotFoundError extends UsageError {
   constructor(token: string | number, path: string, options?: CliErrorOptions) {
     super(
-      ['development', 'test'].includes(process.env.NODE_ENV || '')
+      ["development", "test"].includes(process.env.NODE_ENV || "")
         ? // In development, show the full path to the command
-          `Unable to find command "${token}" in "${path.replace(/\/?$/, '/')}"`
+          `Unable to find command "${token}" in "${path.replace(/\/?$/, "/")}"`
         : // In production, just show the command name
           `Command "${token}" not found.`,
       {
-        name: 'NotFoundError',
+        name: "NotFoundError",
         ...options,
       },
     );
@@ -155,8 +150,8 @@ export class NotFoundError extends UsageError {
  */
 export class CommandRequiredError extends UsageError {
   constructor(options?: CliErrorOptions) {
-    super('Command required.', {
-      name: 'CommandRequiredError',
+    super("Command required.", {
+      name: "CommandRequiredError",
       ...options,
     });
   }

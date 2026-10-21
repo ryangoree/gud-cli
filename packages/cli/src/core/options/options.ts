@@ -1,11 +1,5 @@
-import { type CamelCase, camelCase } from 'src/utils/camel-case';
-import type {
-  Eval,
-  KeyWithMatchingValue,
-  MaybeReadonly,
-  Merge,
-  Replace,
-} from 'src/utils/types';
+import { type CamelCase, camelCase } from "src/utils/camel-case";
+import type { Eval, KeyWithMatchingValue, MaybeReadonly, Merge, Replace } from "src/utils/types";
 
 // Types //
 
@@ -40,9 +34,7 @@ type OptionBaseTypeMap = {
  */
 export interface CustomOptionTypes {}
 
-export interface OptionPrimitiveTypeMap
-  extends OptionBaseTypeMap,
-    CustomOptionTypes {}
+export interface OptionPrimitiveTypeMap extends OptionBaseTypeMap, CustomOptionTypes {}
 
 /**
  * The possible types for an option.
@@ -56,8 +48,7 @@ export type OptionType = keyof OptionPrimitiveTypeMap;
  *
  * @group Options
  */
-export type OptionPrimitiveType<T extends OptionType = OptionType> =
-  OptionPrimitiveTypeMap[T];
+export type OptionPrimitiveType<T extends OptionType = OptionType> = OptionPrimitiveTypeMap[T];
 
 /**
  * Get a union of base option types with the same primitive type as the given
@@ -65,10 +56,9 @@ export type OptionPrimitiveType<T extends OptionType = OptionType> =
  *
  * @group Options
  */
-export type OptionBaseType<T extends OptionType = OptionType> =
-  T extends keyof OptionBaseTypeMap
-    ? T
-    : KeyWithMatchingValue<OptionPrimitiveTypeMap, T, OptionBaseTypeMap>;
+export type OptionBaseType<T extends OptionType = OptionType> = T extends keyof OptionBaseTypeMap
+  ? T
+  : KeyWithMatchingValue<OptionPrimitiveTypeMap, T, OptionBaseTypeMap>;
 
 /**
  * A custom option type that extends the base option types.
@@ -188,38 +178,29 @@ export type OptionConfig<
            * getter prompt will show.
            */
           default?:
-            | (OptionPrimitiveType<T> extends (infer T)[]
-                ? T[]
-                : OptionPrimitiveType<T>[])
+            | (OptionPrimitiveType<T> extends (infer T)[] ? T[] : OptionPrimitiveType<T>[])
             | string;
         }
     )
   : never;
 
-export type OptionConfigType<T extends OptionConfig> =
-  T['customType'] extends OptionType ? T['customType'] : T['type'];
+export type OptionConfigType<T extends OptionConfig> = T["customType"] extends OptionType
+  ? T["customType"]
+  : T["type"];
 
 /**
  * Get the primitive type for an option considering it's config.
  */
 export type OptionConfigPrimitiveType<T extends OptionConfig = OptionConfig> =
   T extends OptionConfig
-    ? T['required'] extends true
-      ? OptionArgumentType<
-          OptionConfigType<T>,
-          'nargs' extends keyof T ? T['nargs'] : undefined
-        >
-      : T['default'] extends MaybeReadonly<
-            OptionArgumentType<OptionConfigType<T>>
-          >
-        ? OptionArgumentType<
-            OptionConfigType<T>,
-            'nargs' extends keyof T ? T['nargs'] : undefined
-          >
+    ? T["required"] extends true
+      ? OptionArgumentType<OptionConfigType<T>, "nargs" extends keyof T ? T["nargs"] : undefined>
+      : T["default"] extends MaybeReadonly<OptionArgumentType<OptionConfigType<T>>>
+        ? OptionArgumentType<OptionConfigType<T>, "nargs" extends keyof T ? T["nargs"] : undefined>
         :
             | OptionArgumentType<
                 OptionConfigType<T>,
-                'nargs' extends keyof T ? T['nargs'] : undefined
+                "nargs" extends keyof T ? T["nargs"] : undefined
               >
             | undefined
     : undefined;
@@ -232,7 +213,7 @@ export type OptionConfigPrimitiveType<T extends OptionConfig = OptionConfig> =
 export type OptionAlias<T extends OptionConfig> = T extends {
   alias: string[];
 }
-  ? T['alias'][number]
+  ? T["alias"][number]
   : never;
 
 /**
@@ -249,10 +230,10 @@ export type OptionsConfig<
  * A key for an option, including the option key, aliases, and camelCased
  * versions of each.
  */
-export type OptionKey<
-  TKey extends PropertyKey = string,
-  TAlias extends string = string,
-> = TKey | TAlias | CamelCase<TKey | TAlias>;
+export type OptionKey<TKey extends PropertyKey = string, TAlias extends string = string> =
+  | TKey
+  | TAlias
+  | CamelCase<TKey | TAlias>;
 
 /**
  * An expanded {@linkcode OptionsConfig} that keys each option config by all of
@@ -269,7 +250,7 @@ export type ExpandedOptionsConfig<T extends OptionsConfig> = T extends T
             Replace<
               T[K],
               {
-                alias: [...T[K]['alias'], `${K & string}`];
+                alias: [...T[K]["alias"], `${K & string}`];
               }
             >
           >
@@ -285,10 +266,9 @@ export type ExpandedOptionsConfig<T extends OptionsConfig> = T extends T
 export type OptionValues<TOptions extends OptionsConfig = OptionsConfig> =
   Merge<TOptions> extends infer TMerged extends OptionsConfig
     ? Eval<{
-        [K in keyof TMerged as OptionKey<
-          K,
-          OptionAlias<TMerged[K]>
-        >]?: OptionConfigPrimitiveType<TMerged[K]>;
+        [K in keyof TMerged as OptionKey<K, OptionAlias<TMerged[K]>>]?: OptionConfigPrimitiveType<
+          TMerged[K]
+        >;
       }>
     : Record<string, OptionPrimitiveType | undefined>;
 
@@ -311,9 +291,7 @@ export function option<const T extends OptionConfig = OptionConfig>(config: T) {
  * @param config - The config for the options.
  * @group Options
  */
-export function options<const T extends OptionsConfig = OptionsConfig>(
-  config: T,
-) {
+export function options<const T extends OptionsConfig = OptionsConfig>(config: T) {
   return config;
 }
 
@@ -326,16 +304,16 @@ export function options<const T extends OptionsConfig = OptionsConfig>(
  */
 export function getOptionTypeFromValue<T>(value: T): OptionType {
   switch (typeof value) {
-    case 'boolean':
-      return 'boolean';
-    case 'number':
-      return 'number';
-    case 'string':
-      return 'string';
-    case 'object':
-      return 'array';
+    case "boolean":
+      return "boolean";
+    case "number":
+      return "number";
+    case "string":
+      return "string";
+    case "object":
+      return "array";
     default:
-      return 'string';
+      return "string";
   }
 }
 
@@ -349,10 +327,7 @@ export function getOptionTypeFromValue<T>(value: T): OptionType {
  */
 export function getOptionKeys(configKey: PropertyKey, config: OptionConfig) {
   const allKeysForOption = [String(configKey), ...(config.alias || [])];
-  return [
-    ...allKeysForOption,
-    ...allKeysForOption.map((key) => camelCase(key)),
-  ];
+  return [...allKeysForOption, ...allKeysForOption.map((key) => camelCase(key))];
 }
 
 /**
@@ -363,10 +338,7 @@ export function getOptionKeys(configKey: PropertyKey, config: OptionConfig) {
  * @param config - The option's config entry.
  * @group Options
  */
-export function getOptionDisplayName(
-  configKey: string,
-  config: OptionConfig | undefined,
-) {
+export function getOptionDisplayName(configKey: string, config: OptionConfig | undefined) {
   if (configKey.length > 1) return configKey;
   return config?.alias?.find((alias) => alias.length > 1) || configKey;
 }
@@ -391,19 +363,15 @@ export function normalizeOptionValue<T extends OptionConfig>(
   if (isEmpty(value)) return undefined;
 
   const nargs = config?.nargs ?? 1;
-  if (config?.type === 'array' || nargs > 1) {
+  if (config?.type === "array" || nargs > 1) {
     // Split string values into normalized arrays for array options
-    if (typeof value === 'string') {
-      value = value
-        .split(',')
-        .map((v) => normalizeScalar(v, config?.type)) as OptionArgumentType;
+    if (typeof value === "string") {
+      value = value.split(",").map((v) => normalizeScalar(v, config?.type)) as OptionArgumentType;
     }
 
     // Map array values to their normalized values
     if (Array.isArray(value)) {
-      return value.map((v) =>
-        normalizeScalar(v, config?.type),
-      ) as OptionConfigPrimitiveType<T>;
+      return value.map((v) => normalizeScalar(v, config?.type)) as OptionConfigPrimitiveType<T>;
     }
   }
 
@@ -413,11 +381,7 @@ export function normalizeOptionValue<T extends OptionConfig>(
 // Internal //
 
 type OptionScalarType<T extends OptionType> =
-  OptionPrimitiveType<T> extends infer U
-    ? U extends any[]
-      ? U[number]
-      : U
-    : never;
+  OptionPrimitiveType<T> extends infer U ? (U extends any[] ? U[number] : U) : never;
 
 function normalizeScalar<T extends OptionType>(
   value: unknown,
@@ -425,15 +389,15 @@ function normalizeScalar<T extends OptionType>(
 ): OptionScalarType<T> | undefined {
   if (isEmpty(value)) return undefined;
   switch (type) {
-    case 'number':
+    case "number":
       return Number(value) as OptionScalarType<T>;
-    case 'boolean':
-      return (value === 'true' || value === true) as OptionScalarType<T>;
+    case "boolean":
+      return (value === "true" || value === true) as OptionScalarType<T>;
     default:
       return String(value).trim() as OptionScalarType<T>;
   }
 }
 
 function isEmpty(value: unknown) {
-  return value === undefined || value === '';
+  return value === undefined || value === "";
 }

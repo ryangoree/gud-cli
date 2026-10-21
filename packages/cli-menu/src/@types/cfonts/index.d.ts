@@ -1,19 +1,19 @@
 //https://github.com/dominikwilkowski/cfonts/blob/released/nodejs/src/Options.js
 // https://github.com/dominikwilkowski/cfonts/blob/released/nodejs/src/constants.js
 /* eslint-disable */
-declare module 'cfonts' {
+declare module "cfonts" {
   type GradientColor =
-    | 'transparent'
-    | 'black'
-    | 'red'
-    | 'green'
-    | 'yellow'
-    | 'blue'
-    | 'magenta'
-    | 'cyan'
-    | 'white'
-    | 'gray'
-    | 'grey';
+    | "transparent"
+    | "black"
+    | "red"
+    | "green"
+    | "yellow"
+    | "blue"
+    | "magenta"
+    | "cyan"
+    | "white"
+    | "gray"
+    | "grey";
 
   export function say(
     msg: string,
@@ -22,46 +22,46 @@ declare module 'cfonts' {
        * define the font face
        */
       font?:
-        | 'console'
-        | 'block'
-        | 'simpleBlock'
-        | 'simple'
-        | '3d'
-        | 'simple3d'
-        | 'chrome'
-        | 'huge'
-        | 'shade'
-        | 'slick'
-        | 'grid'
-        | 'pallet'
-        | 'tiny';
+        | "console"
+        | "block"
+        | "simpleBlock"
+        | "simple"
+        | "3d"
+        | "simple3d"
+        | "chrome"
+        | "huge"
+        | "shade"
+        | "slick"
+        | "grid"
+        | "pallet"
+        | "tiny";
 
       /**
        * define text alignment
        */
-      align?: 'left' | 'center' | 'right' | 'top' | 'bottom';
+      align?: "left" | "center" | "right" | "top" | "bottom";
 
       /**
        * define all colors
        */
       colors?: (
-        | 'system'
-        | 'black'
-        | 'red'
-        | 'green'
-        | 'yellow'
-        | 'blue'
-        | 'magenta'
-        | 'cyan'
-        | 'white'
-        | 'gray'
-        | 'redBright'
-        | 'greenBright'
-        | 'yellowBright'
-        | 'blueBright'
-        | 'magentaBright'
-        | 'cyanBright'
-        | 'whiteBright'
+        | "system"
+        | "black"
+        | "red"
+        | "green"
+        | "yellow"
+        | "blue"
+        | "magenta"
+        | "cyan"
+        | "white"
+        | "gray"
+        | "redBright"
+        | "greenBright"
+        | "yellowBright"
+        | "blueBright"
+        | "magentaBright"
+        | "cyanBright"
+        | "whiteBright"
       )[];
 
       /**
@@ -69,23 +69,23 @@ declare module 'cfonts' {
        * key
        */
       background?: (
-        | 'transparent'
-        | 'black'
-        | 'red'
-        | 'green'
-        | 'yellow'
-        | 'blue'
-        | 'magenta'
-        | 'cyan'
-        | 'white'
-        | 'blackBright'
-        | 'redBright'
-        | 'greenBright'
-        | 'yellowBright'
-        | 'blueBright'
-        | 'magentaBright'
-        | 'cyanBright'
-        | 'whiteBright'
+        | "transparent"
+        | "black"
+        | "red"
+        | "green"
+        | "yellow"
+        | "blue"
+        | "magenta"
+        | "cyan"
+        | "white"
+        | "blackBright"
+        | "redBright"
+        | "greenBright"
+        | "yellowBright"
+        | "blueBright"
+        | "magentaBright"
+        | "cyanBright"
+        | "whiteBright"
       )[];
 
       /**
@@ -135,7 +135,7 @@ declare module 'cfonts' {
        * define the environment cfonts is being executed in
        * @default "node"
        */
-      env?: 'node' | 'browser';
+      env?: "node" | "browser";
     },
   ): void;
 }

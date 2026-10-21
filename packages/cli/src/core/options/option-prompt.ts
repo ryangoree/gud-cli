@@ -1,29 +1,23 @@
-import { Client, type PromptParams } from 'src/core/client';
+import { Client, type PromptParams } from "src/core/client";
 import {
+  normalizeOptionValue,
   type OptionConfig,
   type OptionConfigPrimitiveType,
   type OptionType,
-  normalizeOptionValue,
-} from 'src/core/options/options';
-import { validateOptionType } from 'src/core/options/validate-options';
-import type { KeyMap, MaybePromise, Replace } from 'src/utils/types';
+} from "src/core/options/options";
+import { validateOptionType } from "src/core/options/validate-options";
+import type { KeyMap, MaybePromise, Replace } from "src/utils/types";
 
 // Types //
 
 export type OptionPromptTypeMap = KeyMap<
   OptionType,
   {
-    array: 'autocompleteMultiselect' | 'list' | 'multiselect';
-    boolean: 'confirm' | 'toggle';
-    number: 'number' | 'select';
-    secret: 'invisible' | 'password';
-    string:
-      | 'autocomplete'
-      | 'date'
-      | 'invisible'
-      | 'password'
-      | 'select'
-      | 'text';
+    array: "autocompleteMultiselect" | "list" | "multiselect";
+    boolean: "confirm" | "toggle";
+    number: "number" | "select";
+    secret: "invisible" | "password";
+    string: "autocomplete" | "date" | "invisible" | "password" | "select" | "text";
   }
 >;
 
@@ -32,7 +26,7 @@ export type OptionPromptType<T extends OptionType> = OptionPromptTypeMap[T];
 // Functions + Function Types //
 
 export type OptionPromptParams<T extends OptionConfig = OptionConfig> = Replace<
-  PromptParams<OptionPromptType<T['type']>, T['type']>,
+  PromptParams<OptionPromptType<T["type"]>, T["type"]>,
   {
     /**
      * The name of the option.
@@ -57,9 +51,7 @@ export type OptionPromptParams<T extends OptionConfig = OptionConfig> = Replace<
      * @returns `true` if the value is valid, `false` or an error message if the
      * value is invalid.
      */
-    validate?: (
-      value?: OptionConfigPrimitiveType<T>,
-    ) => MaybePromise<boolean | string>;
+    validate?: (value?: OptionConfigPrimitiveType<T>) => MaybePromise<boolean | string>;
 
     /**
      * A function to call when the user cancels a prompt. By default, this will
@@ -88,9 +80,7 @@ export type OptionPromptParams<T extends OptionConfig = OptionConfig> = Replace<
  * is provided or the value is invalid.
  * @group Options
  */
-export async function optionPrompt<
-  TConfig extends OptionConfig = OptionConfig,
->({
+export async function optionPrompt<TConfig extends OptionConfig = OptionConfig>({
   name,
   config,
   client = new Client(),
@@ -98,9 +88,7 @@ export async function optionPrompt<
   validate,
   onState,
   ...params
-}: OptionPromptParams<TConfig>): Promise<
-  OptionConfigPrimitiveType<TConfig> | undefined
-> {
+}: OptionPromptParams<TConfig>): Promise<OptionConfigPrimitiveType<TConfig> | undefined> {
   // Assign a default validate function if the option is required and no
   // validate function is provided
   if (config?.required && !validate) {
@@ -113,24 +101,24 @@ export async function optionPrompt<
       });
   }
 
-  let type: PromptParams['type'];
+  let type: PromptParams["type"];
 
   // Determine prompt type based on option type
   switch (config?.type) {
-    case 'number':
-      type = config?.choices?.length ? 'select' : 'number';
+    case "number":
+      type = config?.choices?.length ? "select" : "number";
       break;
-    case 'boolean':
-      type = 'toggle';
+    case "boolean":
+      type = "toggle";
       break;
-    case 'array':
-      type = config?.choices?.length ? 'multiselect' : 'list';
+    case "array":
+      type = config?.choices?.length ? "multiselect" : "list";
       break;
-    case 'secret':
-      type = 'password';
+    case "secret":
+      type = "password";
       break;
     default:
-      type = config?.choices?.length ? 'select' : 'text';
+      type = config?.choices?.length ? "select" : "text";
       break;
   }
 
@@ -147,7 +135,7 @@ export async function optionPrompt<
           // default value if provided.
           //
           // see: https://github.com/terkelg/prompts/issues/410
-          if (value === '' && this?.initial !== undefined) {
+          if (value === "" && this?.initial !== undefined) {
             value = this?.initial;
           }
           const preppedValue = normalizeOptionValue(value, config);
@@ -169,8 +157,8 @@ export async function optionPrompt<
 
   // Add additional options for specific prompt types
   switch (promptOptions.type) {
-    case 'autocomplete':
-    case 'autocompleteMultiselect': {
+    case "autocomplete":
+    case "autocompleteMultiselect": {
       // These options are not part of the types package, but do exist.
       (promptOptions as any).clearFirst ??= true;
 
@@ -203,17 +191,16 @@ export async function optionPrompt<
   // If an initial value is not provided, use the default value
   if (promptOptions.initial === undefined && config?.default !== undefined) {
     const defaultValue = Array.isArray(config?.default)
-      ? config?.default.join(',')
+      ? config?.default.join(",")
       : config?.default;
 
     switch (promptOptions.type) {
-      case 'select': {
+      case "select": {
         // Ignore the default value if the choices aren't an array
         if (!Array.isArray(promptOptions.choices)) break;
 
         const defaultChoice = promptOptions.choices?.findIndex(
-          (choice) =>
-            choice.title === defaultValue || choice.value === defaultValue,
+          (choice) => choice.title === defaultValue || choice.value === defaultValue,
         );
         if (defaultChoice > -1) {
           promptOptions.initial = defaultChoice;
@@ -221,7 +208,7 @@ export async function optionPrompt<
         break;
       }
 
-      case 'date':
+      case "date":
         promptOptions.initial = new Date(defaultValue.toString());
         break;
 

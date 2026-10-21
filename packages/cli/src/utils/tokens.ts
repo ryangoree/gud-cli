@@ -30,12 +30,12 @@ export function joinTokens(
     | [JoinableTokens, ...JoinableTokens[]]
     | [JoinableTokens, ...JoinableTokens[], JoinTokenOptions]
 ): string {
-  let delim = ' ';
+  let delim = " ";
   let useQuotes = true;
 
   // Check if the last argument is an options object
   const lastArg = tokens.at(-1);
-  if (typeof lastArg === 'object' && !Array.isArray(lastArg)) {
+  if (typeof lastArg === "object" && !Array.isArray(lastArg)) {
     const { delimiter, wrapInQuotes } = tokens.pop() as JoinTokenOptions;
     if (delimiter !== undefined) {
       delim = delimiter;
@@ -53,7 +53,7 @@ export function joinTokens(
     if (
       useQuotes &&
       tokens.length > 1 &&
-      token.includes(' ') &&
+      token.includes(" ") &&
       (!token.startsWith('"') || !token.endsWith('"'))
     ) {
       processedTokens.push(`"${token.replaceAll('"', '\\"')}"`);
@@ -68,7 +68,7 @@ export function joinTokens(
 /**
  * Splits a command string into an array of tokens.
  */
-export function splitTokens(commandString: string, delimiter = ' '): string[] {
+export function splitTokens(commandString: string, delimiter = " "): string[] {
   if (!commandString) return [];
 
   const tokens: string[] = [];
@@ -78,9 +78,7 @@ export function splitTokens(commandString: string, delimiter = ' '): string[] {
   for (const token of commandString.split(delimiter)) {
     if (inQuotes) {
       if (token.endsWith('"')) {
-        tokens.push(
-          [...currentQuotedToken, token.slice(0, -1)].join(delimiter),
-        );
+        tokens.push([...currentQuotedToken, token.slice(0, -1)].join(delimiter));
         currentQuotedToken.length = 0;
         inQuotes = false;
       } else {
@@ -93,7 +91,7 @@ export function splitTokens(commandString: string, delimiter = ' '): string[] {
       inQuotes = true;
       currentQuotedToken.push(token.slice(1));
     } else {
-      tokens.push(token.replaceAll('"', ''));
+      tokens.push(token.replaceAll('"', ""));
     }
   }
 

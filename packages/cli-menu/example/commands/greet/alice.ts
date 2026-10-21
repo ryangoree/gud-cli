@@ -1,8 +1,8 @@
-import { command } from '@gud/cli';
+import { command } from "@gud/cli";
 
 export default command({
-  description: 'Greet Alice',
+  description: "Greet Alice",
   handler: ({ context }) => {
-    context.client.log('Hello Alice!');
+    context.client.log("Hello Alice!");
   },
 });

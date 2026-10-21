@@ -1,18 +1,9 @@
-import type { Context } from 'src/core/context';
-import type { OptionValues, OptionsConfig } from 'src/core/options/options';
-import type { ParseCommandFn } from 'src/core/parse';
-import type {
-  ResolveCommandFn,
-  ResolvedCommand,
-  RouteParams,
-} from 'src/core/resolve';
-import type { NextState, State } from 'src/core/state';
-import type {
-  AnyFunction,
-  AnyObject,
-  FunctionKey,
-  MaybePromise,
-} from 'src/utils/types';
+import type { Context } from "src/core/context";
+import type { OptionsConfig, OptionValues } from "src/core/options/options";
+import type { ParseCommandFn } from "src/core/parse";
+import type { ResolveCommandFn, ResolvedCommand, RouteParams } from "src/core/resolve";
+import type { NextState, State } from "src/core/state";
+import type { AnyFunction, AnyObject, FunctionKey, MaybePromise } from "src/utils/types";
 
 /**
  * The core hooks interface that defines lifecycle events for the CLI execution
@@ -512,10 +503,7 @@ export class HookRegistry<THooks extends AnyObject = LifecycleHooks> {
     if (initialHandlers) {
       // Wrap initial handlers in arrays.
       this.#handlers = Object.fromEntries(
-        Object.entries(initialHandlers).map(([hook, handler]) => [
-          hook,
-          [handler],
-        ]),
+        Object.entries(initialHandlers).map(([hook, handler]) => [hook, [handler]]),
       ) as HookHandlers<THooks>;
     }
   }
@@ -525,10 +513,7 @@ export class HookRegistry<THooks extends AnyObject = LifecycleHooks> {
    * @param hook - The hook to handle.
    * @param handler - The function to execute when the hook is called.
    */
-  on<THook extends HookName<THooks>>(
-    hook: THook,
-    handler: HookHandler<THook, THooks>,
-  ): void {
+  on<THook extends HookName<THooks>>(hook: THook, handler: HookHandler<THook, THooks>): void {
     this.#handlers[hook] ||= [];
     this.#handlers[hook].push(handler);
   }
@@ -539,10 +524,7 @@ export class HookRegistry<THooks extends AnyObject = LifecycleHooks> {
    * @param handler - The handler function to remove.
    * @returns A boolean indicating whether the handler was found and removed.
    */
-  off<THook extends HookName<THooks>>(
-    hook: THook,
-    handler: HookHandler<THook, THooks>,
-  ): boolean {
+  off<THook extends HookName<THooks>>(hook: THook, handler: HookHandler<THook, THooks>): boolean {
     let didRemove = false;
     const handlers = this.#handlers[hook];
     if (!handlers) return didRemove;
@@ -562,10 +544,7 @@ export class HookRegistry<THooks extends AnyObject = LifecycleHooks> {
    * @param hook - The hook to handle once.
    * @param handler - The function to execute once when the hook is called.
    */
-  once<THook extends HookName<THooks>>(
-    hook: THook,
-    handler: HookHandler<THook, THooks>,
-  ): void {
+  once<THook extends HookName<THooks>>(hook: THook, handler: HookHandler<THook, THooks>): void {
     const wrapped = (...args: unknown[]) => {
       this.off(hook, wrapped as HookHandler<THook, THooks>);
       handler(...args);
@@ -608,9 +587,7 @@ export type HookName<THooks extends AnyObject = LifecycleHooks> =
 export type HookHandler<
   THook extends HookName<THooks> = keyof LifecycleHooks,
   THooks extends AnyObject = LifecycleHooks,
-> = THooks[THook] extends AnyFunction
-  ? THooks[THook]
-  : (payload?: unknown) => MaybePromise<void>;
+> = THooks[THook] extends AnyFunction ? THooks[THook] : (payload?: unknown) => MaybePromise<void>;
 
 /**
  * A collection of handlers for each hook in a hooks configuration object.

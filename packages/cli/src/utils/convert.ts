@@ -27,18 +27,17 @@ export function convert<T, TOriginal extends T | ValueOf<T>, TNew>(
 
   // If the value is an array, convert each item in the array
   if (Array.isArray(value)) {
-    return value.map((item) =>
-      convert(item, predicateFn, converterFn),
-    ) as Converted<T, TOriginal, TNew>;
+    return value.map((item) => convert(item, predicateFn, converterFn)) as Converted<
+      T,
+      TOriginal,
+      TNew
+    >;
   }
 
   // If the value is an object, convert each value in the object
-  if (value && typeof value === 'object') {
+  if (value && typeof value === "object") {
     return Object.fromEntries(
-      Object.entries(value).map(([key, value]) => [
-        key,
-        convert(value, predicateFn, converterFn),
-      ]),
+      Object.entries(value).map(([key, value]) => [key, convert(value, predicateFn, converterFn)]),
     ) as Converted<T, TOriginal, TNew>;
   }
 

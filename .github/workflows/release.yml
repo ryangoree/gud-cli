@@ -31,8 +31,8 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          commit: 'chore: version packages'
-          title: 'chore: version packages'
+          commit: "chore: version packages"
+          title: "chore: version packages"
           version: bun run version
           publish: bun run release
         env:

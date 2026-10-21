@@ -1,5 +1,5 @@
-import { statSync } from 'node:fs';
-import { formatFileName } from 'src/utils/filename';
+import { statSync } from "node:fs";
+import { formatFileName } from "src/utils/filename";
 
 /**
  * Determine if a path is a directory.
@@ -19,7 +19,7 @@ export function isDirectory(path: string): boolean {
  */
 export function isFile(
   path: string,
-  fallbackExtensions: string[] = ['.js', '.cjs', '.mjs', '.ts', '.cts', '.mts'],
+  fallbackExtensions: string[] = [".js", ".cjs", ".mjs", ".ts", ".cts", ".mts"],
 ): boolean {
   return (
     statSync(path, { throwIfNoEntry: false })?.isFile() ??

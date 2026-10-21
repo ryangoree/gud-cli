@@ -1,7 +1,7 @@
-import { UsageError } from 'src/core/errors';
-import { getHelp } from 'src/core/help';
-import { removeOptionTokens } from 'src/core/options/remove-option-tokens';
-import { type Plugin, plugin } from 'src/core/plugin';
+import { UsageError } from "src/core/errors";
+import { getHelp } from "src/core/help";
+import { removeOptionTokens } from "src/core/options/remove-option-tokens";
+import { type Plugin, plugin } from "src/core/plugin";
 
 /**
  * Options for the help plugin.
@@ -39,35 +39,34 @@ export interface HelpPluginMeta {
  */
 export function help({
   maxWidth = 80,
-  helpFlags = ['h', 'help'],
+  helpFlags = ["h", "help"],
 }: HelpPluginOptions = {}): Plugin<HelpPluginMeta> {
   // Ensure at least one help flag
-  const [optionKey = 'help', ...alias] = helpFlags;
+  const [optionKey = "help", ...alias] = helpFlags;
   helpFlags = [optionKey, ...alias];
 
   return plugin<HelpPluginMeta>({
-    name: 'help',
-    description:
-      'Prints help information if a usage error is thrown or a help flag is present.',
+    name: "help",
+    description: "Prints help information if a usage error is thrown or a help flag is present.",
     meta: {
       get helpFlags() {
         return helpFlags;
       },
     },
     init: ({ setOptions, hooks }) => {
-      let usageError: UsageError | undefined = undefined;
+      let usageError: UsageError | undefined;
 
       setOptions({
         [optionKey]: {
           alias,
-          description: 'Prints help information.',
-          type: 'boolean',
+          description: "Prints help information.",
+          type: "boolean",
           default: false,
         },
       });
 
       // Save usage errors so we can print them when the command is executed
-      hooks.on('beforeError', async ({ error, ignore }) => {
+      hooks.on("beforeError", async ({ error, ignore }) => {
         if (error instanceof UsageError) {
           usageError = error;
           ignore();
@@ -75,7 +74,7 @@ export function help({
       });
 
       // Allow the command to be executed with just the help flag
-      hooks.on('beforeResolve', async ({ commandString, skip }) => {
+      hooks.on("beforeResolve", async ({ commandString, skip }) => {
         if (commandString.length) {
           const commandStringWithoutHelp = removeOptionTokens(
             commandString,
@@ -88,7 +87,7 @@ export function help({
         }
       });
 
-      hooks.on('beforeResolveNext', async ({ context, skip, lastResolved }) => {
+      hooks.on("beforeResolveNext", async ({ context, skip, lastResolved }) => {
         // If there's already a usage error, skip resolving the next command
         if (usageError) {
           skip();
@@ -109,12 +108,12 @@ export function help({
 
       // Skip execution if the help flag is present or if a usage error was
       // already thrown.
-      hooks.on('beforeExecute', async ({ state, skip }) => {
+      hooks.on("beforeExecute", async ({ state, skip }) => {
         const helpFlag = (await state.options[optionKey]?.()) === true;
         if (usageError || helpFlag) skip();
       });
 
-      hooks.on('afterExecute', async ({ setResult, state }) => {
+      hooks.on("afterExecute", async ({ setResult, state }) => {
         const { client, context, options } = state;
         const helpFlag = await options[optionKey]?.();
 
@@ -128,8 +127,7 @@ export function help({
         const helpText = await getHelp({ context, maxWidth })
           .then(({ helpText }) => helpText)
           .catch((error) => {
-            const errorMessage =
-              error instanceof Error ? error.message : String(error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
             return `Error generating help text: ${errorMessage}`;
           });
 
