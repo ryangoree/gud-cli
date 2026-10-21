@@ -19,7 +19,7 @@
  *
  * ```ts
  * // /path/to/foo.ts
- * import { getCallerPath } from '#/utils/get-caller';
+ * import { getCallerPath } from '@gud/cli';
  *
  * export function foo() {
  *  console.log(getCallerPath()); // /path/to/file.ts
