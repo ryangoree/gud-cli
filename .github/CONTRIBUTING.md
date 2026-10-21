@@ -118,7 +118,6 @@ packages/cli/
 ├── package.json
 ├── tsconfig.json # typescript config
 ├── tsdown.config.ts # build config
-├── typedoc.json # docs generator config
 └── vitest.config.ts # testing config
 ```
 

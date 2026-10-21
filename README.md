@@ -365,6 +365,5 @@ export default command({
 
 ## Reference
 
-- [API Documentation](https://ryangoree.github.io/gud-cli/)
 - [Examples Repository](examples/)
 - [Plugin Development Guide](docs/plugins.md)

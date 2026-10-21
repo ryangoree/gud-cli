@@ -39,7 +39,6 @@
   "scripts": {
     "build": "tsdown",
     "build:watch": "tsdown --watch",
-    "build:docs": "typedoc",
     "dev": "NODE_ENV=development tsx src/sandbox/index.ts",
     "dev:watch": "NODE_ENV=development tsx --watch src/sandbox/index.ts",
     "prod": "tsx src/sandbox/index.ts",
@@ -70,8 +69,6 @@
     "@vitest/coverage-v8": "^5.0.5",
     "tsdown": "^0.23.1",
     "tsx": "^4.23.15",
-    "typedoc": "^0.28.8",
-    "typescript": "^5.9.2",
     "vitest": "^5.0.5"
   },
   "main": "dist/index.cjs",

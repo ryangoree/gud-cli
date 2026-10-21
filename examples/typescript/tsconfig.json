@@ -10,6 +10,8 @@
     "moduleResolution": "NodeNext",
     "isolatedModules": true,
     "resolveJsonModule": true,
+    "noUncheckedSideEffectImports": true,
+    "types": ["node"],
     "allowSyntheticDefaultImports": true,
 
     // Type Checking

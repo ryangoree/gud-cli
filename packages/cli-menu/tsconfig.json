@@ -10,6 +10,8 @@
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "resolveJsonModule": true,
+    "noUncheckedSideEffectImports": true,
+    "types": ["node"],
     "allowSyntheticDefaultImports": true,
     "paths": {
       "#/*": ["./src/*"]
@@ -25,6 +27,7 @@
     "noPropertyAccessFromIndexSignature": false,
 
     // Output
-    "noEmit": true
+    "noEmit": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo"
   }
 }
