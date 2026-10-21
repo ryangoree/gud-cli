@@ -1,10 +1,10 @@
 import type { CommandModule } from 'src/core/command';
 import type { Context } from 'src/core/context';
 import { CliError } from 'src/core/errors';
-import type { OptionValues, OptionsConfig } from 'src/core/options/options';
+import type { OptionsConfig, OptionValues } from 'src/core/options/options';
 import {
-  type OptionsGetter,
   createOptionsGetter,
+  type OptionsGetter,
 } from 'src/core/options/options-getter';
 import type { ResolvedCommand, RouteParams } from 'src/core/resolve';
 
@@ -208,6 +208,10 @@ export class State<
    * current data will be used.
    * @returns The data from the last command.
    */
+  // TODO: Move to return based chaining. An explicit `next` is not as obvious
+  // and the data passed on from a command can be inferred from it's return
+  // type. Getting the type from a `next` function will require static analysis
+  // from a custom IDE plugin.
   readonly next = async (data = this.#data): Promise<unknown> => {
     this.#actionCallCount++;
     let _data = data;
