@@ -29,11 +29,11 @@ export {
   NotFoundError,
   UsageError,
 } from "#/core/errors";
-export type {
-  GetHelpOptions,
+export {
+  type GetHelpOptions,
   getHelp,
-  Help,
-  HelpRows,
+  type Help,
+  type HelpRows,
 } from "#/core/help";
 export {
   type HookHandler,
@@ -101,10 +101,10 @@ export {
   removeLeadingOptions,
   type Tokens,
 } from "#/core/parse";
-export type {
-  Plugin,
+export {
+  type Plugin,
   PluginError,
-  PluginInfo,
+  type PluginInfo,
   plugin,
 } from "#/core/plugin";
 export {

@@ -3,7 +3,6 @@ import initCliui from "cliui";
 import type { Context } from "#/core/context";
 import type { OptionsConfig } from "#/core/options/options";
 import type { ResolvedCommand } from "#/core/resolve";
-import { getBin } from "#/utils/argv";
 import { type Converted, convert } from "#/utils/convert";
 import { parseFileName, removeFileExtension } from "#/utils/filename";
 import { isDirectory } from "#/utils/fs";
@@ -110,8 +109,8 @@ export async function getHelp({ context, maxWidth = 80 }: GetHelpOptions): Promi
 
   const rows: HelpRows = {
     usage: {
-      // Start the usage string with the binary name
-      text: `Usage: ${getBin().replace(process.cwd(), "")}`,
+      // Start the usage string with the CLI name
+      text: `Usage: ${context.name}`,
       padding: [1, 0, 0, 0],
     },
   };

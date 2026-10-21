@@ -1,3 +1,4 @@
+import { basename } from "node:path";
 import { Client } from "#/core/client";
 import { CliError, type CliErrorOptions, UsageError } from "#/core/errors";
 import { HookRegistry } from "#/core/hooks";
@@ -7,6 +8,7 @@ import { type ParseCommandFn, parseCommand } from "#/core/parse";
 import type { Plugin, PluginInfo } from "#/core/plugin";
 import { type ResolveCommandFn, type ResolvedCommand, resolveCommand } from "#/core/resolve";
 import { State } from "#/core/state";
+import { getBin } from "#/utils/argv";
 
 // Errors //
 
@@ -39,6 +41,12 @@ export interface ContextParams<TOptions extends OptionsConfig = OptionsConfig> {
    * The path to the directory containing command modules
    */
   commandsDir: string;
+
+  /**
+   * The name of the CLI, used in help and usage messages.
+   * @default The file name of the executed script, e.g., `mycli`.
+   */
+  name?: string;
 
   /**
    * The client instance to use for logging and user interaction.
@@ -119,6 +127,11 @@ export interface ContextParams<TOptions extends OptionsConfig = OptionsConfig> {
  * @group Context
  */
 export class Context<TOptions extends OptionsConfig = OptionsConfig> {
+  /**
+   * The name of the CLI, used in help and usage messages.
+   */
+  readonly name: string;
+
   /*
    * The command string to be executed.
    */
@@ -164,6 +177,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   #result: unknown;
 
   constructor({
+    name = basename(getBin()),
     commandString,
     commandsDir,
     hooks = new HookRegistry(),
@@ -173,6 +187,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     resolveFn = resolveCommand,
     parseFn = parseCommand,
   }: ContextParams<TOptions>) {
+    this.name = name;
     this.commandString = commandString;
     this.commandsDir = commandsDir;
     this.client = client;

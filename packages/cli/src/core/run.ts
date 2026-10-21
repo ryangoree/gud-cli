@@ -15,6 +15,12 @@ import type { Plugin } from "./plugin";
  */
 export interface RunParams {
   /**
+   * The name of the CLI, used in help and usage messages.
+   * @default The file name of the executed script, e.g., `mycli`.
+   */
+  name?: string;
+
+  /**
    * The command string or array to be parsed and executed. If not provided, it
    * defaults to system arguments.
    */
@@ -90,6 +96,7 @@ export interface RunParams {
  * @group Run
  */
 export async function run({
+  name,
   command = hideBin(process.argv),
   defaultCommand,
   commandsDir = resolveDefaultCommandsDir(1),
@@ -108,6 +115,7 @@ export async function run({
 
   // create context
   const context = new Context({
+    name,
     commandString,
     commandsDir,
     options,
