@@ -1,24 +1,36 @@
 # OS
 .DS_Store
 
-# local
-*.env
+# Editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local
+*.env*
+!*.env.example
 *.pem
 *.local
+*.local.*
 
-# artifacts
-dist
-out
-build
+# Logs
+logs
+*.log
+*.log.*
 
-# testing
-coverage
-
-# package manager
+# Dependencies
 node_modules
-yarn-debug.log*
-yarn-error.log*
 
-# lib cache
-.next
+# Artifacts
+coverage
+dist
+*.tgz
+*.tsbuildinfo
 .turbo
+.vitest
