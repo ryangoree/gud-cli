@@ -229,7 +229,7 @@ Extend functionality with plugins:
 import { run, help, logger } from '@gud/cli';
 
 run({
-  name: 'mycli', // Shown in help usage (defaults to the executed file name)
+  name: 'mycli', // Shown in help usage (defaults to your package.json bin name)
   plugins: [
     help(), // Adds --help support
     logger(), // Logs command execution

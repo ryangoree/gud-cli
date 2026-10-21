@@ -15,8 +15,9 @@ import type { Plugin } from "./plugin";
  */
 export interface RunParams {
   /**
-   * The name of the CLI, used in help and usage messages.
-   * @default The file name of the executed script, e.g., `mycli`.
+   * The name of the CLI, used in help and usage messages. Defaults to the name
+   * of the package.json `bin` entry for the executed script, or its file name.
+   * @default getBinName()
    */
   name?: string;
 

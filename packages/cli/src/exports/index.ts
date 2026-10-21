@@ -140,6 +140,7 @@ export {
 // utils
 export {
   getBin,
+  getBinName,
   hideBin,
 } from "#/utils/argv";
 export { getCallerPath } from "#/utils/caller-path";

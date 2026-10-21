@@ -1,4 +1,3 @@
-import { basename } from "node:path";
 import { Client } from "#/core/client";
 import { CliError, type CliErrorOptions, UsageError } from "#/core/errors";
 import { HookRegistry } from "#/core/hooks";
@@ -8,7 +7,7 @@ import { type ParseCommandFn, parseCommand } from "#/core/parse";
 import type { Plugin, PluginInfo } from "#/core/plugin";
 import { type ResolveCommandFn, type ResolvedCommand, resolveCommand } from "#/core/resolve";
 import { State } from "#/core/state";
-import { getBin } from "#/utils/argv";
+import { getBinName } from "#/utils/argv";
 
 // Errors //
 
@@ -43,8 +42,9 @@ export interface ContextParams<TOptions extends OptionsConfig = OptionsConfig> {
   commandsDir: string;
 
   /**
-   * The name of the CLI, used in help and usage messages.
-   * @default The file name of the executed script, e.g., `mycli`.
+   * The name of the CLI, used in help and usage messages. Defaults to the name
+   * of the package.json `bin` entry for the executed script, or its file name.
+   * @default getBinName()
    */
   name?: string;
 
@@ -127,11 +127,6 @@ export interface ContextParams<TOptions extends OptionsConfig = OptionsConfig> {
  * @group Context
  */
 export class Context<TOptions extends OptionsConfig = OptionsConfig> {
-  /**
-   * The name of the CLI, used in help and usage messages.
-   */
-  readonly name: string;
-
   /*
    * The command string to be executed.
    */
@@ -162,6 +157,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     };
   };
 
+  #name: string | undefined;
   #plugins: Plugin[];
   #options: TOptions;
 
@@ -177,7 +173,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   #result: unknown;
 
   constructor({
-    name = basename(getBin()),
+    name,
     commandString,
     commandsDir,
     hooks = new HookRegistry(),
@@ -187,7 +183,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     resolveFn = resolveCommand,
     parseFn = parseCommand,
   }: ContextParams<TOptions>) {
-    this.name = name;
+    this.#name = name;
     this.commandString = commandString;
     this.commandsDir = commandsDir;
     this.client = client;
@@ -218,6 +214,15 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   }
 
   // Getters //
+
+  /**
+   * The name of the CLI, used in help and usage messages.
+   */
+  get name() {
+    // Resolved lazily since finding the bin name reads from the file system.
+    this.#name ??= getBinName();
+    return this.#name;
+  }
 
   /*
    * The options config for the command.
