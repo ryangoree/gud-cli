@@ -1,5 +1,5 @@
 #!/bin/bash
 set -e
 cp README.md packages/cli/README.md
-yarn build
+bun run build
 changeset publish

@@ -22,7 +22,7 @@ issue and start a conversation.
 ### Prerequisites
 
 - [Node.js](https://nodejs.org) 24.x
-- [Yarn](https://yarnpkg.com)
+- [Bun](https://bun.sh)
 
 You can install Node.js using [nvm](https://github.com/nvm-sh/nvm). After
 following the [installation
@@ -35,25 +35,26 @@ nvm install
 nvm use
 ```
 
-If Yarn is not already installed, you can install it using npm:
+If Bun is not already installed, follow the [installation
+instructions](https://bun.sh/docs/installation) or install it using npm:
 
 ```sh
-npm install --global yarn
+npm install --global bun
 ```
 
 ### Installing Dependencies
 
 After the prerequisites are installed, install all package and development
-dependencies using Yarn:
+dependencies using Bun:
 
 ```sh
-yarn  # run from the root of the project
+bun install  # run from the root of the project
 ```
 
 ### Working in a Monorepo
 
-This repo is a [Yarn
-Workspaces](https://classic.yarnpkg.com/lang/en/docs/workspaces/) monorepo using
+This repo is a [Bun
+Workspaces](https://bun.sh/docs/install/workspaces) monorepo using
 [Turborepo](https://turbo.build/repo/docs). The root
 [`package.json`](../package.json) file contains a list of workspaces, each of
 which is it's own package with it's own `package.json` file, and `turbo` scripts
@@ -62,17 +63,16 @@ which are configured in [turbo.json](../turbo.json).
 You can work with the root `package.json` mostly like you would with any other:
 
 ```sh
-yarn <script-name>
-
-# use the -W flag when installing root dependencies
-yarn -W add <package-name>
+bun run <script-name>
+bun add <package-name>
 ```
 
-To target a specific package, use the `workspace` command:
+To target a specific package, use the `--filter` flag or run commands from the
+package's directory:
 
 ```sh
-yarn workspace <package-name> <script-name>
-yarn workspace <package-name> add <package-name>
+bun run --filter <package-name> <script-name>
+cd packages/<package-dir> && bun add <package-name>
 ```
 
 ## Source Code Overview
@@ -168,13 +168,13 @@ used in the command files of CLIs and should be their default export.
 To run all tests, use the `test` script in the root `package.json`:
 
 ```sh
-yarn test
+bun run test
 ```
 
-To run tests for a specific package, use the `workspace` command:
+To run tests for a specific package, use the `--filter` flag:
 
-```
-yarn workspace <package-name> test
+```sh
+bun run --filter <package-name> test
 ```
 
 ## Before Opening a PR
@@ -185,7 +185,7 @@ versioning and changelogs.
 Before opening a PR, run:
 
 ```sh
-yarn changeset
+bunx changeset
 ```
 
 Follow the prompts to describe the changes you've made using the

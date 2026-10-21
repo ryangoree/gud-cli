@@ -22,11 +22,13 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: "yarn"
+          node-version-file: .nvmrc
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Run ${{ matrix.tasks }}
-        run: yarn ${{ matrix.tasks }}
+        run: bun run ${{ matrix.tasks }}

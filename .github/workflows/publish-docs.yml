@@ -8,7 +8,7 @@ on:
     paths:
       - 'packages/cli/src/**'
       - 'README.md'
-      - '.github/workflows/docs.yml'
+      - '.github/workflows/publish-docs.yml'
 
 permissions:
   contents: read
@@ -32,17 +32,16 @@ jobs:
       - name: setup node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'yarn'
+          node-version-file: .nvmrc
 
-      - name: install Yarn
-        run: npm i -g yarn
+      - name: setup bun
+        uses: oven-sh/setup-bun@v2
 
       - name: install dependencies
-        run: yarn --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: build
-        run: yarn workspace @gud/cli build:docs
+        run: bun run --filter @gud/cli build:docs
 
       - name: setup pages
         uses: actions/configure-pages@v5
