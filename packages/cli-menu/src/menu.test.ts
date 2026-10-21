@@ -1,4 +1,5 @@
-// Must be imported first
+// Must be imported first so `node:fs` is mocked before other modules load it
+import '@gud/cli/testing';
 import { mockCommandModule } from '@gud/cli/testing';
 
 import { type ResolvedCommand, command, run } from '@gud/cli';

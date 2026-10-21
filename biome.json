@@ -50,5 +50,10 @@
       "semicolons": "always",
       "trailingCommas": "all"
     }
+  },
+  "markdown": {
+    "formatter": {
+      "enabled": false
+    }
   }
 }

@@ -1,4 +1,5 @@
-// Must be imported first
+// Must be imported first so `node:fs` is mocked before other modules load it
+import 'src/utils/testing/command-modules';
 import {
   mockCommandModule,
   unmockAllCommandModules,
