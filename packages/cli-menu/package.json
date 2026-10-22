@@ -33,6 +33,7 @@
     "test": "vitest run --reporter=tree",
     "test:watch": "vitest --reporter=tree",
     "test:ci": "vitest run",
+    "coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
