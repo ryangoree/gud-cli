@@ -231,6 +231,78 @@ describe("run", () => {
     expect(result).toBe(endData);
   });
 
+  it("passes on data set with setData()", async () => {
+    mockCommandModules({
+      "commands/foo": {
+        // No action
+        handler: ({ setData }) => setData("from foo"),
+      },
+      "commands/foo/bar": {
+        handler: async ({ data, setData, next }) => {
+          await setData(`${data} and bar`);
+          return next();
+        },
+      },
+      "commands/foo/bar/baz": {
+        handler: ({ data, end }) => end(`${data} and baz`),
+      },
+    });
+
+    const result = await run({
+      command: "foo bar baz",
+      commandsDir: "commands",
+    });
+
+    expect(result).toBe("from foo and bar and baz");
+  });
+
+  it("keeps the data when undefined is passed and clears it with null", async () => {
+    let dataInBar: unknown;
+    mockCommandModules({
+      "commands/foo": {
+        handler: ({ next }) => next(undefined),
+      },
+      "commands/foo/bar": {
+        handler: ({ data, end }) => {
+          dataInBar = data;
+          return end(null);
+        },
+      },
+    });
+
+    const result = await run({
+      command: "foo bar",
+      commandsDir: "commands",
+      initialData: "initial",
+    });
+
+    expect(dataInBar).toBe("initial");
+    expect(result).toBe(null);
+  });
+
+  it("forks a new set of commands", async () => {
+    mockCommandModule("commands/foo", {
+      handler: async ({ fork, end }) => {
+        const forked = await fork<string>({
+          initialData: "forked",
+          commands: [
+            {
+              handler: ({ data, next }) => next(`${data} and first`),
+            },
+            {
+              handler: ({ data, end }) => end(`${data} and second`),
+            },
+          ],
+        });
+        return end(forked.toUpperCase());
+      },
+    });
+
+    const result = await run({ command: "foo", commandsDir: "commands" });
+
+    expect(result).toBe("FORKED AND FIRST AND SECOND");
+  });
+
   describe("lifecycle", () => {
     it("calls beforeParse hook with the correct payload", async () => {
       mockCommandModule("commands/foo");
@@ -508,6 +580,77 @@ describe("run", () => {
         setData: expect.any(Function),
         state: expect.any(State),
       } satisfies HookPayload<"beforeEnd">);
+    });
+
+    describe("beforeCommand hook", () => {
+      it("can set the data passed to the command", async () => {
+        mockCommandModule("commands/foo", {
+          handler: ({ data, end }) => end(`${data} and foo`),
+        });
+
+        const result = await run({
+          command: "foo",
+          commandsDir: "commands",
+          initialData: "initial",
+          hooks: {
+            beforeCommand: ({ setData }) => setData("from hook"),
+          },
+        });
+
+        expect(result).toBe("from hook and foo");
+      });
+    });
+
+    describe("afterCommand hook", () => {
+      it("receives the data output by the command", async () => {
+        mockCommandModules({
+          "commands/foo": {
+            handler: ({ setData }) => setData("from foo"),
+          },
+          "commands/foo/bar": {
+            handler: ({ end }) => end("from bar"),
+          },
+        });
+
+        const outputs: Record<string, unknown> = {};
+        await run({
+          command: "foo bar",
+          commandsDir: "commands",
+          initialData: "initial",
+          hooks: {
+            afterCommand: ({ command, data }) => {
+              outputs[command.commandName] = data;
+            },
+          },
+        });
+
+        expect(outputs).toEqual({ foo: "from foo", bar: "from bar" });
+      });
+
+      it("can set the data output by the command", async () => {
+        mockCommandModules({
+          "commands/foo": {
+            // No action
+            handler: () => {},
+          },
+          "commands/foo/bar": {
+            handler: ({ data, end }) => end(`${data} and bar`),
+          },
+        });
+
+        const result = await run({
+          command: "foo bar",
+          commandsDir: "commands",
+          initialData: "initial",
+          hooks: {
+            afterCommand: ({ command, data, setData }) => {
+              setData(`${data} after ${command.commandName}`);
+            },
+          },
+        });
+
+        expect(result).toBe("initial after foo and bar after bar");
+      });
     });
 
     describe("error hook", () => {

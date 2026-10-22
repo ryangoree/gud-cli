@@ -198,14 +198,10 @@ export class State<TData = unknown, TOptions extends OptionsConfig = OptionsConf
   /**
    * Continue to the next step in the command chain or end the steps if there
    * are no more steps.
-   * @param data - The data to pass to the next step. If not provided, the
-   * current data will be used.
+   * @param data - The data to pass to the next step. If `undefined`, the
+   * current data will be used. Pass `null` to clear the data.
    * @returns The data from the last command.
    */
-  // TODO: Move to return based chaining. An explicit `next` is not as obvious
-  // and the data passed on from a command can be inferred from it's return
-  // type. Getting the type from a `next` function will require static analysis
-  // from a custom IDE plugin.
   readonly next = async (data = this.#data): Promise<unknown> => {
     this.#actionCallCount++;
     let _data = data;
@@ -241,22 +237,35 @@ export class State<TData = unknown, TOptions extends OptionsConfig = OptionsConf
         },
       });
 
+      // Apply data overridden by the hook so the handler receives it.
+      if (_data !== this.#data) {
+        await this.#applyState({ data: _data });
+      }
+
       const actionCallCountBefore = this.#actionCallCount;
       await nextCommand.command.handler(this);
 
+      // The command's output is the current data: either set by the handler
+      // with `setData()`, or the result of the steps it ran with `next()` or
+      // `end()`.
+      let output = this.#data;
+      let isOutputOverridden = false;
       await this.context.hooks.call("afterCommand", {
         state: this,
         command: nextCommand,
-        data: _data,
+        data: output,
         setData: (data) => {
-          _data = data;
+          output = data;
+          isOutputOverridden = true;
         },
       });
 
       // Prevent the process from hanging if a command handler neglects to call
       // `next()` or `end()` by checking if the action call count has changed.
       if (this.#actionCallCount === actionCallCountBefore) {
-        await this.next(_data);
+        await this.next(output);
+      } else if (isOutputOverridden) {
+        await this.#applyState({ data: output });
       }
     } else {
       // If there is no next command, end the steps.
@@ -274,7 +283,8 @@ export class State<TData = unknown, TOptions extends OptionsConfig = OptionsConf
   /**
    * End execution, skipping any remaining steps, and return the current or
    * provided data.
-   * @param data The data to return. Defaults to the current data.
+   * @param data - The data to return. If `undefined`, the current data will be
+   * used. Pass `null` to clear the data.
    * @returns The data from the last command.
    */
   readonly end = async (
@@ -324,10 +334,26 @@ export class State<TData = unknown, TOptions extends OptionsConfig = OptionsConf
   };
 
   /**
+   * Set the current data without continuing to the next step. The data is
+   * passed on when `next()` or `end()` is called without data, or when the
+   * handler returns without calling either.
+   * @param data - The new data.
+   */
+  readonly setData = async (data: unknown): Promise<void> => {
+    await this.#applyState({ data });
+  };
+
+  /**
    * Fork the state and execute a new set of commands with the same context.
+   *
+   * @typeParam TResult - The expected result type. This isn't checked, since
+   * commands can end early and hooks can change the data.
    * @returns The data from the last command.
    */
-  readonly fork = async <TCommand extends CommandModule<any, any, any>>({
+  readonly fork = async <
+    TResult = unknown,
+    TCommand extends CommandModule<any, any, any> = CommandModule<any, any, any>,
+  >({
     commands,
     initialData = this.#data,
     optionValues,
@@ -356,7 +382,7 @@ export class State<TData = unknown, TOptions extends OptionsConfig = OptionsConf
      */
     // TODO: strict type for paramValues
     paramValues?: RouteParams;
-  }) => {
+  }): Promise<TResult> => {
     const resolvedCommands: ResolvedCommand[] = [];
     const resolvedCommandsOptions: OptionsConfig = {};
 
@@ -404,7 +430,7 @@ export class State<TData = unknown, TOptions extends OptionsConfig = OptionsConf
     }
 
     await state.start(initialData);
-    return state.data;
+    return state.data as TResult;
   };
 
   /**
