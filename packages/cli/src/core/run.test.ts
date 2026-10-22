@@ -318,6 +318,26 @@ describe("run", () => {
     }
   });
 
+  it("resolves a subcommand that matches a leading option or its value", async () => {
+    const { mocks } = mockCommandModules({
+      "commands/deploy": {
+        options: { "dry-run": { type: "boolean" }, target: { type: "string" } },
+        handler: vi.fn(({ next }) => next()),
+      },
+      "commands/deploy/run": {
+        handler: vi.fn(({ end }) => end("ran")),
+      },
+    });
+
+    const result = await run({
+      command: ["deploy", "--dry-run", "--target", "run", "run"],
+      commandsDir: "commands",
+    });
+
+    expect(result).toBe("ran");
+    expect(mocks["commands/deploy/run"].handler).toHaveBeenCalledOnce();
+  });
+
   it("parses a command the same with and without a default command", async () => {
     mockCommandModule("commands/hello", {
       options: { name: { type: "string" } },

@@ -53,59 +53,8 @@ export function parseCommand(
   command: string | string[],
   optionsConfig: OptionsConfig,
 ): ParsedCommand {
-  validateOptionsConfig(optionsConfig);
-
-  // Prepare the options config for yargs-parser
-  const parseOptions: {
-    alias: Record<string, string[]>;
-    array: string[];
-    boolean: string[];
-    number: string[];
-    string: string[];
-    narg: Record<string, number>;
-  } = {
-    alias: {},
-    array: [],
-    boolean: [],
-    number: [],
-    string: [],
-    narg: {},
-  };
-
-  for (const [key, option] of Object.entries(optionsConfig)) {
-    if (option.alias) {
-      parseOptions.alias[key] = option.alias as string[];
-    }
-
-    if (option.nargs) {
-      parseOptions.narg[key] = option.nargs;
-    }
-
-    switch (option.type) {
-      case "array":
-        parseOptions.array.push(key);
-        break;
-      case "boolean":
-        parseOptions.boolean.push(key);
-        break;
-      case "number":
-        parseOptions.number.push(key);
-        break;
-      default:
-        parseOptions.string.push(key);
-        break;
-    }
-  }
-
   // Parse the command with yargs-parser
-  const { _, ...options } = parse(command, {
-    ...parseOptions,
-    configuration: {
-      "duplicate-arguments-array": false,
-      "unknown-options-as-args": true,
-      "parse-numbers": false,
-    },
-  });
+  const { _, ...options } = parse(command, getParserOptions(optionsConfig));
 
   // number parsing disabled...
   let tokens = _ as Tokens;
@@ -130,9 +79,13 @@ export function parseCommand(
 }
 
 /**
- * Remove leading options from a command string or an array of arguments by
- * parsing it with the provided parse function and returning the remaining
- * command string or arguments.
+ * Remove leading options from a command string or an array of arguments and
+ * return the remaining command string or arguments.
+ *
+ * @remarks
+ * With the default parse function, the options end at the first argument that
+ * isn't an option or an option's value. With a custom parse function, they end
+ * at the first argument that matches the first token it returns.
  */
 export async function removeLeadingOptions(
   args: string[],
@@ -155,8 +108,76 @@ export async function removeLeadingOptions(
   }
 
   if (!command.length) return [];
-  const { tokens } = await parseFn(command, optionsConfig);
-  if (!tokens.length) return [];
-  const indexOfNextCommand = command.indexOf(tokens[0]!);
-  return command.slice(indexOfNextCommand);
+
+  if (parseFn !== parseCommand) {
+    const { tokens } = await parseFn(command, optionsConfig);
+    if (!tokens.length) return [];
+    return command.slice(command.indexOf(tokens[0]!));
+  }
+
+  // Stop parsing at the first argument that isn't an option or an option's
+  // value. Everything after it is returned in `_`.
+  const parserOptions = getParserOptions(optionsConfig);
+  const { _ } = parse(command, {
+    ...parserOptions,
+    configuration: {
+      ...parserOptions.configuration,
+      "halt-at-non-option": true,
+    },
+  });
+  const remaining = command.slice(command.length - _.length);
+
+  // Skip leading unknown options, which are treated as boolean flags
+  const indexOfNextCommand = remaining.findIndex((token) => !token.startsWith("-"));
+  return indexOfNextCommand === -1 ? [] : remaining.slice(indexOfNextCommand);
+}
+
+// Internal //
+
+/**
+ * Validate the options config and convert it to yargs-parser options.
+ */
+function getParserOptions(optionsConfig: OptionsConfig) {
+  validateOptionsConfig(optionsConfig);
+
+  const parserOptions = {
+    alias: {} as Record<string, string[]>,
+    array: [] as string[],
+    boolean: [] as string[],
+    number: [] as string[],
+    string: [] as string[],
+    narg: {} as Record<string, number>,
+    configuration: {
+      "duplicate-arguments-array": false,
+      "unknown-options-as-args": true,
+      "parse-numbers": false,
+    } as Partial<parse.Configuration>,
+  };
+
+  for (const [key, option] of Object.entries(optionsConfig)) {
+    if (option.alias) {
+      parserOptions.alias[key] = option.alias as string[];
+    }
+
+    if (option.nargs) {
+      parserOptions.narg[key] = option.nargs;
+    }
+
+    switch (option.type) {
+      case "array":
+        parserOptions.array.push(key);
+        break;
+      case "boolean":
+        parserOptions.boolean.push(key);
+        break;
+      case "number":
+        parserOptions.number.push(key);
+        break;
+      default:
+        parserOptions.string.push(key);
+        break;
+    }
+  }
+
+  return parserOptions;
 }

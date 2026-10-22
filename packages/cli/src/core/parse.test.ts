@@ -216,8 +216,55 @@ describe("parse", () => {
       ).toBe("bar");
     });
 
+    it("doesn't match the next command inside an option", async () => {
+      expect(
+        await removeLeadingOptions(["--verbose", "ver"], { verbose: { type: "boolean" } }),
+      ).toEqual(["ver"]);
+      expect(
+        await removeLeadingOptions(["--dry-run", "run", "--x", "y"], {
+          "dry-run": { type: "boolean" },
+        }),
+      ).toEqual(["run", "--x", "y"]);
+      expect(await removeLeadingOptions("--dry-run run", { "dry-run": { type: "boolean" } })).toBe(
+        "run",
+      );
+    });
+
+    it("doesn't match the next command in an option value", async () => {
+      expect(
+        await removeLeadingOptions(["--name", "run", "run"], { name: { type: "string" } }),
+      ).toEqual(["run"]);
+    });
+
+    it("skips option values, aliases, and nargs", async () => {
+      expect(
+        await removeLeadingOptions(["--alpha", "x", "sub"], {
+          a: { type: "string", alias: ["alpha"] },
+        }),
+      ).toEqual(["sub"]);
+      expect(
+        await removeLeadingOptions(["-n", "1", "2", "sub"], { n: { type: "string", nargs: 2 } }),
+      ).toEqual(["sub"]);
+      expect(
+        await removeLeadingOptions(["--port=3000", "sub"], { port: { type: "number" } }),
+      ).toEqual(["sub"]);
+    });
+
+    it("skips leading unknown options", async () => {
+      expect(await removeLeadingOptions(["--help", "-xvf", "foo"], {})).toEqual(["foo"]);
+    });
+
+    it("uses the first token from a custom parse function", async () => {
+      const parseFn = vi.fn(() => ({ tokens: ["sub"], options: {} }));
+      expect(await removeLeadingOptions(["--opt", "val", "sub"], {}, parseFn)).toEqual(["sub"]);
+      expect(parseFn).toHaveBeenCalledWith(["--opt", "val", "sub"], {});
+    });
+
     it("returns empty arguments when only options remain", async () => {
       expect(await removeLeadingOptions(["--force"], {})).toEqual([]);
+      expect(await removeLeadingOptions(["--name", "Bob"], { name: { type: "string" } })).toEqual(
+        [],
+      );
       expect(await removeLeadingOptions("", {})).toBe("");
     });
   });
