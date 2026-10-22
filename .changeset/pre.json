@@ -9,6 +9,7 @@
   },
   "changesets": [
     "blue-dingos-exist",
+    "calm-data-flow",
     "crazy-berries-peel",
     "early-knives-sing",
     "forty-cows-brush",
@@ -18,8 +19,13 @@
     "hungry-emus-poke",
     "khaki-doodles-heal",
     "nasty-seas-learn",
+    "plain-names-land",
+    "quiet-bins-show",
+    "quiet-names-stay",
+    "sharp-flags-halt",
     "stale-socks-relax",
     "tired-trams-play",
-    "tired-webs-hunt"
+    "tired-webs-hunt",
+    "whole-args-pass"
   ]
 }
