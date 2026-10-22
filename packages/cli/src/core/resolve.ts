@@ -250,7 +250,7 @@ export async function prepareResolvedCommand(
   // `--help foo` -> `foo`
   const remainingArgv = await removeLeadingOptions(
     resolved.remainingArgv ?? splitTokens(resolved.remainingCommandString),
-    isMiddleware ? resolved.command.options || {} : {},
+    resolved.command.options || {},
     parseFn,
   );
   resolved.remainingArgv = remainingArgv;

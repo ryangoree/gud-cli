@@ -338,6 +338,49 @@ describe("run", () => {
     expect(mocks["commands/deploy/run"].handler).toHaveBeenCalledOnce();
   });
 
+  it("doesn't resolve a non-middleware command's option values as subcommands", async () => {
+    const { mocks } = mockCommandModules({
+      "commands/hello": {
+        isMiddleware: false,
+        options: { name: { type: "string" } },
+        handler: vi.fn(({ options, end }) => end(options.values.name)),
+      },
+      "commands/hello/sub": {
+        handler: vi.fn(({ end }) => end("sub")),
+      },
+    });
+
+    const result = await run({
+      command: ["hello", "--name", "Bob", "--help"],
+      commandsDir: "commands",
+    });
+
+    expect(result).toBe("Bob");
+    expect(mocks["commands/hello/sub"].handler).not.toHaveBeenCalled();
+  });
+
+  it("skips a non-middleware command when a subcommand follows its options", async () => {
+    const { mocks } = mockCommandModules({
+      "commands/hello": {
+        isMiddleware: false,
+        options: { name: { type: "string" } },
+        handler: vi.fn(({ end }) => end("hello")),
+      },
+      "commands/hello/sub": {
+        handler: vi.fn(({ end }) => end("sub")),
+      },
+    });
+    const helloHandler = mocks["commands/hello"].handler;
+
+    const result = await run({
+      command: ["hello", "--name", "Bob", "sub"],
+      commandsDir: "commands",
+    });
+
+    expect(result).toBe("sub");
+    expect(helloHandler).not.toHaveBeenCalled();
+  });
+
   it("parses a command the same with and without a default command", async () => {
     mockCommandModule("commands/hello", {
       options: { name: { type: "string" } },
