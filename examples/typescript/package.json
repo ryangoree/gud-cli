@@ -17,7 +17,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "@gud/cli": "1.0.0-beta.7",
+    "@gud/cli": "1.0.0-beta.8",
     "@gud/cli-menu": "1.0.0-beta.5"
   },
   "devDependencies": {
