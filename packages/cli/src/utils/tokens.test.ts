@@ -60,6 +60,11 @@ describe("tokens", () => {
       expect(splitTokens('foo "bar baz" qux quux')).toEqual(["foo", "bar baz", "qux", "quux"]);
     });
 
+    it("ignores repeated delimiters", () => {
+      expect(splitTokens("foo  bar")).toEqual(["foo", "bar"]);
+      expect(splitTokens(' foo "bar  baz" ')).toEqual(["foo", "bar  baz"]);
+    });
+
     it("accepts custom joiner", () => {
       expect(splitTokens('foo/"bar baz"/qux', "/")).toEqual(["foo", "bar baz", "qux"]);
     });

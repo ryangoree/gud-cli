@@ -2,7 +2,7 @@ import { type Client, ClientError } from "#/core/client";
 import type { ParseCommandFn } from "#/core/parse";
 import { type ResolveCommandFn, resolveDefaultCommandsDir } from "#/core/resolve";
 import { hideBin } from "#/utils/argv";
-import { joinTokens } from "#/utils/tokens";
+import { splitTokens } from "#/utils/tokens";
 import { Context } from "./context";
 import { CliError } from "./errors";
 import { HookRegistry, type LifecycleHooks } from "./hooks";
@@ -109,15 +109,15 @@ export async function run({
   resolveFn,
   hooks,
 }: RunParams = {}) {
-  let commandString = joinTokens(command);
-  if ((!commandString || commandString.startsWith("-")) && defaultCommand) {
-    commandString = joinTokens(defaultCommand, command);
+  let argv = toArgv(command);
+  if ((!argv.length || argv[0]!.startsWith("-")) && defaultCommand) {
+    argv = [...toArgv(defaultCommand), ...argv];
   }
 
   // create context
   const context = new Context({
     name,
-    commandString,
+    argv,
     commandsDir,
     options,
     plugins,
@@ -141,4 +141,8 @@ export async function run({
     if (error instanceof CliError) throw error;
     throw new CliError(error);
   }
+}
+
+function toArgv(command: string | string[]): string[] {
+  return typeof command === "string" ? splitTokens(command) : command;
 }

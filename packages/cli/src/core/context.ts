@@ -8,6 +8,7 @@ import type { Plugin, PluginInfo } from "#/core/plugin";
 import { type ResolveCommandFn, type ResolvedCommand, resolveCommand } from "#/core/resolve";
 import { State } from "#/core/state";
 import { getBinName } from "#/utils/argv";
+import { joinTokens, splitTokens } from "#/utils/tokens";
 
 // Errors //
 
@@ -32,9 +33,15 @@ export class SubcommandRequiredError extends UsageError {
  */
 export interface ContextParams<TOptions extends OptionsConfig = OptionsConfig> {
   /*
-   * The command string to be executed
+   * The command string to be executed. Ignored if `argv` is provided.
    */
-  commandString: string;
+  commandString?: string;
+
+  /*
+   * The arguments to be executed
+   * @default splitTokens(commandString)
+   */
+  argv?: string[];
 
   /*
    * The path to the directory containing command modules
@@ -133,6 +140,11 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   readonly commandString: string;
 
   /*
+   * The arguments to be executed.
+   */
+  readonly argv: string[];
+
+  /*
    * The path to the directory containing command modules.
    */
   readonly commandsDir: string;
@@ -174,7 +186,8 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
 
   constructor({
     name,
-    commandString,
+    commandString = "",
+    argv,
     commandsDir,
     hooks = new HookRegistry(),
     client = new Client(),
@@ -184,7 +197,8 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     parseFn = parseCommand,
   }: ContextParams<TOptions>) {
     this.#name = name;
-    this.commandString = commandString;
+    this.argv = argv ?? splitTokens(commandString);
+    this.commandString = argv ? joinTokens(argv) : commandString;
     this.commandsDir = commandsDir;
     this.client = client;
     this.hooks = hooks;
@@ -339,48 +353,50 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
   };
 
   /**
-   * Resolve the first command module from a command string using the configured
-   * `resolveFn` and `parseFn`.
+   * Resolve the first command module from a command string or arguments using
+   * the configured `resolveFn` and `parseFn`.
    *
    * This function has no side effects and is simply a wrapper around the
    * configured `resolveFn` and `parseFn`.
    *
-   * @param commandString - The command string to be resolved. Defaults to the
-   * context's command string.
+   * @param command - The command string or arguments to be resolved. Defaults
+   * to the context's arguments.
    * @param commandsDir - The path to the directory containing command modules.
    * Defaults to the context's commands directory.
    * @returns A `ResolvedCommand` object.
    */
   readonly resolveCommand = (
-    commandString = this.commandString,
+    command: string | string[] = this.argv,
     commandsDir = this.commandsDir,
   ) => {
+    const isString = typeof command === "string";
     return this.#resolveFn({
-      commandString,
+      commandString: isString ? command : joinTokens(command),
+      argv: isString ? splitTokens(command) : command,
       commandsDir,
       parseFn: this.#parseFn,
     });
   };
 
   /**
-   * Parse a command string into a structured object using the configured
-   * `parseFn` and the context's options config.
+   * Parse a command string or arguments into a structured object using the
+   * configured `parseFn` and the context's options config.
    *
    * This function has no side effects and is simply a wrapper around the
    * configured `parseFn` and options config.
    *
-   * @param commandString - The command string to be parsed. Defaults to the
-   * context's command string.
+   * @param command - The command string or arguments to be parsed. Defaults to
+   * the context's arguments.
    * @param optionsConfig - Additional options config to be merged with the
    * context's options config.
    * @returns A `ParsedCommand` object containing the parsed command tokens and
    * option values.
    */
   readonly parseCommand = (
-    commandString: string = this.commandString,
+    command: string | string[] = this.argv,
     optionsConfig: OptionsConfig = this.options,
   ) => {
-    const parsed = this.#parseFn(commandString, {
+    const parsed = this.#parseFn(command, {
       ...this.options,
       ...optionsConfig,
     });
@@ -545,6 +561,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     await this.hooks.call("beforeResolve", {
       context: this,
       commandString: this.commandString,
+      argv: this.argv,
       commandsDir: this.commandsDir,
       setResolveFn: (resolveFn) => {
         this.#resolveFn = resolveFn;
@@ -574,11 +591,16 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
         this.setOptions(pendingCommand.command.options);
       }
 
-      if (!pendingCommand.remainingCommandString) break;
+      // Custom resolvers might only set the remaining command string
+      const remainingArgv =
+        pendingCommand.remainingArgv ?? splitTokens(pendingCommand.remainingCommandString);
+      pendingCommand.remainingArgv = remainingArgv;
+      if (!remainingArgv.length) break;
 
       await this.hooks.call("beforeResolveNext", {
         context: this,
         commandString: pendingCommand.remainingCommandString,
+        argv: remainingArgv,
         commandsDir: pendingCommand.subcommandsDir,
         lastResolved: pendingCommand,
         setResolveFn: (resolveFn) => {
@@ -598,10 +620,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
 
       if (skipped) break;
 
-      pendingCommand = await this.resolveCommand(
-        pendingCommand.remainingCommandString,
-        pendingCommand.subcommandsDir,
-      );
+      pendingCommand = await this.resolveCommand(remainingArgv, pendingCommand.subcommandsDir);
     }
 
     await this.hooks.call("afterResolve", {
@@ -634,6 +653,7 @@ export class Context<TOptions extends OptionsConfig = OptionsConfig> {
     await this.hooks.call("beforeParse", {
       context: this,
       commandString: this.commandString,
+      argv: this.argv,
       optionsConfig: this.options,
       setParseFn: (parseFn) => {
         this.#parseFn = parseFn;

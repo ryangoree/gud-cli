@@ -309,12 +309,33 @@ describe("run", () => {
       handler: ({ options, end }) => end(options.values.name),
     });
 
-    const result = await run({
-      command: ["hello", "--name", "Bob Smith"],
+    for (const name of ["Bob Smith", "a  b", 'say "hi"']) {
+      const result = await run({
+        command: ["hello", "--name", name],
+        commandsDir: "commands",
+      });
+      expect(result).toBe(name);
+    }
+  });
+
+  it("parses a command the same with and without a default command", async () => {
+    mockCommandModule("commands/hello", {
+      options: { name: { type: "string" } },
+      handler: ({ options, end }) => end(options.values.name),
+    });
+
+    const withoutDefault = await run({
+      command: ["hello", "--name", 'say "hi"'],
+      commandsDir: "commands",
+    });
+    const withDefault = await run({
+      command: ["--name", 'say "hi"'],
+      defaultCommand: "hello",
       commandsDir: "commands",
     });
 
-    expect(result).toBe("Bob Smith");
+    expect(withoutDefault).toBe('say "hi"');
+    expect(withDefault).toBe(withoutDefault);
   });
 
   describe("lifecycle", () => {
@@ -334,6 +355,7 @@ describe("run", () => {
       // Expect the hook to have been called with the correct payload
       expect(beforeParse).toHaveBeenCalledWith({
         commandString: "foo",
+        argv: ["foo"],
         optionsConfig: expect.any(Object),
         setParsedOptionsAndSkip: expect.any(Function),
         skip: expect.any(Function),
@@ -379,6 +401,7 @@ describe("run", () => {
       // Expect the hook to have been called with the correct payload
       expect(beforeResolve).toHaveBeenCalledWith({
         commandString: "foo",
+        argv: ["foo"],
         commandsDir: "commands",
         setResolveFn: expect.any(Function),
         setParseFn: expect.any(Function),

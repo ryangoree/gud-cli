@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type ParsedCommand, parseCommand } from "#/core/parse";
+import { type ParsedCommand, parseCommand, removeLeadingOptions } from "#/core/parse";
 import { unmockAllCommandModules } from "#/utils/testing/command-modules";
 
 describe("parse", () => {
@@ -182,5 +182,43 @@ describe("parse", () => {
         a: "hello world",
       },
     } as ParsedCommand);
+  });
+
+  it("parses arguments without splitting or unquoting values", async () => {
+    expect(
+      await parseCommand(["foo", "--a", 'say "hi"', "--b", "a  b", "bar baz"], {
+        a: { type: "string" },
+        b: { type: "string" },
+      }),
+    ).toMatchObject({
+      tokens: ["foo", "bar baz"],
+      options: {
+        a: 'say "hi"',
+        b: "a  b",
+      },
+    } as ParsedCommand);
+  });
+
+  describe("removeLeadingOptions", () => {
+    it("removes leading options from arguments", async () => {
+      expect(
+        await removeLeadingOptions(["--name", "Bob Smith", "--force", "bar", "--baz"], {
+          name: { type: "string" },
+        }),
+      ).toEqual(["bar", "--baz"]);
+    });
+
+    it("removes leading options from a command string", async () => {
+      expect(
+        await removeLeadingOptions('--name "Bob Smith" bar', {
+          name: { type: "string" },
+        }),
+      ).toBe("bar");
+    });
+
+    it("returns empty arguments when only options remain", async () => {
+      expect(await removeLeadingOptions(["--force"], {})).toEqual([]);
+      expect(await removeLeadingOptions("", {})).toBe("");
+    });
   });
 });

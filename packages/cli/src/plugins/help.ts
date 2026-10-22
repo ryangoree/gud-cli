@@ -87,21 +87,18 @@ export function help({
         }
       });
 
-      hooks.on("beforeResolveNext", async ({ context, skip, lastResolved }) => {
+      hooks.on("beforeResolveNext", async ({ context, argv, skip }) => {
         // If there's already a usage error, skip resolving the next command
         if (usageError) {
           skip();
           return;
         }
 
-        // check if the help flag was present in the previously resolved command
-        // string. If it's in the remaining command string we can ignore it for
+        // check if the help flag was present in the previously resolved
+        // arguments. If it's in the remaining arguments we can ignore it for
         // now to build up context for the help text.
-        const stringToCheck = context.commandString.slice(
-          0,
-          -lastResolved.remainingCommandString.length,
-        );
-        const { options } = await context.parseCommand(stringToCheck);
+        const argvToCheck = context.argv.slice(0, context.argv.length - argv.length);
+        const { options } = await context.parseCommand(argvToCheck);
 
         if (options[optionKey]) skip();
       });

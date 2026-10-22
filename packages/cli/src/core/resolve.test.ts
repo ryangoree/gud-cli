@@ -2,6 +2,7 @@
 import "#/utils/testing/command-modules";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { CommandModule } from "#/core/command";
 import { type ResolvedCommand, resolveCommand } from "#/core/resolve";
 import { mockCommandModules, unmockAllCommandModules } from "#/utils/testing/command-modules";
 
@@ -38,6 +39,7 @@ describe("resolve", () => {
       commandName: "foo",
       commandTokens: ["foo"],
       remainingCommandString: "bar baz",
+      remainingArgv: ["bar", "baz"],
       subcommandsDir: "commands/foo",
     } as ResolvedCommand);
 
@@ -52,6 +54,7 @@ describe("resolve", () => {
       commandName: "bar",
       commandTokens: ["bar"],
       remainingCommandString: "baz",
+      remainingArgv: ["baz"],
       subcommandsDir: "commands/foo/bar",
     } as ResolvedCommand);
 
@@ -66,6 +69,7 @@ describe("resolve", () => {
       commandName: "baz",
       commandTokens: ["baz"],
       remainingCommandString: "",
+      remainingArgv: [],
       subcommandsDir: "commands/foo/bar/baz",
     } as ResolvedCommand);
   });
@@ -94,6 +98,7 @@ describe("resolve", () => {
       commandPath: "commands/[qux].js",
       commandTokens: ["do"],
       remainingCommandString: "re mi",
+      remainingArgv: ["re", "mi"],
       params: {
         qux: "do",
       },
@@ -111,10 +116,33 @@ describe("resolve", () => {
       commandPath: "commands/[qux]/[...quux].js",
       commandTokens: ["re", "mi"],
       remainingCommandString: "",
+      remainingArgv: [],
       params: {
         quux: ["re", "mi"],
       },
       subcommandsDir: "commands/[qux]/[...quux]",
+    } as ResolvedCommand);
+  });
+
+  it("resolves arguments containing spaces", async () => {
+    const commandModules = {
+      "commands/foo.js": {
+        options: { name: { type: "string" } },
+        handler: () => {},
+      },
+    } satisfies Record<string, CommandModule>;
+    mockCommandModules(commandModules);
+
+    const resolved = await resolveCommand({
+      commandString: 'foo --name "Bob Smith" bar',
+      argv: ["foo", "--name", "Bob Smith", "bar"],
+      commandsDir: "commands",
+    });
+
+    expect(resolved).toMatchObject({
+      commandName: "foo",
+      remainingCommandString: "bar",
+      remainingArgv: ["bar"],
     } as ResolvedCommand);
   });
 });

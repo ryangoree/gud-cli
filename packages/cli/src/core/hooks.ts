@@ -23,6 +23,11 @@ export interface LifecycleHooks {
     commandString: string;
 
     /**
+     *  The raw arguments input to the CLI
+     */
+    argv: string[];
+
+    /**
      *  The root directory containing command implementations
      */
     commandsDir: string;
@@ -66,6 +71,11 @@ export interface LifecycleHooks {
      *  The remaining unresolved portion of the command string
      */
     commandString: string;
+
+    /**
+     *  The remaining unresolved arguments
+     */
+    argv: string[];
 
     /**
      *  The directory containing subcommand implementations
@@ -159,6 +169,11 @@ export interface LifecycleHooks {
      * The raw command input (string or array format).
      */
     commandString: string | string[];
+
+    /**
+     * The raw arguments input to the CLI.
+     */
+    argv: string[];
 
     /**
      * The consolidated options configuration from all plugins and resolved

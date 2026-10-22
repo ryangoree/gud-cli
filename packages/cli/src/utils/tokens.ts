@@ -86,6 +86,9 @@ export function splitTokens(commandString: string, delimiter = " "): string[] {
       continue;
     }
 
+    // Skip empty tokens left by repeated delimiters
+    if (!token) continue;
+
     if (token.startsWith('"') && !token.endsWith('"')) {
       inQuotes = true;
       currentQuotedToken.push(token.slice(1));

@@ -1,6 +1,7 @@
 import parse from "yargs-parser";
 import type { OptionsConfig, OptionValues } from "#/core/options/options";
 import { validateOptionsConfig } from "#/core/options/validate-option-config";
+import { joinTokens, splitTokens } from "#/utils/tokens";
 import type { MaybePromise } from "#/utils/types";
 
 // Types //
@@ -21,20 +22,26 @@ export type ParsedCommand = {
 };
 
 /**
- * A function to parse a command string.
+ * A function to parse a command string or an array of arguments.
+ *
+ * @remarks
+ * The CLI passes arguments as an array so values containing spaces or quotes
+ * are preserved. Support for command strings will be removed in the next
+ * major version.
  * @group Parse
  */
 export type ParseCommandFn = (
-  commandString: string,
+  command: string | string[],
   optionsConfig: OptionsConfig,
 ) => MaybePromise<ParsedCommand>;
 
 // Functions + Function Types //
 
 /**
- * Parse a command string into command tokens and options values.
+ * Parse a command string or an array of arguments into command tokens and
+ * options values.
  *
- * @param commandString - The command string to parse.
+ * @param command - The command string or arguments to parse.
  * @param optionsConfig  - The options config to use when parsing. Only options
  *  that are defined in the config will be included in the option values. Any
  *  options that are not defined in the config will be treated as command
@@ -42,7 +49,10 @@ export type ParseCommandFn = (
  * @returns The parsed command tokens and options values.
  * @group Parse
  */
-export function parseCommand(commandString: string, optionsConfig: OptionsConfig): ParsedCommand {
+export function parseCommand(
+  command: string | string[],
+  optionsConfig: OptionsConfig,
+): ParsedCommand {
   validateOptionsConfig(optionsConfig);
 
   // Prepare the options config for yargs-parser
@@ -87,8 +97,8 @@ export function parseCommand(commandString: string, optionsConfig: OptionsConfig
     }
   }
 
-  // Parse the command string with yargs-parser
-  const { _, ...options } = parse(commandString, {
+  // Parse the command with yargs-parser
+  const { _, ...options } = parse(command, {
     ...parseOptions,
     configuration: {
       "duplicate-arguments-array": false,
@@ -120,17 +130,33 @@ export function parseCommand(commandString: string, optionsConfig: OptionsConfig
 }
 
 /**
- * Remove leading options from a command string by parsing it with the provided
- * parse function and returning the remaining command string.
+ * Remove leading options from a command string or an array of arguments by
+ * parsing it with the provided parse function and returning the remaining
+ * command string or arguments.
  */
+export async function removeLeadingOptions(
+  args: string[],
+  optionsConfig: OptionsConfig,
+  parseFn?: ParseCommandFn,
+): Promise<string[]>;
 export async function removeLeadingOptions(
   commandString: string,
   optionsConfig: OptionsConfig,
+  parseFn?: ParseCommandFn,
+): Promise<string>;
+export async function removeLeadingOptions(
+  command: string | string[],
+  optionsConfig: OptionsConfig,
   parseFn: ParseCommandFn = parseCommand,
-) {
-  if (!commandString) return "";
-  const { tokens } = await parseFn(commandString, optionsConfig);
-  if (!tokens.length) return "";
-  const indexOfNextCommand = commandString.indexOf(tokens[0]!);
-  return commandString.slice(indexOfNextCommand);
+): Promise<string | string[]> {
+  if (typeof command === "string") {
+    const remaining = await removeLeadingOptions(splitTokens(command), optionsConfig, parseFn);
+    return joinTokens(remaining);
+  }
+
+  if (!command.length) return [];
+  const { tokens } = await parseFn(command, optionsConfig);
+  if (!tokens.length) return [];
+  const indexOfNextCommand = command.indexOf(tokens[0]!);
+  return command.slice(indexOfNextCommand);
 }

@@ -83,6 +83,12 @@ export interface ResolvedCommand {
   remainingCommandString: string;
 
   /**
+   * The arguments that have not yet been resolved. Takes precedence over
+   * {@linkcode remainingCommandString} when set.
+   */
+  remainingArgv?: string[];
+
+  /**
    * The path to the directory where the command's subcommands should live.
    */
   subcommandsDir: string;
@@ -102,6 +108,12 @@ export interface ResolveCommandParams {
    *  The command string to resolve a command file for.
    */
   commandString: string;
+
+  /**
+   * The arguments to resolve a command file for. Takes precedence over
+   * {@linkcode commandString} when set.
+   */
+  argv?: string[];
 
   /**
    *  The path to the directory containing the command files.
@@ -144,12 +156,13 @@ export interface ResolveCommandParams {
  */
 export async function resolveCommand({
   commandString,
+  argv = splitTokens(commandString),
   commandsDir,
   parseFn = parseCommand,
 }: ResolveCommandParams): Promise<ResolvedCommand> {
-  if (!commandString.length) throw new CommandRequiredError();
+  if (!argv.length) throw new CommandRequiredError();
 
-  const [commandName, ...remainingTokens] = splitTokens(commandString) as [string, ...string[]];
+  const [commandName, ...remainingArgv] = argv as [string, ...string[]];
 
   // Validate the command name and commands directory before resolving a command.
   validateResolvable(commandName, commandsDir);
@@ -157,7 +170,7 @@ export async function resolveCommand({
   const subcommandsDir = join(commandsDir, commandName);
   const commandPath = formatFileName(subcommandsDir);
   const commandTokens = [commandName];
-  const remainingCommandString = joinTokens(remainingTokens);
+  const remainingCommandString = joinTokens(remainingArgv);
   let resolved: ResolvedCommand | undefined;
 
   // Attempt to load the command file.
@@ -174,6 +187,7 @@ export async function resolveCommand({
       commandName,
       commandTokens,
       remainingCommandString,
+      remainingArgv,
       subcommandsDir,
     };
   } catch (err: unknown) {
@@ -190,6 +204,7 @@ export async function resolveCommand({
         commandName,
         commandTokens,
         remainingCommandString,
+        remainingArgv,
         subcommandsDir,
       };
     }
@@ -200,6 +215,7 @@ export async function resolveCommand({
   if (!resolved) {
     resolved = await resolveParamCommand({
       commandString,
+      argv,
       commandsDir,
       parseFn,
     });
@@ -214,9 +230,9 @@ export async function resolveCommand({
 }
 
 /**
- * Prepares a resolved command by ensuring the remaining command string starts
- * with a subcommand name and replacing the handler with a pass-through function
- * if the command won't be executed.
+ * Prepares a resolved command by ensuring the remaining arguments start with a
+ * subcommand name and replacing the handler with a pass-through function if
+ * the command won't be executed.
  *
  * @returns The prepared resolved command.
  *
@@ -228,18 +244,20 @@ export async function prepareResolvedCommand(
 ) {
   const isMiddleware = resolved.command.isMiddleware ?? true;
 
-  // Ensure the remaining command string starts with a subcommand name by
-  // removing any leading options. This will ensure they aren't treated as
-  // command names which would cause errors during resolution. For example:
+  // Ensure the remaining arguments start with a subcommand name by removing
+  // any leading options. This will ensure they aren't treated as command names
+  // which would cause errors during resolution. For example:
   // `--help foo` -> `foo`
-  resolved.remainingCommandString = await removeLeadingOptions(
-    resolved.remainingCommandString,
+  const remainingArgv = await removeLeadingOptions(
+    resolved.remainingArgv ?? splitTokens(resolved.remainingCommandString),
     isMiddleware ? resolved.command.options || {} : {},
     parseFn,
   );
+  resolved.remainingArgv = remainingArgv;
+  resolved.remainingCommandString = joinTokens(remainingArgv);
 
   // Replace the handler if the command won't be executed.
-  if (!isMiddleware && resolved.remainingCommandString) {
+  if (!isMiddleware && remainingArgv.length) {
     resolved.command.handler = passThroughHandler;
   }
   return resolved;
@@ -310,13 +328,14 @@ function validateResolvable(commandName: string, commandsDir: string): void {
  */
 async function resolveParamCommand({
   commandString,
+  argv = splitTokens(commandString),
   commandsDir,
   parseFn = parseCommand,
 }: ResolveCommandParams): Promise<ResolvedCommand | undefined> {
-  if (!commandString.length) throw new UsageError("Command required.");
+  if (!argv.length) throw new UsageError("Command required.");
 
   const fileNames = readdirSync(commandsDir);
-  let tokens = splitTokens(commandString) as [string, ...string[]];
+  let tokens = argv as [string, ...string[]];
   let resolved: ResolvedCommand | undefined;
 
   // optimization opportunities:
@@ -333,10 +352,11 @@ async function resolveParamCommand({
     const subcommandsDir = join(commandsDir, commandName);
     const [commandToken, ...remainingTokens] = tokens;
 
-    // Empty the remaining command string if the param has a spread operator
-    // (e.g., [...param].ts) indicating that all remaining tokens should be
-    // passed to the command.
-    const remainingCommandString = spreadOperator ? "" : joinTokens(remainingTokens);
+    // Empty the remaining arguments if the param has a spread operator (e.g.,
+    // [...param].ts) indicating that all remaining tokens should be passed to
+    // the command.
+    const remainingArgv = spreadOperator ? [] : remainingTokens;
+    const remainingCommandString = joinTokens(remainingArgv);
 
     // Attempt to load the command file.
     try {
@@ -348,8 +368,8 @@ async function resolveParamCommand({
 
       // Parse the command string to separate the tokens from the options.
       if (command.options) {
-        const parsedString = await parseFn(commandString, command.options);
-        tokens = parsedString.tokens as [string, ...string[]];
+        const parsed = await parseFn(argv, command.options);
+        tokens = parsed.tokens as [string, ...string[]];
       }
 
       // If the param has a spread operator (e.g., [...param].ts), then pass all
@@ -366,6 +386,7 @@ async function resolveParamCommand({
         commandTokens: spreadOperator ? tokens : [commandToken],
         params,
         remainingCommandString,
+        remainingArgv,
         subcommandsDir,
       };
     } catch (err) {
@@ -385,6 +406,7 @@ async function resolveParamCommand({
           [paramName]: commandToken,
         },
         remainingCommandString,
+        remainingArgv,
         subcommandsDir,
       };
     }

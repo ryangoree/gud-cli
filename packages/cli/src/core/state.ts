@@ -396,6 +396,7 @@ export class State<TData = unknown, TOptions extends OptionsConfig = OptionsConf
           command,
           commandName: "fork-command",
           remainingCommandString: "",
+          remainingArgv: [],
           commandPath: "",
           commandTokens: [],
           subcommandsDir: "",
