@@ -2,4 +2,4 @@
 "@gud/cli": patch
 ---
 
-Patched the help menu to display falsey default values.
+Patched the help menu to display falsy default values.
