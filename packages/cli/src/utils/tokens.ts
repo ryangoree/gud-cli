@@ -45,14 +45,13 @@ export function joinTokens(
     }
   }
 
+  const flatTokens = (tokens as string[]).flat(Number.POSITIVE_INFINITY).filter(Boolean);
   const processedTokens: string[] = [];
-  for (const token of (tokens as string[]).flat(Number.POSITIVE_INFINITY)) {
-    if (!token) continue;
-
+  for (const token of flatTokens) {
     // If a token within multiple tokens contains spaces, wrap it in quotes
     if (
       useQuotes &&
-      tokens.length > 1 &&
+      flatTokens.length > 1 &&
       token.includes(" ") &&
       (!token.startsWith('"') || !token.endsWith('"'))
     ) {

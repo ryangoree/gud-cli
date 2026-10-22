@@ -303,6 +303,20 @@ describe("run", () => {
     expect(result).toBe("FORKED AND FIRST AND SECOND");
   });
 
+  it("keeps option values with spaces from a command array", async () => {
+    mockCommandModule("commands/hello", {
+      options: { name: { type: "string" } },
+      handler: ({ options, end }) => end(options.values.name),
+    });
+
+    const result = await run({
+      command: ["hello", "--name", "Bob Smith"],
+      commandsDir: "commands",
+    });
+
+    expect(result).toBe("Bob Smith");
+  });
+
   describe("lifecycle", () => {
     it("calls beforeParse hook with the correct payload", async () => {
       mockCommandModule("commands/foo");

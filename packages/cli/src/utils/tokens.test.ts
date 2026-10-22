@@ -19,6 +19,10 @@ describe("tokens", () => {
       expect(joinTokens(["foo", "bar baz"], ["qux"])).toBe('foo "bar baz" qux');
     });
 
+    it("adds quotes around tokens with spaces in a single array", () => {
+      expect(joinTokens(["foo", "bar baz", "qux"])).toBe('foo "bar baz" qux');
+    });
+
     it("handles a mix of strings and arrays", () => {
       expect(joinTokens("foo", ["bar", "baz"], "qux")).toBe("foo bar baz qux");
     });
@@ -37,6 +41,7 @@ describe("tokens", () => {
 
     it("returns a single token as is", () => {
       expect(joinTokens("foo")).toBe("foo");
+      expect(joinTokens(["foo bar"])).toBe("foo bar");
       expect(joinTokens("foo", { delimiter: "/" })).toBe("foo");
     });
 
