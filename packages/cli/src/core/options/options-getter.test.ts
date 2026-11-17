@@ -26,6 +26,21 @@ describe("options", () => {
       expect(await getter["foo-bar"]()).toBe("bar-baz");
     });
 
+    it("returns an empty array default for array options", async () => {
+      const getter = createOptionsGetter({
+        optionsConfig: {
+          soldOut: {
+            type: "array",
+            default: [],
+          },
+        },
+        optionValues: {},
+      });
+
+      expect(await getter.soldOut()).toEqual([]);
+      expect(await getter.get("soldOut")).toEqual({ soldOut: [] });
+    });
+
     it('includes "get" function to get multiple options by name', async () => {
       const getter = createOptionsGetter({
         optionsConfig: {

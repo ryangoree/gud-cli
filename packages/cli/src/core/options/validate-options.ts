@@ -281,11 +281,7 @@ function isValidValueType(value: unknown, config: OptionConfig) {
       if (typeof value === "string") {
         value = value.split(",").length > 0;
       }
-      return (
-        Array.isArray(value) &&
-        value.length > 0 &&
-        (!choices || value.every((v) => choices.includes(v)))
-      );
+      return Array.isArray(value) && (!choices || value.every((v) => choices.includes(v)));
 
     default:
       return typeof value === "string" && value.length > 0 && (!choices || choices.includes(value));

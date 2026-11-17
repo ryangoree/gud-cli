@@ -69,6 +69,24 @@ describe("options", () => {
       }).toThrowError(OptionsError);
     });
 
+    it("accepts empty arrays for array options", async () => {
+      expect(() => {
+        validateOptions({
+          values: { foo: [] },
+          config: { foo: { type: "array" } },
+          validations: { type: true },
+        });
+      }).not.toThrow();
+
+      expect(() => {
+        validateOptions({
+          values: { foo: [] },
+          config: { foo: { type: "array", required: true } },
+          validations: { type: true, required: true },
+        });
+      }).not.toThrow();
+    });
+
     it("throws OptionsError on missing required options", async () => {
       expect(() => {
         validateOptions({
