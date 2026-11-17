@@ -1,5 +1,11 @@
 # @gud/cli
 
+## 1.0.0-beta.9
+
+### Patch Changes
+
+- 1f259f5: Allow empty arrays as valid values for `array` options, including `default: []`.
+
 ## 1.0.0-beta.8
 
 ### Patch Changes
